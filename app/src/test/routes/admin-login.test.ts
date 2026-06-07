@@ -125,6 +125,14 @@ describe('adminLoginHandlers.POST', () => {
     expect(body.success).toBe(true)
     expect(body.token).toBe('token-123')
     expect(body.admin.email).toBe('admin@test.com')
+
+    // Same-origin session: an HttpOnly admin_session cookie must be set so the
+    // /admin route loader (which reads the cookie) can authenticate navigations.
+    const setCookie = response.headers.get('set-cookie')
+    expect(setCookie).toContain('admin_session=token-123')
+    expect(setCookie).toContain('HttpOnly')
+    expect(setCookie).toContain('Path=/')
+    expect(setCookie).toContain('SameSite=Lax')
   })
 
   it('OPTIONS returns CORS headers', async () => {

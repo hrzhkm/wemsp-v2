@@ -62,6 +62,19 @@ export const adminLoginHandlers = {
             name: admin.name,
           })
 
+          // Set an HttpOnly session cookie so same-origin /admin navigations
+          // authenticate via the admin_session cookie. The token is also
+          // returned in the body for any Bearer-header based callers.
+          const isProd = process.env.NODE_ENV === 'production'
+          const sessionCookie = [
+            `admin_session=${sessionToken}`,
+            'HttpOnly',
+            'Path=/',
+            'SameSite=Lax',
+            'Max-Age=86400',
+            ...(isProd ? ['Secure'] : []),
+          ].join('; ')
+
           // Return token in response body for client-side storage
           return Response.json({
             success: true,
@@ -71,7 +84,7 @@ export const adminLoginHandlers = {
               email: admin.email,
               name: admin.name,
             },
-          }, { headers: corsHeaders })
+          }, { headers: { ...corsHeaders, 'Set-Cookie': sessionCookie } })
         } catch (error) {
           console.error('Admin login error:', error)
           return Response.json(
