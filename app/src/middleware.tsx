@@ -3,7 +3,6 @@ import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/db'
-import { getAdminFromSession } from '@/lib/admin-auth'
 
 /**
  * Check if a user has completed their profile.
@@ -169,6 +168,22 @@ export const getServerSession = createServerFn({ method: 'GET' }).handler(
 )
 
 /**
+ * Returns the authenticated user only if their role is ADMIN, else null.
+ * This is THE server-side authorization boundary for admin API routes.
+ * Uses the better-auth session; client-side hiding is not sufficient.
+ */
+export async function requireAdminFromHeaders(headers: Headers) {
+  const session = await auth.api.getSession({ headers })
+  const user = session?.user as
+    | { id: string; role?: string | null; name?: string | null; email?: string | null }
+    | undefined
+  if (!user || user.role !== 'ADMIN') {
+    return null
+  }
+  return user
+}
+
+/**
  * Admin authentication middleware for server-side route protection.
  * Checks if the admin has a valid session before allowing access.
  *
@@ -183,19 +198,18 @@ export const getServerSession = createServerFn({ method: 'GET' }).handler(
  * ```
  */
 export const adminAuthMiddleware = createMiddleware().server(async ({ next, request }) => {
-  const admin = await getAdminFromSession(request.headers)
+  const admin = await requireAdminFromHeaders(request.headers)
 
   if (!admin) {
-    // Return a redirect response to the admin login page
+    // Not authenticated or not an admin: send to the shared app dashboard.
     return new Response(null, {
       status: 302,
       headers: {
-        Location: '/admin/login',
+        Location: '/app/dashboard',
       },
     })
   }
 
-  // Pass the admin data to the next handler via context
   return next({
     context: {
       admin,
@@ -204,8 +218,8 @@ export const adminAuthMiddleware = createMiddleware().server(async ({ next, requ
 })
 
 /**
- * Server function to get the current admin session.
- * Can be used in loaders or beforeLoad hooks for server-side admin auth checks.
+ * Server function returning the current admin user (role === ADMIN) or null.
+ * Used in route loaders / beforeLoad for server-side admin checks.
  */
 export const getAdminSession = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -213,6 +227,6 @@ export const getAdminSession = createServerFn({ method: 'GET' }).handler(
     if (!request) {
       return null
     }
-    return await getAdminFromSession(request.headers)
+    return await requireAdminFromHeaders(request.headers)
   }
 )
