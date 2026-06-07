@@ -59,7 +59,6 @@ export const Route = createFileRoute('/app')({
       profileIncomplete: guard.type === 'profile-incomplete',
     }
   },
-  // Add context type for profileIncomplete
 })
 
 // Helper to format route segment to title case

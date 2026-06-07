@@ -37,4 +37,10 @@ describe('resolveAppGuard', () => {
       resolveAppGuard({ role: 'USER', pathname: '/app/dashboard', isProfilePage: false, profileComplete: true }),
     ).toEqual({ type: 'allow' })
   })
+
+  it('redirects USER off an admin route even when profile is incomplete (access check wins)', () => {
+    expect(
+      resolveAppGuard({ role: 'USER', pathname: '/app/admin/users', isProfilePage: false, profileComplete: false }),
+    ).toEqual({ type: 'redirect', to: '/app/dashboard' })
+  })
 })
