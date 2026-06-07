@@ -11,10 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestUploadRouteImport } from './routes/test-upload'
 import { Route as AppRouteImport } from './routes/app'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppDashboardRouteImport } from './routes/app/dashboard'
-import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AppSettingsIndexRouteImport } from './routes/app/settings/index'
 import { Route as AppProfileIndexRouteImport } from './routes/app/profile/index'
 import { Route as AppFamilyIndexRouteImport } from './routes/app/family/index'
@@ -55,9 +53,6 @@ import { Route as ApiAgentPendingActionsConfirmRouteImport } from './routes/api/
 import { Route as ApiAgentConversationsSplatRouteImport } from './routes/api/agent/conversations/$'
 import { Route as ApiAdminUsersIdRouteImport } from './routes/api/admin/users/$id'
 import { Route as ApiAdminUsersSplatRouteImport } from './routes/api/admin/users/$'
-import { Route as ApiAdminSessionSplatRouteImport } from './routes/api/admin/session/$'
-import { Route as ApiAdminLogoutSplatRouteImport } from './routes/api/admin/logout/$'
-import { Route as ApiAdminLoginSplatRouteImport } from './routes/api/admin/login/$'
 import { Route as ApiAdminAssetsSplatRouteImport } from './routes/api/admin/assets/$'
 import { Route as ApiAdminAgreementsSplatRouteImport } from './routes/api/admin/agreements/$'
 import { Route as AppAdminAgreementsSignByIcIndexRouteImport } from './routes/app/admin/agreements/sign-by-ic/index'
@@ -84,11 +79,6 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -98,11 +88,6 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AppRoute,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AdminRoute,
 } as any)
 const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
   id: '/settings/',
@@ -307,21 +292,6 @@ const ApiAdminUsersSplatRoute = ApiAdminUsersSplatRouteImport.update({
   path: '/api/admin/users/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminSessionSplatRoute = ApiAdminSessionSplatRouteImport.update({
-  id: '/api/admin/session/$',
-  path: '/api/admin/session/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminLogoutSplatRoute = ApiAdminLogoutSplatRouteImport.update({
-  id: '/api/admin/logout/$',
-  path: '/api/admin/logout/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminLoginSplatRoute = ApiAdminLoginSplatRouteImport.update({
-  id: '/api/admin/login/$',
-  path: '/api/admin/login/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAdminAssetsSplatRoute = ApiAdminAssetsSplatRouteImport.update({
   id: '/api/admin/assets/$',
   path: '/api/admin/assets/$',
@@ -413,10 +383,8 @@ const ApiAdminAgreementsByIcIcNumberSplatRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/test-upload': typeof TestUploadRoute
-  '/admin/login': typeof AdminLoginRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/api/agent/chat': typeof ApiAgentChatRoute
   '/api/agreement/$': typeof ApiAgreementSplatRoute
@@ -443,9 +411,6 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsIndexRoute
   '/api/admin/agreements/$': typeof ApiAdminAgreementsSplatRoute
   '/api/admin/assets/$': typeof ApiAdminAssetsSplatRoute
-  '/api/admin/login/$': typeof ApiAdminLoginSplatRoute
-  '/api/admin/logout/$': typeof ApiAdminLogoutSplatRoute
-  '/api/admin/session/$': typeof ApiAdminSessionSplatRoute
   '/api/admin/users/$': typeof ApiAdminUsersSplatRoute
   '/api/admin/users/$id': typeof ApiAdminUsersIdRoute
   '/api/agent/conversations/$': typeof ApiAgentConversationsSplatRoute
@@ -479,10 +444,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/test-upload': typeof TestUploadRoute
-  '/admin/login': typeof AdminLoginRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/api/agent/chat': typeof ApiAgentChatRoute
   '/api/agreement/$': typeof ApiAgreementSplatRoute
@@ -509,9 +472,6 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsIndexRoute
   '/api/admin/agreements/$': typeof ApiAdminAgreementsSplatRoute
   '/api/admin/assets/$': typeof ApiAdminAssetsSplatRoute
-  '/api/admin/login/$': typeof ApiAdminLoginSplatRoute
-  '/api/admin/logout/$': typeof ApiAdminLogoutSplatRoute
-  '/api/admin/session/$': typeof ApiAdminSessionSplatRoute
   '/api/admin/users/$': typeof ApiAdminUsersSplatRoute
   '/api/admin/users/$id': typeof ApiAdminUsersIdRoute
   '/api/agent/conversations/$': typeof ApiAgentConversationsSplatRoute
@@ -546,10 +506,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/test-upload': typeof TestUploadRoute
-  '/admin/login': typeof AdminLoginRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/api/agent/chat': typeof ApiAgentChatRoute
   '/api/agreement/$': typeof ApiAgreementSplatRoute
@@ -576,9 +534,6 @@ export interface FileRoutesById {
   '/app/settings/': typeof AppSettingsIndexRoute
   '/api/admin/agreements/$': typeof ApiAdminAgreementsSplatRoute
   '/api/admin/assets/$': typeof ApiAdminAssetsSplatRoute
-  '/api/admin/login/$': typeof ApiAdminLoginSplatRoute
-  '/api/admin/logout/$': typeof ApiAdminLogoutSplatRoute
-  '/api/admin/session/$': typeof ApiAdminSessionSplatRoute
   '/api/admin/users/$': typeof ApiAdminUsersSplatRoute
   '/api/admin/users/$id': typeof ApiAdminUsersIdRoute
   '/api/agent/conversations/$': typeof ApiAgentConversationsSplatRoute
@@ -614,10 +569,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/app'
     | '/test-upload'
-    | '/admin/login'
     | '/app/dashboard'
     | '/api/agent/chat'
     | '/api/agreement/$'
@@ -644,9 +597,6 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/api/admin/agreements/$'
     | '/api/admin/assets/$'
-    | '/api/admin/login/$'
-    | '/api/admin/logout/$'
-    | '/api/admin/session/$'
     | '/api/admin/users/$'
     | '/api/admin/users/$id'
     | '/api/agent/conversations/$'
@@ -680,10 +630,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/app'
     | '/test-upload'
-    | '/admin/login'
     | '/app/dashboard'
     | '/api/agent/chat'
     | '/api/agreement/$'
@@ -710,9 +658,6 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/api/admin/agreements/$'
     | '/api/admin/assets/$'
-    | '/api/admin/login/$'
-    | '/api/admin/logout/$'
-    | '/api/admin/session/$'
     | '/api/admin/users/$'
     | '/api/admin/users/$id'
     | '/api/agent/conversations/$'
@@ -746,10 +691,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/app'
     | '/test-upload'
-    | '/admin/login'
     | '/app/dashboard'
     | '/api/agent/chat'
     | '/api/agreement/$'
@@ -776,9 +719,6 @@ export interface FileRouteTypes {
     | '/app/settings/'
     | '/api/admin/agreements/$'
     | '/api/admin/assets/$'
-    | '/api/admin/login/$'
-    | '/api/admin/logout/$'
-    | '/api/admin/session/$'
     | '/api/admin/users/$'
     | '/api/admin/users/$id'
     | '/api/agent/conversations/$'
@@ -813,7 +753,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   TestUploadRoute: typeof TestUploadRoute
   ApiAgentChatRoute: typeof ApiAgentChatRoute
@@ -827,9 +766,6 @@ export interface RootRouteChildren {
   ApiUploadIndexRoute: typeof ApiUploadIndexRoute
   ApiAdminAgreementsSplatRoute: typeof ApiAdminAgreementsSplatRoute
   ApiAdminAssetsSplatRoute: typeof ApiAdminAssetsSplatRoute
-  ApiAdminLoginSplatRoute: typeof ApiAdminLoginSplatRoute
-  ApiAdminLogoutSplatRoute: typeof ApiAdminLogoutSplatRoute
-  ApiAdminSessionSplatRoute: typeof ApiAdminSessionSplatRoute
   ApiAdminUsersSplatRoute: typeof ApiAdminUsersSplatRoute
   ApiAdminUsersIdRoute: typeof ApiAdminUsersIdRoute
   ApiAgentConversationsSplatRoute: typeof ApiAgentConversationsSplatRoute
@@ -866,13 +802,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -886,13 +815,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/app/settings/': {
       id: '/app/settings/'
@@ -1174,27 +1096,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminUsersSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/session/$': {
-      id: '/api/admin/session/$'
-      path: '/api/admin/session/$'
-      fullPath: '/api/admin/session/$'
-      preLoaderRoute: typeof ApiAdminSessionSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/logout/$': {
-      id: '/api/admin/logout/$'
-      path: '/api/admin/logout/$'
-      fullPath: '/api/admin/logout/$'
-      preLoaderRoute: typeof ApiAdminLogoutSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/login/$': {
-      id: '/api/admin/login/$'
-      path: '/api/admin/login/$'
-      fullPath: '/api/admin/login/$'
-      preLoaderRoute: typeof ApiAdminLoginSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/admin/assets/$': {
       id: '/api/admin/assets/$'
       path: '/api/admin/assets/$'
@@ -1303,16 +1204,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteChildren {
-  AdminLoginRoute: typeof AdminLoginRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminLoginRoute: AdminLoginRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
@@ -1378,7 +1269,6 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   TestUploadRoute: TestUploadRoute,
   ApiAgentChatRoute: ApiAgentChatRoute,
@@ -1392,9 +1282,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiUploadIndexRoute: ApiUploadIndexRoute,
   ApiAdminAgreementsSplatRoute: ApiAdminAgreementsSplatRoute,
   ApiAdminAssetsSplatRoute: ApiAdminAssetsSplatRoute,
-  ApiAdminLoginSplatRoute: ApiAdminLoginSplatRoute,
-  ApiAdminLogoutSplatRoute: ApiAdminLogoutSplatRoute,
-  ApiAdminSessionSplatRoute: ApiAdminSessionSplatRoute,
   ApiAdminUsersSplatRoute: ApiAdminUsersSplatRoute,
   ApiAdminUsersIdRoute: ApiAdminUsersIdRoute,
   ApiAgentConversationsSplatRoute: ApiAgentConversationsSplatRoute,
