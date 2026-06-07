@@ -44,3 +44,26 @@ export function canAccessAppRoute(role: AppRole, routePath: string): boolean {
 export function getUnauthorizedRedirect(): string {
   return UNAUTHORIZED_REDIRECT
 }
+
+export type AppGuardResult =
+  | { type: 'allow' }
+  | { type: 'redirect'; to: string }
+  | { type: 'profile-incomplete' }
+
+export function resolveAppGuard(input: {
+  role: AppRole
+  pathname: string
+  isProfilePage: boolean
+  profileComplete: boolean
+}): AppGuardResult {
+  if (!canAccessAppRoute(input.role, input.pathname)) {
+    return { type: 'redirect', to: getUnauthorizedRedirect() }
+  }
+  if (isAdmin(input.role)) {
+    return { type: 'allow' }
+  }
+  if (!input.isProfilePage && !input.profileComplete) {
+    return { type: 'profile-incomplete' }
+  }
+  return { type: 'allow' }
+}
