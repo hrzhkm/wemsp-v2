@@ -32,4 +32,16 @@ describe('requireAdminFromHeaders', () => {
     const result = await requireAdminFromHeaders(new Headers())
     expect(result).toEqual({ id: 'u1', role: 'ADMIN', name: 'Boss', email: 'a@b.com' })
   })
+
+  it('returns null when the session has no user', async () => {
+    mocks.getSession.mockResolvedValueOnce({ user: undefined })
+    const result = await requireAdminFromHeaders(new Headers())
+    expect(result).toBeNull()
+  })
+
+  it('returns null when the user has no role field', async () => {
+    mocks.getSession.mockResolvedValueOnce({ user: { id: 'u1' } })
+    const result = await requireAdminFromHeaders(new Headers())
+    expect(result).toBeNull()
+  })
 })
