@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
-import { getAdminFromSession } from '@/lib/admin-auth'
+import { requireAdminFromHeaders } from '@/middleware'
 import { corsHeaders } from '@/lib/cors'
 import { AgreementStatus, DistributionType } from '@/generated/prisma/enums'
 
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
       GET: async ({ request }: { request: Request }) => {
         try {
           // Verify admin session
-          const admin = await getAdminFromSession(request.headers)
+          const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
           }
@@ -116,7 +116,7 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
 
       POST: async ({ request }: { request: Request }) => {
         try {
-          const admin = await getAdminFromSession(request.headers)
+          const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
           }
@@ -206,7 +206,7 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
       DELETE: async ({ request }: { request: Request }) => {
         try {
           // Verify admin session
-          const admin = await getAdminFromSession(request.headers)
+          const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
           }

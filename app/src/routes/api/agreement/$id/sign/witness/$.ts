@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
-import { getAdminFromSession } from '@/lib/admin-auth'
+import { requireAdminFromHeaders } from '@/middleware'
 import {
   ensureAgreementMinted,
   finalizeAgreement,
@@ -18,7 +18,7 @@ import {
 
 export const witnessSignHandlers = {
   POST: async ({ request, params }: { request: Request; params: { id: string } }) => {
-        const adminSession = await getAdminFromSession(request.headers)
+        const adminSession = await requireAdminFromHeaders(request.headers)
 
         if (!adminSession) {
           return new Response('Unauthorized', { status: 401 })
@@ -67,21 +67,6 @@ export const witnessSignHandlers = {
             return Response.json(
               { error: 'Agreement has already been witnessed' },
               { status: 400 }
-            )
-          }
-
-          // Verify admin is still active
-          const admin = await prisma.admin.findFirst({
-            where: {
-              id: adminSession.adminId,
-              isActive: true,
-            },
-          })
-
-          if (!admin) {
-            return Response.json(
-              { error: 'Only active admins can witness agreements' },
-              { status: 403 }
             )
           }
 
@@ -135,7 +120,7 @@ export const witnessSignHandlers = {
           const updatedAgreement = await prisma.agreement.update({
             where: { id: agreementId },
             data: {
-              witnessId: adminSession.adminId,
+              witnessId: adminSession.id,
               witnessedAt,
               status: 'ACTIVE',
             },
