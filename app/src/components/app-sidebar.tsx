@@ -40,8 +40,18 @@ export function AppSidebar() {
   const accountItems = visibleItems.filter((i) => i.section === "account")
   const administrationItems = visibleItems.filter((i) => i.section === "administration")
 
-  const isActivePath = (matchPath: string) =>
-    location.pathname === matchPath || location.pathname.startsWith(`${matchPath}/`)
+  const activeMatchPath = visibleItems
+    .filter(
+      (item) =>
+        location.pathname === item.matchPath ||
+        location.pathname.startsWith(`${item.matchPath}/`),
+    )
+    .reduce<string | null>(
+      (best, item) => (!best || item.matchPath.length > best.length ? item.matchPath : best),
+      null,
+    )
+
+  const isActivePath = (matchPath: string) => matchPath === activeMatchPath
 
   const handleLogout = async () => {
     await authClient.signOut()
