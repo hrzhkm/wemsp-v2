@@ -1,9 +1,8 @@
-import { createFileRoute, Outlet, useNavigate, Link, useLocation, redirect } from '@tanstack/react-router'
-import { useEffect, useMemo } from 'react'
-import React from 'react'
+import { Link, Outlet, createFileRoute, redirect, useLocation, useNavigate } from '@tanstack/react-router'
+import React, { useEffect, useMemo } from 'react'
 import {
-  SidebarProvider,
   SidebarInset,
+  SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
@@ -76,7 +75,7 @@ function RouteComponent() {
   const { data: session, isPending } = authClient.useSession()
   const routeContext = Route.useRouteContext()
 
-  const profileIncomplete = routeContext?.profileIncomplete ?? false
+  const profileIncomplete = routeContext.profileIncomplete
 
   // Build breadcrumb items from current pathname segments
   const breadcrumbs = useMemo(() => {
