@@ -38,23 +38,6 @@ services:
     networks:
     - wemsp-network
 
-  admin:
-    build:
-      context: ..
-      dockerfile: .container/Dockerfile.admin
-      args:
-        VITE_API_BASE_URL: ${VITE_ADMIN_BASE_URL:-http://localhost:5050}
-    container_name: wemsp-admin
-    restart: unless-stopped
-    env_file:
-    - ../admin/.env
-    ports:
-    - "5051:3000"
-    networks:
-    - wemsp-network
-    depends_on:
-    - app
-
 volumes:
   wemsp_db_data:
 
