@@ -74,11 +74,11 @@ interface Agreement {
   assets: Array<AgreementAsset>
 }
 
-export const Route = createFileRoute('/admin/agreements/pending-witness/')({
+export const Route = createFileRoute('/app/admin/agreements/pending-witness/')({
   loader: async () => {
     const admin = await getAdminSession()
     if (!admin) {
-      throw redirect({ to: '/admin/login' })
+      throw redirect({ to: '/app/dashboard' })
     }
     return { admin }
   },

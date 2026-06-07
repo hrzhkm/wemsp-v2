@@ -140,11 +140,11 @@ interface Account {
   createdAt: string
 }
 
-export const Route = createFileRoute('/admin/users/$id')({
+export const Route = createFileRoute('/app/admin/users/$id')({
   loader: async ({ params }) => {
     const admin = await getAdminSession()
     if (!admin) {
-      throw redirect({ to: '/admin/login' })
+      throw redirect({ to: '/app/dashboard' })
     }
     return { admin, userId: params.id }
   },
@@ -188,12 +188,12 @@ function RouteComponent() {
         })
       } else {
         toast.error('Failed to fetch user details')
-        navigate({ to: '/admin/users' })
+        navigate({ to: '/app/admin/users' })
       }
     } catch (error) {
       console.error('Error fetching user details:', error)
       toast.error('Failed to fetch user details')
-      navigate({ to: '/admin/users' })
+      navigate({ to: '/app/admin/users' })
     } finally {
       setLoading(false)
     }
@@ -238,7 +238,7 @@ function RouteComponent() {
       if (response.ok) {
         toast.success('User deleted successfully')
         setDeleteDialogOpen(false)
-        navigate({ to: '/admin/users' })
+        navigate({ to: '/app/admin/users' })
       } else {
         const error = await response.json()
         toast.error(error.error || 'Failed to delete user')

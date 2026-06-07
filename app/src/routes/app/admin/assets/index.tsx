@@ -71,11 +71,11 @@ interface User {
   email: string
 }
 
-export const Route = createFileRoute('/admin/assets/')({
+export const Route = createFileRoute('/app/admin/assets/')({
   loader: async () => {
     const admin = await getAdminSession()
     if (!admin) {
-      throw redirect({ to: '/admin/login' })
+      throw redirect({ to: '/app/dashboard' })
     }
     return { admin }
   },

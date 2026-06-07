@@ -127,11 +127,11 @@ interface AgreementBeneficiaryInput {
   shareDescription?: string
 }
 
-export const Route = createFileRoute('/admin/agreements/')({
+export const Route = createFileRoute('/app/admin/agreements/')({
   loader: async () => {
     const admin = await getAdminSession()
     if (!admin) {
-      throw redirect({ to: '/admin/login' })
+      throw redirect({ to: '/app/dashboard' })
     }
     return { admin }
   },

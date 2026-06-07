@@ -1,11 +1,11 @@
 import { createFileRoute, redirect, Link } from '@tanstack/react-router'
 import { getAdminSession } from '@/middleware'
 
-export const Route = createFileRoute('/admin/dashboard')({
+export const Route = createFileRoute('/app/admin/dashboard')({
   loader: async () => {
     const admin = await getAdminSession()
     if (!admin) {
-      throw redirect({ to: '/admin/login' })
+      throw redirect({ to: '/app/dashboard' })
     }
     return { admin }
   },
@@ -17,7 +17,7 @@ function RouteComponent() {
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Link
-          to="/admin/users"
+          to="/app/admin/users"
           className="bg-background rounded-lg border p-6 hover:bg-accent/50 transition-colors cursor-pointer block"
         >
           <h3 className="text-lg font-semibold mb-2">User Management</h3>

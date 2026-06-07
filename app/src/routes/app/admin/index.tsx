@@ -1,13 +1,13 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { getAdminSession } from '@/middleware'
 
-export const Route = createFileRoute('/admin/')({
+export const Route = createFileRoute('/app/admin/')({
   loader: async () => {
     const admin = await getAdminSession()
     if (admin) {
-      throw redirect({ to: '/admin/dashboard' })
+      throw redirect({ to: '/app/admin/dashboard' })
     } else {
-      throw redirect({ to: '/admin/login' })
+      throw redirect({ to: '/app/dashboard' })
     }
   },
   component: RouteComponent,

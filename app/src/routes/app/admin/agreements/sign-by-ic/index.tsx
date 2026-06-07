@@ -34,7 +34,7 @@ interface AgreementForSigning {
   shareDescription?: string | null
 }
 
-export const Route = createFileRoute('/admin/agreements/sign-by-ic/')({
+export const Route = createFileRoute('/app/admin/agreements/sign-by-ic/')({
   component: SignByICPage,
 })
 
@@ -151,7 +151,6 @@ function SignByICPage() {
           Search for and sign agreements on behalf of non-registered users
         </p>
       </div>
-
       {/* IC Search Section */}
       <div className="flex items-center gap-4">
         <div className="flex-1 max-w-md space-y-2">
@@ -174,7 +173,6 @@ function SignByICPage() {
           Search
         </Button>
       </div>
-
       {/* Results Table */}
       {hasSearched && (
         <div className="bg-background rounded-lg border">
@@ -236,7 +234,6 @@ function SignByICPage() {
           )}
         </div>
       )}
-
       {/* Optional Notes Dialog */}
       <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
         <DialogContent>
@@ -263,7 +260,6 @@ function SignByICPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       {/* Confirmation Dialog */}
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
         <DialogContent>

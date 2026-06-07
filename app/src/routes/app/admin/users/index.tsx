@@ -112,11 +112,11 @@ interface UserDetails {
   agreements: Agreement[]
 }
 
-export const Route = createFileRoute('/admin/users/')({
+export const Route = createFileRoute('/app/admin/users/')({
   loader: async () => {
     const admin = await getAdminSession()
     if (!admin) {
-      throw redirect({ to: '/admin/login' })
+      throw redirect({ to: '/app/dashboard' })
     }
     return { admin }
   },
@@ -376,7 +376,7 @@ function RouteComponent() {
                     <TableRow key={user.id}>
                       <TableCell className="font-medium">
                         <a
-                          href={`/admin/users/${user.id}`}
+                          href={`/app/admin/users/${user.id}`}
                           className="hover:underline hover:text-primary cursor-pointer"
                         >
                           {user.name}
