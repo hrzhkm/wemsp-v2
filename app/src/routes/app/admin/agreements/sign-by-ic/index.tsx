@@ -1,7 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
 import { PenIcon, SearchIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import { getAdminSession } from '@/middleware'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -35,6 +36,13 @@ interface AgreementForSigning {
 }
 
 export const Route = createFileRoute('/app/admin/agreements/sign-by-ic/')({
+  loader: async () => {
+    const admin = await getAdminSession()
+    if (!admin) {
+      throw redirect({ to: '/app/dashboard' })
+    }
+    return { admin }
+  },
   component: SignByICPage,
 })
 
