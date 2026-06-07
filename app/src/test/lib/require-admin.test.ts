@@ -8,7 +8,7 @@ vi.mock('@/lib/auth', () => ({
   auth: { api: { getSession: mocks.getSession } },
 }))
 
-import { requireAdminFromHeaders } from '@/middleware'
+import { requireAdminFromHeaders } from '@/lib/admin-guard'
 
 describe('requireAdminFromHeaders', () => {
   beforeEach(() => vi.clearAllMocks())

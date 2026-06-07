@@ -3,6 +3,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/db'
+import { requireAdminFromHeaders } from '@/lib/admin-guard'
 
 /**
  * Check if a user has completed their profile.
@@ -166,22 +167,6 @@ export const getServerSession = createServerFn({ method: 'GET' }).handler(
     return session
   }
 )
-
-/**
- * Returns the authenticated user only if their role is ADMIN, else null.
- * This is THE server-side authorization boundary for admin API routes.
- * Uses the better-auth session; client-side hiding is not sufficient.
- */
-export async function requireAdminFromHeaders(headers: Headers) {
-  const session = await auth.api.getSession({ headers })
-  const user = session?.user as
-    | { id: string; role?: string | null; name?: string | null; email?: string | null }
-    | undefined
-  if (!user || user.role !== 'ADMIN') {
-    return null
-  }
-  return user
-}
 
 /**
  * Admin authentication middleware for server-side route protection.
