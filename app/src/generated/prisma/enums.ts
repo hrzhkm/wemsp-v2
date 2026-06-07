@@ -42,6 +42,14 @@ export const AssetType = {
 export type AssetType = (typeof AssetType)[keyof typeof AssetType]
 
 
+export const Role = {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
+} as const
+
+export type Role = (typeof Role)[keyof typeof Role]
+
+
 export const DistributionType = {
   FARAID: 'FARAID',
   HIBAH: 'HIBAH',

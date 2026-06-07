@@ -33,6 +33,7 @@ export type UserMinAggregateOutputType = {
   email: string | null
   emailVerified: boolean | null
   image: string | null
+  role: $Enums.Role | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -46,6 +47,7 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   emailVerified: boolean | null
   image: string | null
+  role: $Enums.Role | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -59,6 +61,7 @@ export type UserCountAggregateOutputType = {
   email: number
   emailVerified: number
   image: number
+  role: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -74,6 +77,7 @@ export type UserMinAggregateInputType = {
   email?: true
   emailVerified?: true
   image?: true
+  role?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -87,6 +91,7 @@ export type UserMaxAggregateInputType = {
   email?: true
   emailVerified?: true
   image?: true
+  role?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +105,7 @@ export type UserCountAggregateInputType = {
   email?: true
   emailVerified?: true
   image?: true
+  role?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -186,6 +192,7 @@ export type UserGroupByOutputType = {
   email: string
   emailVerified: boolean
   image: string | null
+  role: $Enums.Role
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -220,6 +227,7 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
+  role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
@@ -232,6 +240,8 @@ export type UserWhereInput = {
   agentConversations?: Prisma.AgentConversationListRelationFilter
   settings?: Prisma.XOR<Prisma.UserSettingNullableScalarRelationFilter, Prisma.UserSettingWhereInput> | null
   icRegistry?: Prisma.XOR<Prisma.IcRegistryNullableScalarRelationFilter, Prisma.IcRegistryWhereInput> | null
+  witnessedAgreements?: Prisma.AgreementListRelationFilter
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -243,6 +253,7 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sessions?: Prisma.SessionOrderByRelationAggregateInput
@@ -255,6 +266,8 @@ export type UserOrderByWithRelationInput = {
   agentConversations?: Prisma.AgentConversationOrderByRelationAggregateInput
   settings?: Prisma.UserSettingOrderByWithRelationInput
   icRegistry?: Prisma.IcRegistryOrderByWithRelationInput
+  witnessedAgreements?: Prisma.AgreementOrderByRelationAggregateInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -269,6 +282,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   phoneNumber?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
+  role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
@@ -281,6 +295,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   agentConversations?: Prisma.AgentConversationListRelationFilter
   settings?: Prisma.XOR<Prisma.UserSettingNullableScalarRelationFilter, Prisma.UserSettingWhereInput> | null
   icRegistry?: Prisma.XOR<Prisma.IcRegistryNullableScalarRelationFilter, Prisma.IcRegistryWhereInput> | null
+  witnessedAgreements?: Prisma.AgreementListRelationFilter
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryListRelationFilter
 }, "id" | "icNumber" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -292,6 +308,7 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -311,6 +328,7 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -323,6 +341,7 @@ export type UserCreateInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -335,6 +354,8 @@ export type UserCreateInput = {
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -346,6 +367,7 @@ export type UserUncheckedCreateInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -357,6 +379,8 @@ export type UserUncheckedCreateInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUpdateInput = {
@@ -367,6 +391,7 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -379,6 +404,8 @@ export type UserUpdateInput = {
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -390,6 +417,7 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -401,6 +429,8 @@ export type UserUncheckedUpdateInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -412,6 +442,7 @@ export type UserCreateManyInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -424,6 +455,7 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -437,6 +469,7 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -455,6 +488,7 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -468,6 +502,7 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -481,6 +516,7 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -528,6 +564,10 @@ export type NullableStringFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type EnumRoleFieldUpdateOperationsInput = {
+  set?: $Enums.Role
 }
 
 export type UserCreateNestedOneWithoutSettingsInput = {
@@ -634,12 +674,44 @@ export type UserCreateNestedOneWithoutAgreementsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutWitnessedAgreementsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWitnessedAgreementsInput, Prisma.UserUncheckedCreateWithoutWitnessedAgreementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWitnessedAgreementsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserUpdateOneRequiredWithoutAgreementsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutAgreementsInput, Prisma.UserUncheckedCreateWithoutAgreementsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutAgreementsInput
   upsert?: Prisma.UserUpsertWithoutAgreementsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAgreementsInput, Prisma.UserUpdateWithoutAgreementsInput>, Prisma.UserUncheckedUpdateWithoutAgreementsInput>
+}
+
+export type UserUpdateOneWithoutWitnessedAgreementsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWitnessedAgreementsInput, Prisma.UserUncheckedCreateWithoutWitnessedAgreementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWitnessedAgreementsInput
+  upsert?: Prisma.UserUpsertWithoutWitnessedAgreementsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWitnessedAgreementsInput, Prisma.UserUpdateWithoutWitnessedAgreementsInput>, Prisma.UserUncheckedUpdateWithoutWitnessedAgreementsInput>
+}
+
+export type UserCreateNestedOneWithoutProxySignedBeneficiariesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProxySignedBeneficiariesInput, Prisma.UserUncheckedCreateWithoutProxySignedBeneficiariesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProxySignedBeneficiariesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutProxySignedBeneficiariesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProxySignedBeneficiariesInput, Prisma.UserUncheckedCreateWithoutProxySignedBeneficiariesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProxySignedBeneficiariesInput
+  upsert?: Prisma.UserUpsertWithoutProxySignedBeneficiariesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProxySignedBeneficiariesInput, Prisma.UserUpdateWithoutProxySignedBeneficiariesInput>, Prisma.UserUncheckedUpdateWithoutProxySignedBeneficiariesInput>
 }
 
 export type UserCreateNestedOneWithoutAgentConversationsInput = {
@@ -664,6 +736,7 @@ export type UserCreateWithoutIcRegistryInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -675,6 +748,8 @@ export type UserCreateWithoutIcRegistryInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutIcRegistryInput = {
@@ -685,6 +760,7 @@ export type UserUncheckedCreateWithoutIcRegistryInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -696,6 +772,8 @@ export type UserUncheckedCreateWithoutIcRegistryInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutIcRegistryInput = {
@@ -722,6 +800,7 @@ export type UserUpdateWithoutIcRegistryInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -733,6 +812,8 @@ export type UserUpdateWithoutIcRegistryInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutIcRegistryInput = {
@@ -743,6 +824,7 @@ export type UserUncheckedUpdateWithoutIcRegistryInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -754,6 +836,8 @@ export type UserUncheckedUpdateWithoutIcRegistryInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserCreateWithoutSettingsInput = {
@@ -764,6 +848,7 @@ export type UserCreateWithoutSettingsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -775,6 +860,8 @@ export type UserCreateWithoutSettingsInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutSettingsInput = {
@@ -786,6 +873,7 @@ export type UserUncheckedCreateWithoutSettingsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -796,6 +884,8 @@ export type UserUncheckedCreateWithoutSettingsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedCreateNestedManyWithoutUserInput
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutSettingsInput = {
@@ -822,6 +912,7 @@ export type UserUpdateWithoutSettingsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -833,6 +924,8 @@ export type UserUpdateWithoutSettingsInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSettingsInput = {
@@ -844,6 +937,7 @@ export type UserUncheckedUpdateWithoutSettingsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -854,6 +948,8 @@ export type UserUncheckedUpdateWithoutSettingsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedUpdateManyWithoutUserNestedInput
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserCreateWithoutFamilyMembersInput = {
@@ -864,6 +960,7 @@ export type UserCreateWithoutFamilyMembersInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -875,6 +972,8 @@ export type UserCreateWithoutFamilyMembersInput = {
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutFamilyMembersInput = {
@@ -886,6 +985,7 @@ export type UserUncheckedCreateWithoutFamilyMembersInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -896,6 +996,8 @@ export type UserUncheckedCreateWithoutFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutFamilyMembersInput = {
@@ -911,6 +1013,7 @@ export type UserCreateWithoutRelatedFamilyMembersInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -922,6 +1025,8 @@ export type UserCreateWithoutRelatedFamilyMembersInput = {
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutRelatedFamilyMembersInput = {
@@ -933,6 +1038,7 @@ export type UserUncheckedCreateWithoutRelatedFamilyMembersInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -943,6 +1049,8 @@ export type UserUncheckedCreateWithoutRelatedFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutRelatedFamilyMembersInput = {
@@ -969,6 +1077,7 @@ export type UserUpdateWithoutFamilyMembersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -980,6 +1089,8 @@ export type UserUpdateWithoutFamilyMembersInput = {
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFamilyMembersInput = {
@@ -991,6 +1102,7 @@ export type UserUncheckedUpdateWithoutFamilyMembersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1001,6 +1113,8 @@ export type UserUncheckedUpdateWithoutFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUpsertWithoutRelatedFamilyMembersInput = {
@@ -1022,6 +1136,7 @@ export type UserUpdateWithoutRelatedFamilyMembersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1033,6 +1148,8 @@ export type UserUpdateWithoutRelatedFamilyMembersInput = {
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRelatedFamilyMembersInput = {
@@ -1044,6 +1161,7 @@ export type UserUncheckedUpdateWithoutRelatedFamilyMembersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1054,6 +1172,8 @@ export type UserUncheckedUpdateWithoutRelatedFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserCreateWithoutNonRegisteredFamilyMembersInput = {
@@ -1064,6 +1184,7 @@ export type UserCreateWithoutNonRegisteredFamilyMembersInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1075,6 +1196,8 @@ export type UserCreateWithoutNonRegisteredFamilyMembersInput = {
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutNonRegisteredFamilyMembersInput = {
@@ -1086,6 +1209,7 @@ export type UserUncheckedCreateWithoutNonRegisteredFamilyMembersInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1096,6 +1220,8 @@ export type UserUncheckedCreateWithoutNonRegisteredFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutNonRegisteredFamilyMembersInput = {
@@ -1122,6 +1248,7 @@ export type UserUpdateWithoutNonRegisteredFamilyMembersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1133,6 +1260,8 @@ export type UserUpdateWithoutNonRegisteredFamilyMembersInput = {
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNonRegisteredFamilyMembersInput = {
@@ -1144,6 +1273,7 @@ export type UserUncheckedUpdateWithoutNonRegisteredFamilyMembersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1154,6 +1284,8 @@ export type UserUncheckedUpdateWithoutNonRegisteredFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserCreateWithoutAssetsInput = {
@@ -1164,6 +1296,7 @@ export type UserCreateWithoutAssetsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1175,6 +1308,8 @@ export type UserCreateWithoutAssetsInput = {
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutAssetsInput = {
@@ -1186,6 +1321,7 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1196,6 +1332,8 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutAssetsInput = {
@@ -1222,6 +1360,7 @@ export type UserUpdateWithoutAssetsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1233,6 +1372,8 @@ export type UserUpdateWithoutAssetsInput = {
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssetsInput = {
@@ -1244,6 +1385,7 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1254,6 +1396,8 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1264,6 +1408,7 @@ export type UserCreateWithoutSessionsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -1275,6 +1420,8 @@ export type UserCreateWithoutSessionsInput = {
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1286,6 +1433,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1296,6 +1444,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1322,6 +1472,7 @@ export type UserUpdateWithoutSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -1333,6 +1484,8 @@ export type UserUpdateWithoutSessionsInput = {
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1344,6 +1497,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1354,6 +1508,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1364,6 +1520,7 @@ export type UserCreateWithoutAccountsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1375,6 +1532,8 @@ export type UserCreateWithoutAccountsInput = {
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1386,6 +1545,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1396,6 +1556,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1422,6 +1584,7 @@ export type UserUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1433,6 +1596,8 @@ export type UserUpdateWithoutAccountsInput = {
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1444,6 +1609,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1454,6 +1620,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserCreateWithoutAgreementsInput = {
@@ -1464,6 +1632,7 @@ export type UserCreateWithoutAgreementsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1475,6 +1644,8 @@ export type UserCreateWithoutAgreementsInput = {
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutAgreementsInput = {
@@ -1486,6 +1657,7 @@ export type UserUncheckedCreateWithoutAgreementsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1496,11 +1668,66 @@ export type UserUncheckedCreateWithoutAgreementsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedCreateNestedManyWithoutUserInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutAgreementsInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutAgreementsInput, Prisma.UserUncheckedCreateWithoutAgreementsInput>
+}
+
+export type UserCreateWithoutWitnessedAgreementsInput = {
+  id: string
+  name: string
+  address?: string | null
+  phoneNumber?: string | null
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  assets?: Prisma.AssetCreateNestedManyWithoutUserInput
+  familyMembers?: Prisma.FamilyMemberCreateNestedManyWithoutUserInput
+  relatedFamilyMembers?: Prisma.FamilyMemberCreateNestedManyWithoutFamilyMemberUserInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberCreateNestedManyWithoutUserInput
+  agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
+  agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
+  settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
+}
+
+export type UserUncheckedCreateWithoutWitnessedAgreementsInput = {
+  id: string
+  name: string
+  icNumber?: string | null
+  address?: string | null
+  phoneNumber?: string | null
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
+  familyMembers?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutUserInput
+  relatedFamilyMembers?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutFamilyMemberUserInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedCreateNestedManyWithoutUserInput
+  agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
+  agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
+  settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
+}
+
+export type UserCreateOrConnectWithoutWitnessedAgreementsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWitnessedAgreementsInput, Prisma.UserUncheckedCreateWithoutWitnessedAgreementsInput>
 }
 
 export type UserUpsertWithoutAgreementsInput = {
@@ -1522,6 +1749,7 @@ export type UserUpdateWithoutAgreementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1533,6 +1761,8 @@ export type UserUpdateWithoutAgreementsInput = {
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAgreementsInput = {
@@ -1544,6 +1774,7 @@ export type UserUncheckedUpdateWithoutAgreementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1554,6 +1785,179 @@ export type UserUncheckedUpdateWithoutAgreementsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedUpdateManyWithoutUserNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
+}
+
+export type UserUpsertWithoutWitnessedAgreementsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWitnessedAgreementsInput, Prisma.UserUncheckedUpdateWithoutWitnessedAgreementsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWitnessedAgreementsInput, Prisma.UserUncheckedCreateWithoutWitnessedAgreementsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWitnessedAgreementsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWitnessedAgreementsInput, Prisma.UserUncheckedUpdateWithoutWitnessedAgreementsInput>
+}
+
+export type UserUpdateWithoutWitnessedAgreementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
+  familyMembers?: Prisma.FamilyMemberUpdateManyWithoutUserNestedInput
+  relatedFamilyMembers?: Prisma.FamilyMemberUpdateManyWithoutFamilyMemberUserNestedInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUpdateManyWithoutUserNestedInput
+  agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
+  agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
+  settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWitnessedAgreementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  icNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
+  familyMembers?: Prisma.FamilyMemberUncheckedUpdateManyWithoutUserNestedInput
+  relatedFamilyMembers?: Prisma.FamilyMemberUncheckedUpdateManyWithoutFamilyMemberUserNestedInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedUpdateManyWithoutUserNestedInput
+  agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
+  agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
+  settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
+}
+
+export type UserCreateWithoutProxySignedBeneficiariesInput = {
+  id: string
+  name: string
+  address?: string | null
+  phoneNumber?: string | null
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  assets?: Prisma.AssetCreateNestedManyWithoutUserInput
+  familyMembers?: Prisma.FamilyMemberCreateNestedManyWithoutUserInput
+  relatedFamilyMembers?: Prisma.FamilyMemberCreateNestedManyWithoutFamilyMemberUserInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberCreateNestedManyWithoutUserInput
+  agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
+  agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
+  settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+}
+
+export type UserUncheckedCreateWithoutProxySignedBeneficiariesInput = {
+  id: string
+  name: string
+  icNumber?: string | null
+  address?: string | null
+  phoneNumber?: string | null
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
+  familyMembers?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutUserInput
+  relatedFamilyMembers?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutFamilyMemberUserInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedCreateNestedManyWithoutUserInput
+  agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
+  agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
+  settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+}
+
+export type UserCreateOrConnectWithoutProxySignedBeneficiariesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutProxySignedBeneficiariesInput, Prisma.UserUncheckedCreateWithoutProxySignedBeneficiariesInput>
+}
+
+export type UserUpsertWithoutProxySignedBeneficiariesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutProxySignedBeneficiariesInput, Prisma.UserUncheckedUpdateWithoutProxySignedBeneficiariesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutProxySignedBeneficiariesInput, Prisma.UserUncheckedCreateWithoutProxySignedBeneficiariesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutProxySignedBeneficiariesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutProxySignedBeneficiariesInput, Prisma.UserUncheckedUpdateWithoutProxySignedBeneficiariesInput>
+}
+
+export type UserUpdateWithoutProxySignedBeneficiariesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
+  familyMembers?: Prisma.FamilyMemberUpdateManyWithoutUserNestedInput
+  relatedFamilyMembers?: Prisma.FamilyMemberUpdateManyWithoutFamilyMemberUserNestedInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUpdateManyWithoutUserNestedInput
+  agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
+  agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
+  settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+}
+
+export type UserUncheckedUpdateWithoutProxySignedBeneficiariesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  icNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
+  familyMembers?: Prisma.FamilyMemberUncheckedUpdateManyWithoutUserNestedInput
+  relatedFamilyMembers?: Prisma.FamilyMemberUncheckedUpdateManyWithoutFamilyMemberUserNestedInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedUpdateManyWithoutUserNestedInput
+  agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
+  agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
+  settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
 }
 
 export type UserCreateWithoutAgentConversationsInput = {
@@ -1564,6 +1968,7 @@ export type UserCreateWithoutAgentConversationsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1575,6 +1980,8 @@ export type UserCreateWithoutAgentConversationsInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserUncheckedCreateWithoutAgentConversationsInput = {
@@ -1586,6 +1993,7 @@ export type UserUncheckedCreateWithoutAgentConversationsInput = {
   email: string
   emailVerified?: boolean
   image?: string | null
+  role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1596,6 +2004,8 @@ export type UserUncheckedCreateWithoutAgentConversationsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedCreateNestedManyWithoutUserInput
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
 export type UserCreateOrConnectWithoutAgentConversationsInput = {
@@ -1622,6 +2032,7 @@ export type UserUpdateWithoutAgentConversationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1633,6 +2044,8 @@ export type UserUpdateWithoutAgentConversationsInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAgentConversationsInput = {
@@ -1644,6 +2057,7 @@ export type UserUncheckedUpdateWithoutAgentConversationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1654,6 +2068,8 @@ export type UserUncheckedUpdateWithoutAgentConversationsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedUpdateManyWithoutUserNestedInput
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
 
@@ -1670,6 +2086,8 @@ export type UserCountOutputType = {
   nonRegisteredFamilyMembers: number
   agreements: number
   agentConversations: number
+  witnessedAgreements: number
+  proxySignedBeneficiaries: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1681,6 +2099,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   nonRegisteredFamilyMembers?: boolean | UserCountOutputTypeCountNonRegisteredFamilyMembersArgs
   agreements?: boolean | UserCountOutputTypeCountAgreementsArgs
   agentConversations?: boolean | UserCountOutputTypeCountAgentConversationsArgs
+  witnessedAgreements?: boolean | UserCountOutputTypeCountWitnessedAgreementsArgs
+  proxySignedBeneficiaries?: boolean | UserCountOutputTypeCountProxySignedBeneficiariesArgs
 }
 
 /**
@@ -1749,6 +2169,20 @@ export type UserCountOutputTypeCountAgentConversationsArgs<ExtArgs extends runti
   where?: Prisma.AgentConversationWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWitnessedAgreementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AgreementWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountProxySignedBeneficiariesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AgreementBeneficiaryWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1759,6 +2193,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   email?: boolean
   emailVerified?: boolean
   image?: boolean
+  role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
@@ -1771,6 +2206,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   agentConversations?: boolean | Prisma.User$agentConversationsArgs<ExtArgs>
   settings?: boolean | Prisma.User$settingsArgs<ExtArgs>
   icRegistry?: boolean | Prisma.User$icRegistryArgs<ExtArgs>
+  witnessedAgreements?: boolean | Prisma.User$witnessedAgreementsArgs<ExtArgs>
+  proxySignedBeneficiaries?: boolean | Prisma.User$proxySignedBeneficiariesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1783,6 +2220,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   emailVerified?: boolean
   image?: boolean
+  role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   icRegistry?: boolean | Prisma.User$icRegistryArgs<ExtArgs>
@@ -1797,6 +2235,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   emailVerified?: boolean
   image?: boolean
+  role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   icRegistry?: boolean | Prisma.User$icRegistryArgs<ExtArgs>
@@ -1811,11 +2250,12 @@ export type UserSelectScalar = {
   email?: boolean
   emailVerified?: boolean
   image?: boolean
+  role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "icNumber" | "address" | "phoneNumber" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "icNumber" | "address" | "phoneNumber" | "email" | "emailVerified" | "image" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
@@ -1827,6 +2267,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   agentConversations?: boolean | Prisma.User$agentConversationsArgs<ExtArgs>
   settings?: boolean | Prisma.User$settingsArgs<ExtArgs>
   icRegistry?: boolean | Prisma.User$icRegistryArgs<ExtArgs>
+  witnessedAgreements?: boolean | Prisma.User$witnessedAgreementsArgs<ExtArgs>
+  proxySignedBeneficiaries?: boolean | Prisma.User$proxySignedBeneficiariesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1849,6 +2291,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     agentConversations: Prisma.$AgentConversationPayload<ExtArgs>[]
     settings: Prisma.$UserSettingPayload<ExtArgs> | null
     icRegistry: Prisma.$IcRegistryPayload<ExtArgs> | null
+    witnessedAgreements: Prisma.$AgreementPayload<ExtArgs>[]
+    proxySignedBeneficiaries: Prisma.$AgreementBeneficiaryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1859,6 +2303,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     email: string
     emailVerified: boolean
     image: string | null
+    role: $Enums.Role
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -2265,6 +2710,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   agentConversations<T extends Prisma.User$agentConversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   settings<T extends Prisma.User$settingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$settingsArgs<ExtArgs>>): Prisma.Prisma__UserSettingClient<runtime.Types.Result.GetResult<Prisma.$UserSettingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   icRegistry<T extends Prisma.User$icRegistryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$icRegistryArgs<ExtArgs>>): Prisma.Prisma__IcRegistryClient<runtime.Types.Result.GetResult<Prisma.$IcRegistryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  witnessedAgreements<T extends Prisma.User$witnessedAgreementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$witnessedAgreementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgreementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  proxySignedBeneficiaries<T extends Prisma.User$proxySignedBeneficiariesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$proxySignedBeneficiariesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgreementBeneficiaryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2302,6 +2749,7 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly emailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly image: Prisma.FieldRef<"User", 'String'>
+  readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -2927,6 +3375,54 @@ export type User$icRegistryArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.IcRegistryInclude<ExtArgs> | null
   where?: Prisma.IcRegistryWhereInput
+}
+
+/**
+ * User.witnessedAgreements
+ */
+export type User$witnessedAgreementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Agreement
+   */
+  select?: Prisma.AgreementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Agreement
+   */
+  omit?: Prisma.AgreementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AgreementInclude<ExtArgs> | null
+  where?: Prisma.AgreementWhereInput
+  orderBy?: Prisma.AgreementOrderByWithRelationInput | Prisma.AgreementOrderByWithRelationInput[]
+  cursor?: Prisma.AgreementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AgreementScalarFieldEnum | Prisma.AgreementScalarFieldEnum[]
+}
+
+/**
+ * User.proxySignedBeneficiaries
+ */
+export type User$proxySignedBeneficiariesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AgreementBeneficiary
+   */
+  select?: Prisma.AgreementBeneficiarySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AgreementBeneficiary
+   */
+  omit?: Prisma.AgreementBeneficiaryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AgreementBeneficiaryInclude<ExtArgs> | null
+  where?: Prisma.AgreementBeneficiaryWhereInput
+  orderBy?: Prisma.AgreementBeneficiaryOrderByWithRelationInput | Prisma.AgreementBeneficiaryOrderByWithRelationInput[]
+  cursor?: Prisma.AgreementBeneficiaryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AgreementBeneficiaryScalarFieldEnum | Prisma.AgreementBeneficiaryScalarFieldEnum[]
 }
 
 /**

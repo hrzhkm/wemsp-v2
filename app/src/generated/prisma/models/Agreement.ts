@@ -337,7 +337,7 @@ export type AgreementWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Agreement"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Agreement"> | Date | string
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  witness?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
+  witness?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   assets?: Prisma.AgreementAssetListRelationFilter
   beneficiaries?: Prisma.AgreementBeneficiaryListRelationFilter
 }
@@ -364,7 +364,7 @@ export type AgreementOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   owner?: Prisma.UserOrderByWithRelationInput
-  witness?: Prisma.AdminOrderByWithRelationInput
+  witness?: Prisma.UserOrderByWithRelationInput
   assets?: Prisma.AgreementAssetOrderByRelationAggregateInput
   beneficiaries?: Prisma.AgreementBeneficiaryOrderByRelationAggregateInput
 }
@@ -394,7 +394,7 @@ export type AgreementWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Agreement"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Agreement"> | Date | string
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  witness?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
+  witness?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   assets?: Prisma.AgreementAssetListRelationFilter
   beneficiaries?: Prisma.AgreementBeneficiaryListRelationFilter
 }, "id">
@@ -473,7 +473,7 @@ export type AgreementCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutAgreementsInput
-  witness?: Prisma.AdminCreateNestedOneWithoutWitnessedAgreementsInput
+  witness?: Prisma.UserCreateNestedOneWithoutWitnessedAgreementsInput
   assets?: Prisma.AgreementAssetCreateNestedManyWithoutAgreementInput
   beneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAgreementInput
 }
@@ -523,7 +523,7 @@ export type AgreementUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutAgreementsNestedInput
-  witness?: Prisma.AdminUpdateOneWithoutWitnessedAgreementsNestedInput
+  witness?: Prisma.UserUpdateOneWithoutWitnessedAgreementsNestedInput
   assets?: Prisma.AgreementAssetUpdateManyWithoutAgreementNestedInput
   beneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAgreementNestedInput
 }
@@ -719,10 +719,24 @@ export type AgreementCreateNestedManyWithoutOwnerInput = {
   connect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
 }
 
+export type AgreementCreateNestedManyWithoutWitnessInput = {
+  create?: Prisma.XOR<Prisma.AgreementCreateWithoutWitnessInput, Prisma.AgreementUncheckedCreateWithoutWitnessInput> | Prisma.AgreementCreateWithoutWitnessInput[] | Prisma.AgreementUncheckedCreateWithoutWitnessInput[]
+  connectOrCreate?: Prisma.AgreementCreateOrConnectWithoutWitnessInput | Prisma.AgreementCreateOrConnectWithoutWitnessInput[]
+  createMany?: Prisma.AgreementCreateManyWitnessInputEnvelope
+  connect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
+}
+
 export type AgreementUncheckedCreateNestedManyWithoutOwnerInput = {
   create?: Prisma.XOR<Prisma.AgreementCreateWithoutOwnerInput, Prisma.AgreementUncheckedCreateWithoutOwnerInput> | Prisma.AgreementCreateWithoutOwnerInput[] | Prisma.AgreementUncheckedCreateWithoutOwnerInput[]
   connectOrCreate?: Prisma.AgreementCreateOrConnectWithoutOwnerInput | Prisma.AgreementCreateOrConnectWithoutOwnerInput[]
   createMany?: Prisma.AgreementCreateManyOwnerInputEnvelope
+  connect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
+}
+
+export type AgreementUncheckedCreateNestedManyWithoutWitnessInput = {
+  create?: Prisma.XOR<Prisma.AgreementCreateWithoutWitnessInput, Prisma.AgreementUncheckedCreateWithoutWitnessInput> | Prisma.AgreementCreateWithoutWitnessInput[] | Prisma.AgreementUncheckedCreateWithoutWitnessInput[]
+  connectOrCreate?: Prisma.AgreementCreateOrConnectWithoutWitnessInput | Prisma.AgreementCreateOrConnectWithoutWitnessInput[]
+  createMany?: Prisma.AgreementCreateManyWitnessInputEnvelope
   connect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
 }
 
@@ -740,34 +754,6 @@ export type AgreementUpdateManyWithoutOwnerNestedInput = {
   deleteMany?: Prisma.AgreementScalarWhereInput | Prisma.AgreementScalarWhereInput[]
 }
 
-export type AgreementUncheckedUpdateManyWithoutOwnerNestedInput = {
-  create?: Prisma.XOR<Prisma.AgreementCreateWithoutOwnerInput, Prisma.AgreementUncheckedCreateWithoutOwnerInput> | Prisma.AgreementCreateWithoutOwnerInput[] | Prisma.AgreementUncheckedCreateWithoutOwnerInput[]
-  connectOrCreate?: Prisma.AgreementCreateOrConnectWithoutOwnerInput | Prisma.AgreementCreateOrConnectWithoutOwnerInput[]
-  upsert?: Prisma.AgreementUpsertWithWhereUniqueWithoutOwnerInput | Prisma.AgreementUpsertWithWhereUniqueWithoutOwnerInput[]
-  createMany?: Prisma.AgreementCreateManyOwnerInputEnvelope
-  set?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
-  disconnect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
-  delete?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
-  connect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
-  update?: Prisma.AgreementUpdateWithWhereUniqueWithoutOwnerInput | Prisma.AgreementUpdateWithWhereUniqueWithoutOwnerInput[]
-  updateMany?: Prisma.AgreementUpdateManyWithWhereWithoutOwnerInput | Prisma.AgreementUpdateManyWithWhereWithoutOwnerInput[]
-  deleteMany?: Prisma.AgreementScalarWhereInput | Prisma.AgreementScalarWhereInput[]
-}
-
-export type AgreementCreateNestedManyWithoutWitnessInput = {
-  create?: Prisma.XOR<Prisma.AgreementCreateWithoutWitnessInput, Prisma.AgreementUncheckedCreateWithoutWitnessInput> | Prisma.AgreementCreateWithoutWitnessInput[] | Prisma.AgreementUncheckedCreateWithoutWitnessInput[]
-  connectOrCreate?: Prisma.AgreementCreateOrConnectWithoutWitnessInput | Prisma.AgreementCreateOrConnectWithoutWitnessInput[]
-  createMany?: Prisma.AgreementCreateManyWitnessInputEnvelope
-  connect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
-}
-
-export type AgreementUncheckedCreateNestedManyWithoutWitnessInput = {
-  create?: Prisma.XOR<Prisma.AgreementCreateWithoutWitnessInput, Prisma.AgreementUncheckedCreateWithoutWitnessInput> | Prisma.AgreementCreateWithoutWitnessInput[] | Prisma.AgreementUncheckedCreateWithoutWitnessInput[]
-  connectOrCreate?: Prisma.AgreementCreateOrConnectWithoutWitnessInput | Prisma.AgreementCreateOrConnectWithoutWitnessInput[]
-  createMany?: Prisma.AgreementCreateManyWitnessInputEnvelope
-  connect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
-}
-
 export type AgreementUpdateManyWithoutWitnessNestedInput = {
   create?: Prisma.XOR<Prisma.AgreementCreateWithoutWitnessInput, Prisma.AgreementUncheckedCreateWithoutWitnessInput> | Prisma.AgreementCreateWithoutWitnessInput[] | Prisma.AgreementUncheckedCreateWithoutWitnessInput[]
   connectOrCreate?: Prisma.AgreementCreateOrConnectWithoutWitnessInput | Prisma.AgreementCreateOrConnectWithoutWitnessInput[]
@@ -779,6 +765,20 @@ export type AgreementUpdateManyWithoutWitnessNestedInput = {
   connect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
   update?: Prisma.AgreementUpdateWithWhereUniqueWithoutWitnessInput | Prisma.AgreementUpdateWithWhereUniqueWithoutWitnessInput[]
   updateMany?: Prisma.AgreementUpdateManyWithWhereWithoutWitnessInput | Prisma.AgreementUpdateManyWithWhereWithoutWitnessInput[]
+  deleteMany?: Prisma.AgreementScalarWhereInput | Prisma.AgreementScalarWhereInput[]
+}
+
+export type AgreementUncheckedUpdateManyWithoutOwnerNestedInput = {
+  create?: Prisma.XOR<Prisma.AgreementCreateWithoutOwnerInput, Prisma.AgreementUncheckedCreateWithoutOwnerInput> | Prisma.AgreementCreateWithoutOwnerInput[] | Prisma.AgreementUncheckedCreateWithoutOwnerInput[]
+  connectOrCreate?: Prisma.AgreementCreateOrConnectWithoutOwnerInput | Prisma.AgreementCreateOrConnectWithoutOwnerInput[]
+  upsert?: Prisma.AgreementUpsertWithWhereUniqueWithoutOwnerInput | Prisma.AgreementUpsertWithWhereUniqueWithoutOwnerInput[]
+  createMany?: Prisma.AgreementCreateManyOwnerInputEnvelope
+  set?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
+  disconnect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
+  delete?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
+  connect?: Prisma.AgreementWhereUniqueInput | Prisma.AgreementWhereUniqueInput[]
+  update?: Prisma.AgreementUpdateWithWhereUniqueWithoutOwnerInput | Prisma.AgreementUpdateWithWhereUniqueWithoutOwnerInput[]
+  updateMany?: Prisma.AgreementUpdateManyWithWhereWithoutOwnerInput | Prisma.AgreementUpdateManyWithWhereWithoutOwnerInput[]
   deleteMany?: Prisma.AgreementScalarWhereInput | Prisma.AgreementScalarWhereInput[]
 }
 
@@ -859,7 +859,7 @@ export type AgreementCreateWithoutOwnerInput = {
   mintTxHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  witness?: Prisma.AdminCreateNestedOneWithoutWitnessedAgreementsInput
+  witness?: Prisma.UserCreateNestedOneWithoutWitnessedAgreementsInput
   assets?: Prisma.AgreementAssetCreateNestedManyWithoutAgreementInput
   beneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAgreementInput
 }
@@ -896,48 +896,6 @@ export type AgreementCreateOrConnectWithoutOwnerInput = {
 export type AgreementCreateManyOwnerInputEnvelope = {
   data: Prisma.AgreementCreateManyOwnerInput | Prisma.AgreementCreateManyOwnerInput[]
   skipDuplicates?: boolean
-}
-
-export type AgreementUpsertWithWhereUniqueWithoutOwnerInput = {
-  where: Prisma.AgreementWhereUniqueInput
-  update: Prisma.XOR<Prisma.AgreementUpdateWithoutOwnerInput, Prisma.AgreementUncheckedUpdateWithoutOwnerInput>
-  create: Prisma.XOR<Prisma.AgreementCreateWithoutOwnerInput, Prisma.AgreementUncheckedCreateWithoutOwnerInput>
-}
-
-export type AgreementUpdateWithWhereUniqueWithoutOwnerInput = {
-  where: Prisma.AgreementWhereUniqueInput
-  data: Prisma.XOR<Prisma.AgreementUpdateWithoutOwnerInput, Prisma.AgreementUncheckedUpdateWithoutOwnerInput>
-}
-
-export type AgreementUpdateManyWithWhereWithoutOwnerInput = {
-  where: Prisma.AgreementScalarWhereInput
-  data: Prisma.XOR<Prisma.AgreementUpdateManyMutationInput, Prisma.AgreementUncheckedUpdateManyWithoutOwnerInput>
-}
-
-export type AgreementScalarWhereInput = {
-  AND?: Prisma.AgreementScalarWhereInput | Prisma.AgreementScalarWhereInput[]
-  OR?: Prisma.AgreementScalarWhereInput[]
-  NOT?: Prisma.AgreementScalarWhereInput | Prisma.AgreementScalarWhereInput[]
-  id?: Prisma.StringFilter<"Agreement"> | string
-  title?: Prisma.StringFilter<"Agreement"> | string
-  description?: Prisma.StringNullableFilter<"Agreement"> | string | null
-  distributionType?: Prisma.EnumDistributionTypeFilter<"Agreement"> | $Enums.DistributionType
-  status?: Prisma.EnumAgreementStatusFilter<"Agreement"> | $Enums.AgreementStatus
-  ownerId?: Prisma.StringFilter<"Agreement"> | string
-  ownerHasSigned?: Prisma.BoolFilter<"Agreement"> | boolean
-  ownerSignedAt?: Prisma.DateTimeNullableFilter<"Agreement"> | Date | string | null
-  ownerSignatureRef?: Prisma.StringNullableFilter<"Agreement"> | string | null
-  witnessId?: Prisma.StringNullableFilter<"Agreement"> | string | null
-  witnessedAt?: Prisma.DateTimeNullableFilter<"Agreement"> | Date | string | null
-  witnessSignatureRef?: Prisma.StringNullableFilter<"Agreement"> | string | null
-  effectiveDate?: Prisma.DateTimeNullableFilter<"Agreement"> | Date | string | null
-  expiryDate?: Prisma.DateTimeNullableFilter<"Agreement"> | Date | string | null
-  tokenId?: Prisma.IntNullableFilter<"Agreement"> | number | null
-  contractAddress?: Prisma.StringNullableFilter<"Agreement"> | string | null
-  metadataUri?: Prisma.StringNullableFilter<"Agreement"> | string | null
-  mintTxHash?: Prisma.StringNullableFilter<"Agreement"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Agreement"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Agreement"> | Date | string
 }
 
 export type AgreementCreateWithoutWitnessInput = {
@@ -998,6 +956,48 @@ export type AgreementCreateManyWitnessInputEnvelope = {
   skipDuplicates?: boolean
 }
 
+export type AgreementUpsertWithWhereUniqueWithoutOwnerInput = {
+  where: Prisma.AgreementWhereUniqueInput
+  update: Prisma.XOR<Prisma.AgreementUpdateWithoutOwnerInput, Prisma.AgreementUncheckedUpdateWithoutOwnerInput>
+  create: Prisma.XOR<Prisma.AgreementCreateWithoutOwnerInput, Prisma.AgreementUncheckedCreateWithoutOwnerInput>
+}
+
+export type AgreementUpdateWithWhereUniqueWithoutOwnerInput = {
+  where: Prisma.AgreementWhereUniqueInput
+  data: Prisma.XOR<Prisma.AgreementUpdateWithoutOwnerInput, Prisma.AgreementUncheckedUpdateWithoutOwnerInput>
+}
+
+export type AgreementUpdateManyWithWhereWithoutOwnerInput = {
+  where: Prisma.AgreementScalarWhereInput
+  data: Prisma.XOR<Prisma.AgreementUpdateManyMutationInput, Prisma.AgreementUncheckedUpdateManyWithoutOwnerInput>
+}
+
+export type AgreementScalarWhereInput = {
+  AND?: Prisma.AgreementScalarWhereInput | Prisma.AgreementScalarWhereInput[]
+  OR?: Prisma.AgreementScalarWhereInput[]
+  NOT?: Prisma.AgreementScalarWhereInput | Prisma.AgreementScalarWhereInput[]
+  id?: Prisma.StringFilter<"Agreement"> | string
+  title?: Prisma.StringFilter<"Agreement"> | string
+  description?: Prisma.StringNullableFilter<"Agreement"> | string | null
+  distributionType?: Prisma.EnumDistributionTypeFilter<"Agreement"> | $Enums.DistributionType
+  status?: Prisma.EnumAgreementStatusFilter<"Agreement"> | $Enums.AgreementStatus
+  ownerId?: Prisma.StringFilter<"Agreement"> | string
+  ownerHasSigned?: Prisma.BoolFilter<"Agreement"> | boolean
+  ownerSignedAt?: Prisma.DateTimeNullableFilter<"Agreement"> | Date | string | null
+  ownerSignatureRef?: Prisma.StringNullableFilter<"Agreement"> | string | null
+  witnessId?: Prisma.StringNullableFilter<"Agreement"> | string | null
+  witnessedAt?: Prisma.DateTimeNullableFilter<"Agreement"> | Date | string | null
+  witnessSignatureRef?: Prisma.StringNullableFilter<"Agreement"> | string | null
+  effectiveDate?: Prisma.DateTimeNullableFilter<"Agreement"> | Date | string | null
+  expiryDate?: Prisma.DateTimeNullableFilter<"Agreement"> | Date | string | null
+  tokenId?: Prisma.IntNullableFilter<"Agreement"> | number | null
+  contractAddress?: Prisma.StringNullableFilter<"Agreement"> | string | null
+  metadataUri?: Prisma.StringNullableFilter<"Agreement"> | string | null
+  mintTxHash?: Prisma.StringNullableFilter<"Agreement"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Agreement"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Agreement"> | Date | string
+}
+
 export type AgreementUpsertWithWhereUniqueWithoutWitnessInput = {
   where: Prisma.AgreementWhereUniqueInput
   update: Prisma.XOR<Prisma.AgreementUpdateWithoutWitnessInput, Prisma.AgreementUncheckedUpdateWithoutWitnessInput>
@@ -1034,7 +1034,7 @@ export type AgreementCreateWithoutAssetsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutAgreementsInput
-  witness?: Prisma.AdminCreateNestedOneWithoutWitnessedAgreementsInput
+  witness?: Prisma.UserCreateNestedOneWithoutWitnessedAgreementsInput
   beneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAgreementInput
 }
 
@@ -1098,7 +1098,7 @@ export type AgreementUpdateWithoutAssetsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutAgreementsNestedInput
-  witness?: Prisma.AdminUpdateOneWithoutWitnessedAgreementsNestedInput
+  witness?: Prisma.UserUpdateOneWithoutWitnessedAgreementsNestedInput
   beneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAgreementNestedInput
 }
 
@@ -1146,7 +1146,7 @@ export type AgreementCreateWithoutBeneficiariesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutAgreementsInput
-  witness?: Prisma.AdminCreateNestedOneWithoutWitnessedAgreementsInput
+  witness?: Prisma.UserCreateNestedOneWithoutWitnessedAgreementsInput
   assets?: Prisma.AgreementAssetCreateNestedManyWithoutAgreementInput
 }
 
@@ -1210,7 +1210,7 @@ export type AgreementUpdateWithoutBeneficiariesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutAgreementsNestedInput
-  witness?: Prisma.AdminUpdateOneWithoutWitnessedAgreementsNestedInput
+  witness?: Prisma.UserUpdateOneWithoutWitnessedAgreementsNestedInput
   assets?: Prisma.AgreementAssetUpdateManyWithoutAgreementNestedInput
 }
 
@@ -1260,6 +1260,28 @@ export type AgreementCreateManyOwnerInput = {
   updatedAt?: Date | string
 }
 
+export type AgreementCreateManyWitnessInput = {
+  id?: string
+  title: string
+  description?: string | null
+  distributionType: $Enums.DistributionType
+  status?: $Enums.AgreementStatus
+  ownerId: string
+  ownerHasSigned?: boolean
+  ownerSignedAt?: Date | string | null
+  ownerSignatureRef?: string | null
+  witnessedAt?: Date | string | null
+  witnessSignatureRef?: string | null
+  effectiveDate?: Date | string | null
+  expiryDate?: Date | string | null
+  tokenId?: number | null
+  contractAddress?: string | null
+  metadataUri?: string | null
+  mintTxHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
 export type AgreementUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1279,7 +1301,7 @@ export type AgreementUpdateWithoutOwnerInput = {
   mintTxHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  witness?: Prisma.AdminUpdateOneWithoutWitnessedAgreementsNestedInput
+  witness?: Prisma.UserUpdateOneWithoutWitnessedAgreementsNestedInput
   assets?: Prisma.AgreementAssetUpdateManyWithoutAgreementNestedInput
   beneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAgreementNestedInput
 }
@@ -1328,28 +1350,6 @@ export type AgreementUncheckedUpdateManyWithoutOwnerInput = {
   mintTxHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type AgreementCreateManyWitnessInput = {
-  id?: string
-  title: string
-  description?: string | null
-  distributionType: $Enums.DistributionType
-  status?: $Enums.AgreementStatus
-  ownerId: string
-  ownerHasSigned?: boolean
-  ownerSignedAt?: Date | string | null
-  ownerSignatureRef?: string | null
-  witnessedAt?: Date | string | null
-  witnessSignatureRef?: string | null
-  effectiveDate?: Date | string | null
-  expiryDate?: Date | string | null
-  tokenId?: number | null
-  contractAddress?: string | null
-  metadataUri?: string | null
-  mintTxHash?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type AgreementUpdateWithoutWitnessInput = {
@@ -1584,7 +1584,7 @@ export type $AgreementPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "Agreement"
   objects: {
     owner: Prisma.$UserPayload<ExtArgs>
-    witness: Prisma.$AdminPayload<ExtArgs> | null
+    witness: Prisma.$UserPayload<ExtArgs> | null
     assets: Prisma.$AgreementAssetPayload<ExtArgs>[]
     beneficiaries: Prisma.$AgreementBeneficiaryPayload<ExtArgs>[]
   }
@@ -2004,7 +2004,7 @@ readonly fields: AgreementFieldRefs;
 export interface Prisma__AgreementClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   owner<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  witness<T extends Prisma.Agreement$witnessArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Agreement$witnessArgs<ExtArgs>>): Prisma.Prisma__AdminClient<runtime.Types.Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  witness<T extends Prisma.Agreement$witnessArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Agreement$witnessArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   assets<T extends Prisma.Agreement$assetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Agreement$assetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgreementAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   beneficiaries<T extends Prisma.Agreement$beneficiariesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Agreement$beneficiariesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgreementBeneficiaryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2456,18 +2456,18 @@ export type AgreementDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
  */
 export type Agreement$witnessArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Admin
+   * Select specific fields to fetch from the User
    */
-  select?: Prisma.AdminSelect<ExtArgs> | null
+  select?: Prisma.UserSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Admin
+   * Omit specific fields from the User
    */
-  omit?: Prisma.AdminOmit<ExtArgs> | null
+  omit?: Prisma.UserOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AdminInclude<ExtArgs> | null
-  where?: Prisma.AdminWhereInput
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**
