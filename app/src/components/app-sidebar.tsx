@@ -1,14 +1,5 @@
 import { Link, useLocation, useRouter } from "@tanstack/react-router"
-import {
-  ChevronUp,
-  Contact,
-  FileText,
-  Home,
-  Settings,
-  User,
-  Wallet2,
-} from "lucide-react"
-import type { LucideIcon } from "lucide-react"
+import { ChevronUp, User } from "lucide-react"
 
 import {
   Sidebar,
@@ -31,6 +22,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { authClient } from "@/lib/auth-client"
 import { useLanguage } from "@/lib/i18n/context"
+import { getVisibleNavItems } from "@/components/app-nav-items"
+import { getRoleFromSession } from "@/lib/rbac"
 
 export function AppSidebar() {
   const router = useRouter()
@@ -41,27 +34,11 @@ export function AppSidebar() {
 
   const user = session?.user
 
-  const navigationItems: Array<{
-    to: string
-    labelKey: string
-    matchPath: string
-    icon: LucideIcon
-  }> = [
-    { to: "/app/dashboard", labelKey: "navigation.dashboard", matchPath: "/app/dashboard", icon: Home },
-    { to: "/app/family/view", labelKey: "navigation.family", matchPath: "/app/family", icon: Contact },
-    { to: "/app/assets/view", labelKey: "navigation.assets", matchPath: "/app/assets", icon: Wallet2 },
-    { to: "/app/agreement", labelKey: "navigation.agreement", matchPath: "/app/agreement", icon: FileText },
-  ]
-
-  const accountItems: Array<{
-    to: string
-    labelKey: string
-    matchPath: string
-    icon: LucideIcon
-  }> = [
-    { to: "/app/profile", labelKey: "navigation.profile", matchPath: "/app/profile", icon: User },
-    { to: "/app/settings", labelKey: "navigation.settings", matchPath: "/app/settings", icon: Settings },
-  ]
+  const role = getRoleFromSession(session)
+  const visibleItems = getVisibleNavItems(role)
+  const navigationItems = visibleItems.filter((i) => i.section === "application")
+  const accountItems = visibleItems.filter((i) => i.section === "account")
+  const administrationItems = visibleItems.filter((i) => i.section === "administration")
 
   const isActivePath = (matchPath: string) =>
     location.pathname === matchPath || location.pathname.startsWith(`${matchPath}/`)
@@ -136,6 +113,30 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              {administrationItems.length > 0 && (
+                <>
+                  <SidebarSeparator className="my-2" />
+                  <SidebarGroupLabel className="px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-sidebar-foreground/60">
+                    {t('navigation.administration')}
+                  </SidebarGroupLabel>
+                  {administrationItems.map((item) => (
+                    <SidebarMenuItem key={item.to}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActivePath(item.matchPath)}
+                        className="h-11 rounded-xl px-3 data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:shadow-sm"
+                      >
+                        <Link to={item.to}>
+                          <div className="flex size-7 items-center justify-center rounded-lg bg-sidebar-accent/70">
+                            <item.icon className="size-4" />
+                          </div>
+                          <span className="font-medium">{t(item.labelKey)}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

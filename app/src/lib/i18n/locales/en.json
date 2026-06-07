@@ -163,7 +163,13 @@
       "settings": "Settings",
       "estateManagement": "Estate Management",
       "account": "Account",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "adminDashboard": "Admin Dashboard",
+      "adminUsers": "Manage Users",
+      "adminAssets": "Manage Assets",
+      "adminAgreements": "Manage Agreements",
+      "adminPendingWitness": "Pending Witness",
+      "administration": "Administration"
     },
     "breadcrumbs": {
       "dashboard": "Dashboard",

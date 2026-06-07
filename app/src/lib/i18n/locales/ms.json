@@ -163,7 +163,13 @@
       "settings": "Tetapan",
       "estateManagement": "Pengurusan Harta",
       "account": "Akaun",
-      "signOut": "Log keluar"
+      "signOut": "Log keluar",
+      "adminDashboard": "Papan Pemuka Admin",
+      "adminUsers": "Urus Pengguna",
+      "adminAssets": "Urus Aset",
+      "adminAgreements": "Urus Perjanjian",
+      "adminPendingWitness": "Menunggu Saksi",
+      "administration": "Pentadbiran"
     },
     "breadcrumbs": {
       "dashboard": "Papan Pemuka",
