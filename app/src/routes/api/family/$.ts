@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 import {
   getFamilyMembers,
   getNonRegisteredFamilyMembers,
@@ -8,7 +8,7 @@ import {
   updateBidirectionalFamilyRelation,
   updateNonRegisteredFamilyMember,
   createBidirectionalFamilyRelation,
-} from '@/lib/family'
+} from '@/lib/family/family'
 import { prisma } from '@/db'
 
 export const Route = createFileRoute('/api/family/$')({

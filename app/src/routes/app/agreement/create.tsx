@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/auth-client'
 import {
   Card,
   CardContent,
@@ -31,7 +31,7 @@ import {
   calculateAutoFaraidDistribution,
   type FamilyMember,
   type BeneficiaryWithShare,
-} from '@/lib/faraid-calculator'
+} from '@/lib/faraid/faraid-calculator'
 
 export const Route = createFileRoute('/app/agreement/create')({
   component: RouteComponent,

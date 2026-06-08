@@ -307,7 +307,7 @@ export type AgreementBeneficiaryWhereInput = {
   agreement?: Prisma.XOR<Prisma.AgreementScalarRelationFilter, Prisma.AgreementWhereInput>
   familyMember?: Prisma.XOR<Prisma.FamilyMemberNullableScalarRelationFilter, Prisma.FamilyMemberWhereInput> | null
   nonRegisteredFamilyMember?: Prisma.XOR<Prisma.NonRegisteredFamilyMemberNullableScalarRelationFilter, Prisma.NonRegisteredFamilyMemberWhereInput> | null
-  adminSignedBy?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
+  adminSignedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type AgreementBeneficiaryOrderByWithRelationInput = {
@@ -329,7 +329,7 @@ export type AgreementBeneficiaryOrderByWithRelationInput = {
   agreement?: Prisma.AgreementOrderByWithRelationInput
   familyMember?: Prisma.FamilyMemberOrderByWithRelationInput
   nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberOrderByWithRelationInput
-  adminSignedBy?: Prisma.AdminOrderByWithRelationInput
+  adminSignedBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type AgreementBeneficiaryWhereUniqueInput = Prisma.AtLeast<{
@@ -354,7 +354,7 @@ export type AgreementBeneficiaryWhereUniqueInput = Prisma.AtLeast<{
   agreement?: Prisma.XOR<Prisma.AgreementScalarRelationFilter, Prisma.AgreementWhereInput>
   familyMember?: Prisma.XOR<Prisma.FamilyMemberNullableScalarRelationFilter, Prisma.FamilyMemberWhereInput> | null
   nonRegisteredFamilyMember?: Prisma.XOR<Prisma.NonRegisteredFamilyMemberNullableScalarRelationFilter, Prisma.NonRegisteredFamilyMemberWhereInput> | null
-  adminSignedBy?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
+  adminSignedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
 export type AgreementBeneficiaryOrderByWithAggregationInput = {
@@ -416,7 +416,7 @@ export type AgreementBeneficiaryCreateInput = {
   agreement: Prisma.AgreementCreateNestedOneWithoutBeneficiariesInput
   familyMember?: Prisma.FamilyMemberCreateNestedOneWithoutAgreementBeneficiariesInput
   nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberCreateNestedOneWithoutAgreementBeneficiariesInput
-  adminSignedBy?: Prisma.AdminCreateNestedOneWithoutProxySignedBeneficiariesInput
+  adminSignedBy?: Prisma.UserCreateNestedOneWithoutProxySignedBeneficiariesInput
 }
 
 export type AgreementBeneficiaryUncheckedCreateInput = {
@@ -452,7 +452,7 @@ export type AgreementBeneficiaryUpdateInput = {
   agreement?: Prisma.AgreementUpdateOneRequiredWithoutBeneficiariesNestedInput
   familyMember?: Prisma.FamilyMemberUpdateOneWithoutAgreementBeneficiariesNestedInput
   nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberUpdateOneWithoutAgreementBeneficiariesNestedInput
-  adminSignedBy?: Prisma.AdminUpdateOneWithoutProxySignedBeneficiariesNestedInput
+  adminSignedBy?: Prisma.UserUpdateOneWithoutProxySignedBeneficiariesNestedInput
 }
 
 export type AgreementBeneficiaryUncheckedUpdateInput = {
@@ -599,6 +599,48 @@ export type AgreementBeneficiarySumOrderByAggregateInput = {
   sharePercentage?: Prisma.SortOrder
 }
 
+export type AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput = {
+  create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput> | Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput[]
+  connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput[]
+  createMany?: Prisma.AgreementBeneficiaryCreateManyAdminSignedByInputEnvelope
+  connect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+}
+
+export type AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput = {
+  create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput> | Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput[]
+  connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput[]
+  createMany?: Prisma.AgreementBeneficiaryCreateManyAdminSignedByInputEnvelope
+  connect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+}
+
+export type AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput = {
+  create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput> | Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput[]
+  connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput[]
+  upsert?: Prisma.AgreementBeneficiaryUpsertWithWhereUniqueWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpsertWithWhereUniqueWithoutAdminSignedByInput[]
+  createMany?: Prisma.AgreementBeneficiaryCreateManyAdminSignedByInputEnvelope
+  set?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+  disconnect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+  delete?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+  connect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+  update?: Prisma.AgreementBeneficiaryUpdateWithWhereUniqueWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpdateWithWhereUniqueWithoutAdminSignedByInput[]
+  updateMany?: Prisma.AgreementBeneficiaryUpdateManyWithWhereWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpdateManyWithWhereWithoutAdminSignedByInput[]
+  deleteMany?: Prisma.AgreementBeneficiaryScalarWhereInput | Prisma.AgreementBeneficiaryScalarWhereInput[]
+}
+
+export type AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput = {
+  create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput> | Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput[]
+  connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput[]
+  upsert?: Prisma.AgreementBeneficiaryUpsertWithWhereUniqueWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpsertWithWhereUniqueWithoutAdminSignedByInput[]
+  createMany?: Prisma.AgreementBeneficiaryCreateManyAdminSignedByInputEnvelope
+  set?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+  disconnect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+  delete?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+  connect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
+  update?: Prisma.AgreementBeneficiaryUpdateWithWhereUniqueWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpdateWithWhereUniqueWithoutAdminSignedByInput[]
+  updateMany?: Prisma.AgreementBeneficiaryUpdateManyWithWhereWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpdateManyWithWhereWithoutAdminSignedByInput[]
+  deleteMany?: Prisma.AgreementBeneficiaryScalarWhereInput | Prisma.AgreementBeneficiaryScalarWhereInput[]
+}
+
 export type AgreementBeneficiaryCreateNestedManyWithoutFamilyMemberInput = {
   create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutFamilyMemberInput> | Prisma.AgreementBeneficiaryCreateWithoutFamilyMemberInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutFamilyMemberInput[]
   connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutFamilyMemberInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutFamilyMemberInput[]
@@ -683,48 +725,6 @@ export type AgreementBeneficiaryUncheckedUpdateManyWithoutNonRegisteredFamilyMem
   deleteMany?: Prisma.AgreementBeneficiaryScalarWhereInput | Prisma.AgreementBeneficiaryScalarWhereInput[]
 }
 
-export type AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput = {
-  create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput> | Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput[]
-  connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput[]
-  createMany?: Prisma.AgreementBeneficiaryCreateManyAdminSignedByInputEnvelope
-  connect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-}
-
-export type AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput = {
-  create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput> | Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput[]
-  connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput[]
-  createMany?: Prisma.AgreementBeneficiaryCreateManyAdminSignedByInputEnvelope
-  connect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-}
-
-export type AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput = {
-  create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput> | Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput[]
-  connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput[]
-  upsert?: Prisma.AgreementBeneficiaryUpsertWithWhereUniqueWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpsertWithWhereUniqueWithoutAdminSignedByInput[]
-  createMany?: Prisma.AgreementBeneficiaryCreateManyAdminSignedByInputEnvelope
-  set?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-  disconnect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-  delete?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-  connect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-  update?: Prisma.AgreementBeneficiaryUpdateWithWhereUniqueWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpdateWithWhereUniqueWithoutAdminSignedByInput[]
-  updateMany?: Prisma.AgreementBeneficiaryUpdateManyWithWhereWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpdateManyWithWhereWithoutAdminSignedByInput[]
-  deleteMany?: Prisma.AgreementBeneficiaryScalarWhereInput | Prisma.AgreementBeneficiaryScalarWhereInput[]
-}
-
-export type AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput = {
-  create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput> | Prisma.AgreementBeneficiaryCreateWithoutAdminSignedByInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutAdminSignedByInput[]
-  connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutAdminSignedByInput[]
-  upsert?: Prisma.AgreementBeneficiaryUpsertWithWhereUniqueWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpsertWithWhereUniqueWithoutAdminSignedByInput[]
-  createMany?: Prisma.AgreementBeneficiaryCreateManyAdminSignedByInputEnvelope
-  set?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-  disconnect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-  delete?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-  connect?: Prisma.AgreementBeneficiaryWhereUniqueInput | Prisma.AgreementBeneficiaryWhereUniqueInput[]
-  update?: Prisma.AgreementBeneficiaryUpdateWithWhereUniqueWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpdateWithWhereUniqueWithoutAdminSignedByInput[]
-  updateMany?: Prisma.AgreementBeneficiaryUpdateManyWithWhereWithoutAdminSignedByInput | Prisma.AgreementBeneficiaryUpdateManyWithWhereWithoutAdminSignedByInput[]
-  deleteMany?: Prisma.AgreementBeneficiaryScalarWhereInput | Prisma.AgreementBeneficiaryScalarWhereInput[]
-}
-
 export type AgreementBeneficiaryCreateNestedManyWithoutAgreementInput = {
   create?: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutAgreementInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutAgreementInput> | Prisma.AgreementBeneficiaryCreateWithoutAgreementInput[] | Prisma.AgreementBeneficiaryUncheckedCreateWithoutAgreementInput[]
   connectOrCreate?: Prisma.AgreementBeneficiaryCreateOrConnectWithoutAgreementInput | Prisma.AgreementBeneficiaryCreateOrConnectWithoutAgreementInput[]
@@ -769,147 +769,6 @@ export type AgreementBeneficiaryUncheckedUpdateManyWithoutAgreementNestedInput =
 
 export type NullableBoolFieldUpdateOperationsInput = {
   set?: boolean | null
-}
-
-export type AgreementBeneficiaryCreateWithoutFamilyMemberInput = {
-  id?: string
-  sharePercentage: number
-  shareDescription?: string | null
-  hasSigned?: boolean
-  signedAt?: Date | string | null
-  signatureRef?: string | null
-  isAccepted?: boolean | null
-  rejectionReason?: string | null
-  adminNotes?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  agreement: Prisma.AgreementCreateNestedOneWithoutBeneficiariesInput
-  nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberCreateNestedOneWithoutAgreementBeneficiariesInput
-  adminSignedBy?: Prisma.AdminCreateNestedOneWithoutProxySignedBeneficiariesInput
-}
-
-export type AgreementBeneficiaryUncheckedCreateWithoutFamilyMemberInput = {
-  id?: string
-  agreementId: string
-  nonRegisteredFamilyMemberId?: number | null
-  sharePercentage: number
-  shareDescription?: string | null
-  hasSigned?: boolean
-  signedAt?: Date | string | null
-  signatureRef?: string | null
-  isAccepted?: boolean | null
-  rejectionReason?: string | null
-  adminNotes?: string | null
-  adminSignedById?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type AgreementBeneficiaryCreateOrConnectWithoutFamilyMemberInput = {
-  where: Prisma.AgreementBeneficiaryWhereUniqueInput
-  create: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutFamilyMemberInput>
-}
-
-export type AgreementBeneficiaryCreateManyFamilyMemberInputEnvelope = {
-  data: Prisma.AgreementBeneficiaryCreateManyFamilyMemberInput | Prisma.AgreementBeneficiaryCreateManyFamilyMemberInput[]
-  skipDuplicates?: boolean
-}
-
-export type AgreementBeneficiaryUpsertWithWhereUniqueWithoutFamilyMemberInput = {
-  where: Prisma.AgreementBeneficiaryWhereUniqueInput
-  update: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateWithoutFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedUpdateWithoutFamilyMemberInput>
-  create: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutFamilyMemberInput>
-}
-
-export type AgreementBeneficiaryUpdateWithWhereUniqueWithoutFamilyMemberInput = {
-  where: Prisma.AgreementBeneficiaryWhereUniqueInput
-  data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateWithoutFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedUpdateWithoutFamilyMemberInput>
-}
-
-export type AgreementBeneficiaryUpdateManyWithWhereWithoutFamilyMemberInput = {
-  where: Prisma.AgreementBeneficiaryScalarWhereInput
-  data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateManyMutationInput, Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutFamilyMemberInput>
-}
-
-export type AgreementBeneficiaryScalarWhereInput = {
-  AND?: Prisma.AgreementBeneficiaryScalarWhereInput | Prisma.AgreementBeneficiaryScalarWhereInput[]
-  OR?: Prisma.AgreementBeneficiaryScalarWhereInput[]
-  NOT?: Prisma.AgreementBeneficiaryScalarWhereInput | Prisma.AgreementBeneficiaryScalarWhereInput[]
-  id?: Prisma.StringFilter<"AgreementBeneficiary"> | string
-  agreementId?: Prisma.StringFilter<"AgreementBeneficiary"> | string
-  familyMemberId?: Prisma.IntNullableFilter<"AgreementBeneficiary"> | number | null
-  nonRegisteredFamilyMemberId?: Prisma.IntNullableFilter<"AgreementBeneficiary"> | number | null
-  sharePercentage?: Prisma.FloatFilter<"AgreementBeneficiary"> | number
-  shareDescription?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
-  hasSigned?: Prisma.BoolFilter<"AgreementBeneficiary"> | boolean
-  signedAt?: Prisma.DateTimeNullableFilter<"AgreementBeneficiary"> | Date | string | null
-  signatureRef?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
-  isAccepted?: Prisma.BoolNullableFilter<"AgreementBeneficiary"> | boolean | null
-  rejectionReason?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
-  adminNotes?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
-  adminSignedById?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"AgreementBeneficiary"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"AgreementBeneficiary"> | Date | string
-}
-
-export type AgreementBeneficiaryCreateWithoutNonRegisteredFamilyMemberInput = {
-  id?: string
-  sharePercentage: number
-  shareDescription?: string | null
-  hasSigned?: boolean
-  signedAt?: Date | string | null
-  signatureRef?: string | null
-  isAccepted?: boolean | null
-  rejectionReason?: string | null
-  adminNotes?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  agreement: Prisma.AgreementCreateNestedOneWithoutBeneficiariesInput
-  familyMember?: Prisma.FamilyMemberCreateNestedOneWithoutAgreementBeneficiariesInput
-  adminSignedBy?: Prisma.AdminCreateNestedOneWithoutProxySignedBeneficiariesInput
-}
-
-export type AgreementBeneficiaryUncheckedCreateWithoutNonRegisteredFamilyMemberInput = {
-  id?: string
-  agreementId: string
-  familyMemberId?: number | null
-  sharePercentage: number
-  shareDescription?: string | null
-  hasSigned?: boolean
-  signedAt?: Date | string | null
-  signatureRef?: string | null
-  isAccepted?: boolean | null
-  rejectionReason?: string | null
-  adminNotes?: string | null
-  adminSignedById?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type AgreementBeneficiaryCreateOrConnectWithoutNonRegisteredFamilyMemberInput = {
-  where: Prisma.AgreementBeneficiaryWhereUniqueInput
-  create: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutNonRegisteredFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutNonRegisteredFamilyMemberInput>
-}
-
-export type AgreementBeneficiaryCreateManyNonRegisteredFamilyMemberInputEnvelope = {
-  data: Prisma.AgreementBeneficiaryCreateManyNonRegisteredFamilyMemberInput | Prisma.AgreementBeneficiaryCreateManyNonRegisteredFamilyMemberInput[]
-  skipDuplicates?: boolean
-}
-
-export type AgreementBeneficiaryUpsertWithWhereUniqueWithoutNonRegisteredFamilyMemberInput = {
-  where: Prisma.AgreementBeneficiaryWhereUniqueInput
-  update: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateWithoutNonRegisteredFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedUpdateWithoutNonRegisteredFamilyMemberInput>
-  create: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutNonRegisteredFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutNonRegisteredFamilyMemberInput>
-}
-
-export type AgreementBeneficiaryUpdateWithWhereUniqueWithoutNonRegisteredFamilyMemberInput = {
-  where: Prisma.AgreementBeneficiaryWhereUniqueInput
-  data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateWithoutNonRegisteredFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedUpdateWithoutNonRegisteredFamilyMemberInput>
-}
-
-export type AgreementBeneficiaryUpdateManyWithWhereWithoutNonRegisteredFamilyMemberInput = {
-  where: Prisma.AgreementBeneficiaryScalarWhereInput
-  data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateManyMutationInput, Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutNonRegisteredFamilyMemberInput>
 }
 
 export type AgreementBeneficiaryCreateWithoutAdminSignedByInput = {
@@ -972,6 +831,147 @@ export type AgreementBeneficiaryUpdateManyWithWhereWithoutAdminSignedByInput = {
   data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateManyMutationInput, Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByInput>
 }
 
+export type AgreementBeneficiaryScalarWhereInput = {
+  AND?: Prisma.AgreementBeneficiaryScalarWhereInput | Prisma.AgreementBeneficiaryScalarWhereInput[]
+  OR?: Prisma.AgreementBeneficiaryScalarWhereInput[]
+  NOT?: Prisma.AgreementBeneficiaryScalarWhereInput | Prisma.AgreementBeneficiaryScalarWhereInput[]
+  id?: Prisma.StringFilter<"AgreementBeneficiary"> | string
+  agreementId?: Prisma.StringFilter<"AgreementBeneficiary"> | string
+  familyMemberId?: Prisma.IntNullableFilter<"AgreementBeneficiary"> | number | null
+  nonRegisteredFamilyMemberId?: Prisma.IntNullableFilter<"AgreementBeneficiary"> | number | null
+  sharePercentage?: Prisma.FloatFilter<"AgreementBeneficiary"> | number
+  shareDescription?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
+  hasSigned?: Prisma.BoolFilter<"AgreementBeneficiary"> | boolean
+  signedAt?: Prisma.DateTimeNullableFilter<"AgreementBeneficiary"> | Date | string | null
+  signatureRef?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
+  isAccepted?: Prisma.BoolNullableFilter<"AgreementBeneficiary"> | boolean | null
+  rejectionReason?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
+  adminNotes?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
+  adminSignedById?: Prisma.StringNullableFilter<"AgreementBeneficiary"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"AgreementBeneficiary"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"AgreementBeneficiary"> | Date | string
+}
+
+export type AgreementBeneficiaryCreateWithoutFamilyMemberInput = {
+  id?: string
+  sharePercentage: number
+  shareDescription?: string | null
+  hasSigned?: boolean
+  signedAt?: Date | string | null
+  signatureRef?: string | null
+  isAccepted?: boolean | null
+  rejectionReason?: string | null
+  adminNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agreement: Prisma.AgreementCreateNestedOneWithoutBeneficiariesInput
+  nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberCreateNestedOneWithoutAgreementBeneficiariesInput
+  adminSignedBy?: Prisma.UserCreateNestedOneWithoutProxySignedBeneficiariesInput
+}
+
+export type AgreementBeneficiaryUncheckedCreateWithoutFamilyMemberInput = {
+  id?: string
+  agreementId: string
+  nonRegisteredFamilyMemberId?: number | null
+  sharePercentage: number
+  shareDescription?: string | null
+  hasSigned?: boolean
+  signedAt?: Date | string | null
+  signatureRef?: string | null
+  isAccepted?: boolean | null
+  rejectionReason?: string | null
+  adminNotes?: string | null
+  adminSignedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AgreementBeneficiaryCreateOrConnectWithoutFamilyMemberInput = {
+  where: Prisma.AgreementBeneficiaryWhereUniqueInput
+  create: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutFamilyMemberInput>
+}
+
+export type AgreementBeneficiaryCreateManyFamilyMemberInputEnvelope = {
+  data: Prisma.AgreementBeneficiaryCreateManyFamilyMemberInput | Prisma.AgreementBeneficiaryCreateManyFamilyMemberInput[]
+  skipDuplicates?: boolean
+}
+
+export type AgreementBeneficiaryUpsertWithWhereUniqueWithoutFamilyMemberInput = {
+  where: Prisma.AgreementBeneficiaryWhereUniqueInput
+  update: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateWithoutFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedUpdateWithoutFamilyMemberInput>
+  create: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutFamilyMemberInput>
+}
+
+export type AgreementBeneficiaryUpdateWithWhereUniqueWithoutFamilyMemberInput = {
+  where: Prisma.AgreementBeneficiaryWhereUniqueInput
+  data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateWithoutFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedUpdateWithoutFamilyMemberInput>
+}
+
+export type AgreementBeneficiaryUpdateManyWithWhereWithoutFamilyMemberInput = {
+  where: Prisma.AgreementBeneficiaryScalarWhereInput
+  data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateManyMutationInput, Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutFamilyMemberInput>
+}
+
+export type AgreementBeneficiaryCreateWithoutNonRegisteredFamilyMemberInput = {
+  id?: string
+  sharePercentage: number
+  shareDescription?: string | null
+  hasSigned?: boolean
+  signedAt?: Date | string | null
+  signatureRef?: string | null
+  isAccepted?: boolean | null
+  rejectionReason?: string | null
+  adminNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agreement: Prisma.AgreementCreateNestedOneWithoutBeneficiariesInput
+  familyMember?: Prisma.FamilyMemberCreateNestedOneWithoutAgreementBeneficiariesInput
+  adminSignedBy?: Prisma.UserCreateNestedOneWithoutProxySignedBeneficiariesInput
+}
+
+export type AgreementBeneficiaryUncheckedCreateWithoutNonRegisteredFamilyMemberInput = {
+  id?: string
+  agreementId: string
+  familyMemberId?: number | null
+  sharePercentage: number
+  shareDescription?: string | null
+  hasSigned?: boolean
+  signedAt?: Date | string | null
+  signatureRef?: string | null
+  isAccepted?: boolean | null
+  rejectionReason?: string | null
+  adminNotes?: string | null
+  adminSignedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AgreementBeneficiaryCreateOrConnectWithoutNonRegisteredFamilyMemberInput = {
+  where: Prisma.AgreementBeneficiaryWhereUniqueInput
+  create: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutNonRegisteredFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutNonRegisteredFamilyMemberInput>
+}
+
+export type AgreementBeneficiaryCreateManyNonRegisteredFamilyMemberInputEnvelope = {
+  data: Prisma.AgreementBeneficiaryCreateManyNonRegisteredFamilyMemberInput | Prisma.AgreementBeneficiaryCreateManyNonRegisteredFamilyMemberInput[]
+  skipDuplicates?: boolean
+}
+
+export type AgreementBeneficiaryUpsertWithWhereUniqueWithoutNonRegisteredFamilyMemberInput = {
+  where: Prisma.AgreementBeneficiaryWhereUniqueInput
+  update: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateWithoutNonRegisteredFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedUpdateWithoutNonRegisteredFamilyMemberInput>
+  create: Prisma.XOR<Prisma.AgreementBeneficiaryCreateWithoutNonRegisteredFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedCreateWithoutNonRegisteredFamilyMemberInput>
+}
+
+export type AgreementBeneficiaryUpdateWithWhereUniqueWithoutNonRegisteredFamilyMemberInput = {
+  where: Prisma.AgreementBeneficiaryWhereUniqueInput
+  data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateWithoutNonRegisteredFamilyMemberInput, Prisma.AgreementBeneficiaryUncheckedUpdateWithoutNonRegisteredFamilyMemberInput>
+}
+
+export type AgreementBeneficiaryUpdateManyWithWhereWithoutNonRegisteredFamilyMemberInput = {
+  where: Prisma.AgreementBeneficiaryScalarWhereInput
+  data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateManyMutationInput, Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutNonRegisteredFamilyMemberInput>
+}
+
 export type AgreementBeneficiaryCreateWithoutAgreementInput = {
   id?: string
   sharePercentage: number
@@ -986,7 +986,7 @@ export type AgreementBeneficiaryCreateWithoutAgreementInput = {
   updatedAt?: Date | string
   familyMember?: Prisma.FamilyMemberCreateNestedOneWithoutAgreementBeneficiariesInput
   nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberCreateNestedOneWithoutAgreementBeneficiariesInput
-  adminSignedBy?: Prisma.AdminCreateNestedOneWithoutProxySignedBeneficiariesInput
+  adminSignedBy?: Prisma.UserCreateNestedOneWithoutProxySignedBeneficiariesInput
 }
 
 export type AgreementBeneficiaryUncheckedCreateWithoutAgreementInput = {
@@ -1030,142 +1030,6 @@ export type AgreementBeneficiaryUpdateWithWhereUniqueWithoutAgreementInput = {
 export type AgreementBeneficiaryUpdateManyWithWhereWithoutAgreementInput = {
   where: Prisma.AgreementBeneficiaryScalarWhereInput
   data: Prisma.XOR<Prisma.AgreementBeneficiaryUpdateManyMutationInput, Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAgreementInput>
-}
-
-export type AgreementBeneficiaryCreateManyFamilyMemberInput = {
-  id?: string
-  agreementId: string
-  nonRegisteredFamilyMemberId?: number | null
-  sharePercentage: number
-  shareDescription?: string | null
-  hasSigned?: boolean
-  signedAt?: Date | string | null
-  signatureRef?: string | null
-  isAccepted?: boolean | null
-  rejectionReason?: string | null
-  adminNotes?: string | null
-  adminSignedById?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type AgreementBeneficiaryUpdateWithoutFamilyMemberInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  agreement?: Prisma.AgreementUpdateOneRequiredWithoutBeneficiariesNestedInput
-  nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberUpdateOneWithoutAgreementBeneficiariesNestedInput
-  adminSignedBy?: Prisma.AdminUpdateOneWithoutProxySignedBeneficiariesNestedInput
-}
-
-export type AgreementBeneficiaryUncheckedUpdateWithoutFamilyMemberInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  agreementId?: Prisma.StringFieldUpdateOperationsInput | string
-  nonRegisteredFamilyMemberId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminSignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type AgreementBeneficiaryUncheckedUpdateManyWithoutFamilyMemberInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  agreementId?: Prisma.StringFieldUpdateOperationsInput | string
-  nonRegisteredFamilyMemberId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminSignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type AgreementBeneficiaryCreateManyNonRegisteredFamilyMemberInput = {
-  id?: string
-  agreementId: string
-  familyMemberId?: number | null
-  sharePercentage: number
-  shareDescription?: string | null
-  hasSigned?: boolean
-  signedAt?: Date | string | null
-  signatureRef?: string | null
-  isAccepted?: boolean | null
-  rejectionReason?: string | null
-  adminNotes?: string | null
-  adminSignedById?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type AgreementBeneficiaryUpdateWithoutNonRegisteredFamilyMemberInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  agreement?: Prisma.AgreementUpdateOneRequiredWithoutBeneficiariesNestedInput
-  familyMember?: Prisma.FamilyMemberUpdateOneWithoutAgreementBeneficiariesNestedInput
-  adminSignedBy?: Prisma.AdminUpdateOneWithoutProxySignedBeneficiariesNestedInput
-}
-
-export type AgreementBeneficiaryUncheckedUpdateWithoutNonRegisteredFamilyMemberInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  agreementId?: Prisma.StringFieldUpdateOperationsInput | string
-  familyMemberId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminSignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type AgreementBeneficiaryUncheckedUpdateManyWithoutNonRegisteredFamilyMemberInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  agreementId?: Prisma.StringFieldUpdateOperationsInput | string
-  familyMemberId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  adminSignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AgreementBeneficiaryCreateManyAdminSignedByInput = {
@@ -1236,6 +1100,142 @@ export type AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type AgreementBeneficiaryCreateManyFamilyMemberInput = {
+  id?: string
+  agreementId: string
+  nonRegisteredFamilyMemberId?: number | null
+  sharePercentage: number
+  shareDescription?: string | null
+  hasSigned?: boolean
+  signedAt?: Date | string | null
+  signatureRef?: string | null
+  isAccepted?: boolean | null
+  rejectionReason?: string | null
+  adminNotes?: string | null
+  adminSignedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AgreementBeneficiaryUpdateWithoutFamilyMemberInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
+  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agreement?: Prisma.AgreementUpdateOneRequiredWithoutBeneficiariesNestedInput
+  nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberUpdateOneWithoutAgreementBeneficiariesNestedInput
+  adminSignedBy?: Prisma.UserUpdateOneWithoutProxySignedBeneficiariesNestedInput
+}
+
+export type AgreementBeneficiaryUncheckedUpdateWithoutFamilyMemberInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  agreementId?: Prisma.StringFieldUpdateOperationsInput | string
+  nonRegisteredFamilyMemberId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
+  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminSignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AgreementBeneficiaryUncheckedUpdateManyWithoutFamilyMemberInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  agreementId?: Prisma.StringFieldUpdateOperationsInput | string
+  nonRegisteredFamilyMemberId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
+  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminSignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AgreementBeneficiaryCreateManyNonRegisteredFamilyMemberInput = {
+  id?: string
+  agreementId: string
+  familyMemberId?: number | null
+  sharePercentage: number
+  shareDescription?: string | null
+  hasSigned?: boolean
+  signedAt?: Date | string | null
+  signatureRef?: string | null
+  isAccepted?: boolean | null
+  rejectionReason?: string | null
+  adminNotes?: string | null
+  adminSignedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AgreementBeneficiaryUpdateWithoutNonRegisteredFamilyMemberInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
+  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agreement?: Prisma.AgreementUpdateOneRequiredWithoutBeneficiariesNestedInput
+  familyMember?: Prisma.FamilyMemberUpdateOneWithoutAgreementBeneficiariesNestedInput
+  adminSignedBy?: Prisma.UserUpdateOneWithoutProxySignedBeneficiariesNestedInput
+}
+
+export type AgreementBeneficiaryUncheckedUpdateWithoutNonRegisteredFamilyMemberInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  agreementId?: Prisma.StringFieldUpdateOperationsInput | string
+  familyMemberId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
+  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminSignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AgreementBeneficiaryUncheckedUpdateManyWithoutNonRegisteredFamilyMemberInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  agreementId?: Prisma.StringFieldUpdateOperationsInput | string
+  familyMemberId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharePercentage?: Prisma.FloatFieldUpdateOperationsInput | number
+  shareDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasSigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signatureRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAccepted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminSignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type AgreementBeneficiaryCreateManyAgreementInput = {
   id?: string
   familyMemberId?: number | null
@@ -1267,7 +1267,7 @@ export type AgreementBeneficiaryUpdateWithoutAgreementInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   familyMember?: Prisma.FamilyMemberUpdateOneWithoutAgreementBeneficiariesNestedInput
   nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberUpdateOneWithoutAgreementBeneficiariesNestedInput
-  adminSignedBy?: Prisma.AdminUpdateOneWithoutProxySignedBeneficiariesNestedInput
+  adminSignedBy?: Prisma.UserUpdateOneWithoutProxySignedBeneficiariesNestedInput
 }
 
 export type AgreementBeneficiaryUncheckedUpdateWithoutAgreementInput = {
@@ -1416,7 +1416,7 @@ export type $AgreementBeneficiaryPayload<ExtArgs extends runtime.Types.Extension
     agreement: Prisma.$AgreementPayload<ExtArgs>
     familyMember: Prisma.$FamilyMemberPayload<ExtArgs> | null
     nonRegisteredFamilyMember: Prisma.$NonRegisteredFamilyMemberPayload<ExtArgs> | null
-    adminSignedBy: Prisma.$AdminPayload<ExtArgs> | null
+    adminSignedBy: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1831,7 +1831,7 @@ export interface Prisma__AgreementBeneficiaryClient<T, Null = never, ExtArgs ext
   agreement<T extends Prisma.AgreementDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgreementDefaultArgs<ExtArgs>>): Prisma.Prisma__AgreementClient<runtime.Types.Result.GetResult<Prisma.$AgreementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   familyMember<T extends Prisma.AgreementBeneficiary$familyMemberArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgreementBeneficiary$familyMemberArgs<ExtArgs>>): Prisma.Prisma__FamilyMemberClient<runtime.Types.Result.GetResult<Prisma.$FamilyMemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   nonRegisteredFamilyMember<T extends Prisma.AgreementBeneficiary$nonRegisteredFamilyMemberArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgreementBeneficiary$nonRegisteredFamilyMemberArgs<ExtArgs>>): Prisma.Prisma__NonRegisteredFamilyMemberClient<runtime.Types.Result.GetResult<Prisma.$NonRegisteredFamilyMemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  adminSignedBy<T extends Prisma.AgreementBeneficiary$adminSignedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgreementBeneficiary$adminSignedByArgs<ExtArgs>>): Prisma.Prisma__AdminClient<runtime.Types.Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  adminSignedBy<T extends Prisma.AgreementBeneficiary$adminSignedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgreementBeneficiary$adminSignedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2314,18 +2314,18 @@ export type AgreementBeneficiary$nonRegisteredFamilyMemberArgs<ExtArgs extends r
  */
 export type AgreementBeneficiary$adminSignedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Admin
+   * Select specific fields to fetch from the User
    */
-  select?: Prisma.AdminSelect<ExtArgs> | null
+  select?: Prisma.UserSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Admin
+   * Omit specific fields from the User
    */
-  omit?: Prisma.AdminOmit<ExtArgs> | null
+  omit?: Prisma.UserOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AdminInclude<ExtArgs> | null
-  where?: Prisma.AdminWhereInput
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
 import { AssetType } from '@/generated/prisma/enums'
-import { uploadFileToS3, generateS3Key, getFileUrl, deleteFileFromS3, extractKeyFromUrl } from '@/lib/aws'
+import { uploadFileToS3, generateS3Key, getFileUrl, deleteFileFromS3, extractKeyFromUrl } from '@/lib/storage/aws'
 
 // Helper function to get inverse relationship
 // When someone adds you as their family member, we need to determine what they are to you

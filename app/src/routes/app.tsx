@@ -1,9 +1,8 @@
-import { createFileRoute, Outlet, useNavigate, Link, useLocation, redirect } from '@tanstack/react-router'
-import { useEffect, useMemo } from 'react'
-import React from 'react'
+import { Link, Outlet, createFileRoute, redirect, useLocation, useNavigate } from '@tanstack/react-router'
+import React, { useEffect, useMemo } from 'react'
 import {
-  SidebarProvider,
   SidebarInset,
+  SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
@@ -16,8 +15,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/auth-client'
 import { getServerSession, requireCompletedProfile } from '@/middleware'
+import { getRoleFromSession, resolveAppGuard } from '@/lib/auth/rbac'
 import { ProfileCompletionDialog } from '@/components/profile-completion-dialog'
 import { useLanguage } from '@/lib/i18n/context'
 import { AssistantFloatingChat } from '@/components/assistant-floating-chat'
@@ -25,30 +25,39 @@ import { AssistantFloatingChat } from '@/components/assistant-floating-chat'
 export const Route = createFileRoute('/app')({
   component: RouteComponent,
   beforeLoad: async ({ location }) => {
-    // Server-side authentication check using server function
-    // This properly accesses cookies/headers on the server
+    // Server-side auth check (reads cookies/headers on the server)
     const session = await getServerSession()
     if (!session) {
       throw redirect({ to: '/' })
     }
 
-    // Check profile completion - skip for all profile pages to avoid showing dialog there
+    const role = getRoleFromSession(session)
     const isProfilePage = location.pathname.startsWith('/app/profile')
-    if (!isProfilePage) {
+
+    // Profile completeness only matters for non-admins on non-profile pages.
+    // Skip the (DB) profile lookup entirely for admins.
+    let profileComplete = true
+    if (role !== 'ADMIN' && !isProfilePage) {
       const profileCheck = await requireCompletedProfile()
-      if (profileCheck && !profileCheck.profileComplete) {
-        // Return profile incomplete status instead of redirecting
-        // The dialog will be shown on the current page
-        return {
-          session,
-          profileIncomplete: true,
-        }
-      }
+      profileComplete = !!(profileCheck && profileCheck.profileComplete)
     }
 
-    return { session }
+    const guard = resolveAppGuard({
+      role,
+      pathname: location.pathname,
+      isProfilePage,
+      profileComplete,
+    })
+
+    if (guard.type === 'redirect') {
+      throw redirect({ to: guard.to })
+    }
+
+    return {
+      session,
+      profileIncomplete: guard.type === 'profile-incomplete',
+    }
   },
-  // Add context type for profileIncomplete
 })
 
 // Helper to format route segment to title case
@@ -66,7 +75,7 @@ function RouteComponent() {
   const { data: session, isPending } = authClient.useSession()
   const routeContext = Route.useRouteContext()
 
-  const profileIncomplete = routeContext?.profileIncomplete ?? false
+  const profileIncomplete = routeContext.profileIncomplete
 
   // Build breadcrumb items from current pathname segments
   const breadcrumbs = useMemo(() => {

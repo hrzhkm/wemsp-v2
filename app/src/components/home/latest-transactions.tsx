@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, ExternalLink, Clock, Hash } from 'lucide-react';
 import { format } from 'date-fns';
 import { getLatestTransactions, LatestTransaction, getTransactionDescription, getTransactionTypeDisplayName } from '@/services/latestTransactions';
-import { CONTRACT_ADDRESS } from '@/lib/config';
+import { CONTRACT_ADDRESS } from '@/lib/blockchain/config';
 
 export default function LatestTransactions() {
   const [transactions, setTransactions] = useState<LatestTransaction[]>([]);

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
-import { getAdminFromSession } from '@/lib/admin-auth'
+import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
 import { corsHeaders } from '@/lib/cors'
 import { AssetType } from '@/generated/prisma/enums'
 import {
@@ -9,7 +9,7 @@ import {
   generateS3Key,
   getFileUrl,
   uploadFileToS3,
-} from '@/lib/aws'
+} from '@/lib/storage/aws'
 
 export const Route = createFileRoute('/api/admin/assets/$')({
   server: {
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/api/admin/assets/$')({
       GET: async ({ request }: { request: Request }) => {
         try {
           // Verify admin session
-          const admin = await getAdminFromSession(request.headers)
+          const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
           }
@@ -99,7 +99,7 @@ export const Route = createFileRoute('/api/admin/assets/$')({
       POST: async ({ request }: { request: Request }) => {
         try {
           // Verify admin session
-          const admin = await getAdminFromSession(request.headers)
+          const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
           }
@@ -219,7 +219,7 @@ export const Route = createFileRoute('/api/admin/assets/$')({
       PUT: async ({ request }: { request: Request }) => {
         try {
           // Verify admin session
-          const admin = await getAdminFromSession(request.headers)
+          const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
           }
@@ -365,7 +365,7 @@ export const Route = createFileRoute('/api/admin/assets/$')({
       DELETE: async ({ request }: { request: Request }) => {
         try {
           // Verify admin session
-          const admin = await getAdminFromSession(request.headers)
+          const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
           }

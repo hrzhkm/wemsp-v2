@@ -42,6 +42,11 @@ enum AssetType {
   OTHER
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 // Distribution type for Islamic agreements
 enum DistributionType {
   FARAID      // Islamic inheritance law (fixed shares)
@@ -83,6 +88,7 @@ model User {
   email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
+  role          Role      @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
@@ -105,6 +111,11 @@ model User {
   
   // Reference to IC registry for global uniqueness
   icRegistry    IcRegistry? @relation(fields: [icNumber], references: [icNumber], onDelete: SetNull)
+  
+  // Agreements this user witnessed (admin-role users act as witnesses)
+  witnessedAgreements      Agreement[]            @relation("AgreementWitness")
+  // Beneficiaries this user proxy-signed (admin-role users only)
+  proxySignedBeneficiaries AgreementBeneficiary[] @relation("AdminProxySigning")
   
   @@map("user")
 }
@@ -254,24 +265,6 @@ model Verification {
   @@map("verification")
 }
 
-// Admin model for system administrators who act as witnesses
-model Admin {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  password      String
-  isActive      Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Agreements witnessed by this admin
-  witnessedAgreements Agreement[]
-  // Beneficiaries signed by this admin (proxy signing)
-  proxySignedBeneficiaries AgreementBeneficiary[] @relation("AdminProxySigning")
-
-  @@map("admin")
-}
-
 // Main agreement model for Islamic distribution
 model Agreement {
   id                String           @id @default(cuid())
@@ -289,9 +282,9 @@ model Agreement {
   ownerSignedAt     DateTime?
   ownerSignatureRef String?          // Transaction hash for owner signature
   
-  // Witness (Admin)
+  // Witness (admin-role User)
   witnessId         String?
-  witness           Admin?           @relation(fields: [witnessId], references: [id])
+  witness           User?            @relation("AgreementWitness", fields: [witnessId], references: [id])
   witnessedAt       DateTime?
   witnessSignatureRef String?        // Transaction hash for witness signature
   
@@ -374,7 +367,7 @@ model AgreementBeneficiary {
   // Admin signing audit fields
   adminNotes      String?
   adminSignedById String?
-  adminSignedBy   Admin?   @relation("AdminProxySigning", fields: [adminSignedById], references: [id])
+  adminSignedBy   User?    @relation("AdminProxySigning", fields: [adminSignedById], references: [id])
 
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt

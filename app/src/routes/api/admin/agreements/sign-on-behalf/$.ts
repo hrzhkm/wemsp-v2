@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
-import { getAdminFromSession } from '@/lib/admin-auth'
+import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
 import { corsHeaders } from '@/lib/cors'
 import {
   ensureAgreementMinted,
@@ -12,7 +12,7 @@ import {
   isContractConfigured,
   recordBeneficiarySignature,
   recordOwnerSignature,
-} from '@/lib/contract'
+} from '@/lib/blockchain/contract'
 
 export const Route = createFileRoute('/api/admin/agreements/sign-on-behalf/$')({
   server: {
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/api/admin/agreements/sign-on-behalf/$')({
 
       POST: async ({ request }: { request: Request }) => {
         try {
-          const admin = await getAdminFromSession(request.headers)
+          const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
           }
@@ -131,7 +131,7 @@ export const Route = createFileRoute('/api/admin/agreements/sign-on-behalf/$')({
               signatureRef: beneficiaryTxHash,
               isAccepted: true,
               rejectionReason: null,
-              adminSignedById: admin.adminId,
+              adminSignedById: admin.id,
               adminNotes: adminNotes || null,
             },
           })

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
-import { getAdminFromSession } from '@/lib/admin-auth'
+import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
 import { corsHeaders } from '@/lib/cors'
 
 export const Route = createFileRoute('/api/admin/agreements/by-ic/$icNumber/$')({
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/api/admin/agreements/by-ic/$icNumber/$')(
         params: { icNumber: string }
       }) => {
         try {
-          const admin = await getAdminFromSession(request.headers)
+          const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
           }

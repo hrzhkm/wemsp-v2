@@ -11,7 +11,7 @@ async function main() {
     recordOwnerSignature,
     recordWitnessSignature,
     finalizeAgreement,
-  } = await import('@/lib/contract')
+  } = await import('@/lib/blockchain/contract')
   const agreementId = `smoke-${Date.now()}`
   const beneficiaries = ['101', '102']
 

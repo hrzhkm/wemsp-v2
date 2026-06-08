@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Upload, FileText, CheckCircle, XCircle, Trash2, FileJson } from 'lucide-react'
-import { getFileUrl } from '@/lib/aws'
+import { getFileUrl } from '@/lib/storage/aws'
 
 export const Route = createFileRoute('/test-upload')({
   component: TestUploadPage,

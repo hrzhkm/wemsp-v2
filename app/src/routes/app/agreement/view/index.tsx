@@ -22,8 +22,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { AgreementStatus, DistributionType } from '@/generated/prisma/enums'
-import { authClient } from '@/lib/auth-client'
-import { getStatusColor } from '@/lib/agreement-workflow'
+import { authClient } from '@/lib/auth/auth-client'
+import { getStatusColor } from '@/lib/agreement/agreement-workflow'
 import { useLanguage } from '@/lib/i18n/context'
 
 interface AgreementListItem {

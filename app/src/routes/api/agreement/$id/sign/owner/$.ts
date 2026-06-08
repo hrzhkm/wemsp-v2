@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
 import {
   ensureAgreementMinted,
@@ -9,7 +9,7 @@ import {
   getOnChainTimestampDate,
   isContractConfigured,
   recordOwnerSignature,
-} from '@/lib/contract'
+} from '@/lib/blockchain/contract'
 
 export const ownerSignHandlers = {
   POST: async ({ request, params }: { request: Request; params: { id: string } }) => {

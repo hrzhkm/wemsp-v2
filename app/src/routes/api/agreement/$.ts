@@ -1,14 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
 import { DistributionType } from '@/generated/prisma/enums'
-import { getExplorerUrl } from '@/lib/contract'
+import { getExplorerUrl } from '@/lib/blockchain/contract'
 import {
   canEditAgreement,
   validateAgreementInput,
   validateAssets,
   validateBeneficiaries,
-} from '@/lib/agreement-validation'
+} from '@/lib/agreement/agreement-validation'
 
 export const agreementHandlers = {
       // GET /api/agreement - List agreements or get single agreement by ID

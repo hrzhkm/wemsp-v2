@@ -27,7 +27,6 @@ jobs:
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           VITE_APP_BASE_URL=${{ secrets.VITE_APP_BASE_URL }}
-          VITE_ADMIN_BASE_URL=${{ secrets.VITE_ADMIN_BASE_URL }}
           EOF
 
       - name: Write app/.env.local
@@ -53,13 +52,6 @@ jobs:
           OPENROUTER_BASE_URL=${{ secrets.OPENROUTER_BASE_URL }}
           OPENROUTER_SITE_URL=${{ secrets.OPENROUTER_SITE_URL }}
           OPENROUTER_APP_NAME=${{ secrets.OPENROUTER_APP_NAME }}
-          EOF
-
-      - name: Write admin/.env
-        run: |
-          cat > admin/.env << EOF
-          VITE_API_BASE_URL=${{ secrets.VITE_ADMIN_BASE_URL }}
-          PROD_ENDPOINT=${{ secrets.PROD_ENDPOINT }}
           EOF
 
   docker-build:
@@ -140,11 +132,6 @@ jobs:
           docker logs wemsp-app --tail=100 2>&1 || true
           exit 1
 
-      - name: Wait for admin to be healthy
-        run: |
-          echo "Waiting for admin to be ready..."
-          timeout 60 bash -c 'until curl -sf http://localhost:5051 > /dev/null 2>&1; do echo "Retrying..."; sleep 3; done'
-
   verify:
     name: Verify Deployment
     runs-on: self-hosted
@@ -170,16 +157,11 @@ jobs:
           curl -f http://localhost:5050 || exit 1
 
           echo ""
-          echo "Admin health check:"
-          curl -f http://localhost:5051 || exit 1
-
-          echo ""
           echo "==================================="
           echo "Deployment successful!"
           echo "==================================="
           echo "Services are running at:"
           echo "  - App:      http://localhost:5050"
-          echo "  - Admin:    http://localhost:5051"
           echo "  - Database: localhost:5053"
 
   on-failure:
@@ -207,11 +189,6 @@ jobs:
           echo "App Logs:"
           echo "==================================="
           docker logs wemsp-app --tail=100 || true
-          echo ""
-          echo "==================================="
-          echo "Admin Logs:"
-          echo "==================================="
-          docker logs wemsp-admin --tail=100 || true
           echo ""
           echo "==================================="
           echo "Network Info:"

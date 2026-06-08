@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card'
 import { FieldGroup } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/auth-client'
 import { cn } from '@/lib/utils'
 
 const formatCurrency = (value: number) =>
