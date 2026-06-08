@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/table'
 import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
-import { ArrowLeftIcon, MailIcon, PhoneIcon, MapPinIcon, CalendarIcon, CheckCircleIcon, XCircleIcon, EditIcon, TrashIcon, UserIcon, Building2Icon, FileTextIcon, UsersIcon, KeyIcon } from 'lucide-react'
+import { MailIcon, PhoneIcon, MapPinIcon, CalendarIcon, CheckCircleIcon, XCircleIcon, EditIcon, TrashIcon, UserIcon, Building2Icon, FileTextIcon, UsersIcon, KeyIcon, Loader2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -153,7 +153,7 @@ export const Route = createFileRoute('/app/admin/users/$id')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const { admin, userId } = Route.useLoaderData()
+  const { userId } = Route.useLoaderData()
 
   const [user, setUser] = useState<UserDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -283,8 +283,8 @@ function RouteComponent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-muted-foreground">Loading user details...</p>
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
@@ -298,17 +298,17 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="space-y-4">
       {/* Header Card */}
-      <Card>
+      <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-xl">
                 <UserIcon className="h-5 w-5" />
                 {user.name}
               </CardTitle>
-              <CardDescription>User Details</CardDescription>
+              <CardDescription className="mt-1">User Details</CardDescription>
             </div>
             <CardAction>
               <div className="flex items-center gap-2">
@@ -332,9 +332,9 @@ function RouteComponent() {
       </Card>
 
       {/* Personal Information */}
-      <Card>
+      <Card className="border-border/70">
         <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
+          <CardTitle className="text-base">Personal Information</CardTitle>
           <CardDescription>Basic user details and contact information</CardDescription>
         </CardHeader>
         <CardContent>
@@ -395,7 +395,7 @@ function RouteComponent() {
             <CardTitle className="text-sm font-medium">Assets</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{user.assets.length}</div>
+            <div className="text-2xl font-semibold">{user.assets.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -403,7 +403,7 @@ function RouteComponent() {
             <CardTitle className="text-sm font-medium">Agreements</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{user.agreements.length}</div>
+            <div className="text-2xl font-semibold">{user.agreements.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -411,7 +411,7 @@ function RouteComponent() {
             <CardTitle className="text-sm font-medium">Family Members</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{user.familyMembers.length + user.nonRegisteredFamilyMembers.length}</div>
+            <div className="text-2xl font-semibold">{user.familyMembers.length + user.nonRegisteredFamilyMembers.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -419,15 +419,15 @@ function RouteComponent() {
             <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{user.sessions.filter(s => new Date(s.expiresAt) > new Date()).length}</div>
+            <div className="text-2xl font-semibold">{user.sessions.filter(s => new Date(s.expiresAt) > new Date()).length}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Assets */}
-      <Card>
+      <Card className="border-border/70">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <Building2Icon className="h-5 w-5" />
             Assets ({user.assets.length})
           </CardTitle>
@@ -438,7 +438,7 @@ function RouteComponent() {
             <p className="text-muted-foreground text-center py-8">No assets found</p>
           ) : (
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-muted/35">
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Type</TableHead>
@@ -470,9 +470,9 @@ function RouteComponent() {
       </Card>
 
       {/* Agreements */}
-      <Card>
+      <Card className="border-border/70">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <FileTextIcon className="h-5 w-5" />
             Agreements ({user.agreements.length})
           </CardTitle>
@@ -483,7 +483,7 @@ function RouteComponent() {
             <p className="text-muted-foreground text-center py-8">No agreements found</p>
           ) : (
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-muted/35">
                 <TableRow>
                   <TableHead>Title</TableHead>
                   <TableHead>Type</TableHead>
@@ -521,9 +521,9 @@ function RouteComponent() {
       {/* Family Members */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Registered Family Members */}
-        <Card>
+        <Card className="border-border/70">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base">
               <UsersIcon className="h-5 w-5" />
               Registered Family Members ({user.familyMembers.length})
             </CardTitle>
@@ -534,7 +534,7 @@ function RouteComponent() {
               <p className="text-muted-foreground text-center py-8">No registered family members</p>
             ) : (
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-muted/35">
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Relation</TableHead>
@@ -558,9 +558,9 @@ function RouteComponent() {
         </Card>
 
         {/* Non-Registered Family Members */}
-        <Card>
+        <Card className="border-border/70">
           <CardHeader>
-            <CardTitle>Non-Registered Family Members ({user.nonRegisteredFamilyMembers.length})</CardTitle>
+            <CardTitle className="text-base">Non-Registered Family Members ({user.nonRegisteredFamilyMembers.length})</CardTitle>
             <CardDescription>Family members not yet registered in the system</CardDescription>
           </CardHeader>
           <CardContent>
@@ -568,7 +568,7 @@ function RouteComponent() {
               <p className="text-muted-foreground text-center py-8">No non-registered family members</p>
             ) : (
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-muted/35">
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Relation</TableHead>
@@ -595,9 +595,9 @@ function RouteComponent() {
       {/* Sessions & Accounts */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Sessions */}
-        <Card>
+        <Card className="border-border/70">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base">
               <KeyIcon className="h-5 w-5" />
               Sessions ({user.sessions.length})
             </CardTitle>
@@ -611,7 +611,8 @@ function RouteComponent() {
                 {user.sessions.map((session) => {
                   const isExpired = new Date(session.expiresAt) < new Date()
                   return (
-                    <div key={session.id} className="text-sm border rounded p-3 space-y-1">
+                    <Card key={session.id} className="border-border/70">
+                      <CardContent className="text-sm p-3 space-y-1">
                       <div className="flex items-center justify-between">
                         <span className="font-medium">Created: {formatDate(session.createdAt)}</span>
                         {isExpired ? (
@@ -629,7 +630,8 @@ function RouteComponent() {
                       {session.userAgent && (
                         <p className="text-xs text-muted-foreground truncate">{session.userAgent}</p>
                       )}
-                    </div>
+                      </CardContent>
+                    </Card>
                   )
                 })}
               </div>
@@ -638,9 +640,9 @@ function RouteComponent() {
         </Card>
 
         {/* Accounts */}
-        <Card>
+        <Card className="border-border/70">
           <CardHeader>
-            <CardTitle>Accounts ({user.accounts.length})</CardTitle>
+            <CardTitle className="text-base">Accounts ({user.accounts.length})</CardTitle>
             <CardDescription>Linked authentication providers</CardDescription>
           </CardHeader>
           <CardContent>
@@ -648,7 +650,7 @@ function RouteComponent() {
               <p className="text-muted-foreground text-center py-8">No linked accounts</p>
             ) : (
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-muted/35">
                   <TableRow>
                     <TableHead>Provider</TableHead>
                     <TableHead>Account ID</TableHead>

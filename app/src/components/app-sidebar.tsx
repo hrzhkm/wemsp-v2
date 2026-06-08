@@ -60,32 +60,32 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r border-sidebar-border/60">
-      <SidebarHeader className="p-4 pb-2">
-        <div className="rounded-2xl border border-sidebar-border/60 bg-gradient-to-br from-sidebar-accent/60 via-sidebar to-sidebar p-3 shadow-sm">
-          <Link to="/app/dashboard" className="flex items-center gap-3">
-            <div className="rounded-xl bg-white/90 p-2 shadow-sm ring-1 ring-black/5">
-              <img src="/assets/logo2.png" alt="WEMSP" className="h-8 w-auto" />
+      <SidebarHeader className="p-2.5 pb-1.5">
+        <div className="rounded-xl border border-sidebar-border/60 bg-gradient-to-br from-sidebar-accent/60 via-sidebar to-sidebar p-2 shadow-sm">
+          <Link to="/app/dashboard" className="flex items-center gap-2.5">
+            <div className="rounded-lg bg-white/90 p-1.5 shadow-sm ring-1 ring-black/5">
+              <img src="/assets/logo2.png" alt="WEMSP" className="h-6 w-auto" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold tracking-tight">WEMSP</p>
-              <p className="truncate text-xs text-sidebar-foreground/70">{t('navigation.estateManagement')}</p>
+              <p className="truncate text-[13px] font-semibold tracking-tight">WEMSP</p>
+              <p className="truncate text-[11px] text-sidebar-foreground/70">{t('navigation.estateManagement')}</p>
             </div>
           </Link>
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-2 pb-3">
+      <SidebarContent className="px-2 pb-2">
         <SidebarGroup className="pt-1">
-          <SidebarGroupLabel className="px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-sidebar-foreground/60">
+          <SidebarGroupLabel className="px-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-sidebar-foreground/60">
             {t('navigation.application')}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1.5">
+            <SidebarMenu className="gap-0.5">
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.to}>
                   <SidebarMenuButton
                     asChild
                     isActive={isActivePath(item.matchPath)}
-                    className="h-11 rounded-xl px-3 data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:shadow-sm"
+                    className="h-8 rounded-md px-2 text-sidebar-foreground/70 data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground"
                   >
                     <Link
                       to={item.to}
@@ -93,21 +93,19 @@ export function AppSidebar() {
                         ? { search: { onboarding: false, redirect: location.pathname } }
                         : {})}
                     >
-                      <div className="flex size-7 items-center justify-center rounded-lg bg-sidebar-accent/70">
-                        <item.icon className="size-4" />
-                      </div>
-                      <span className="font-medium">{t(item.labelKey)}</span>
+                      <item.icon className="size-4 shrink-0" />
+                      <span className="text-xs">{t(item.labelKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              <SidebarSeparator className="my-2" />
+              <SidebarSeparator className="my-1" />
               {accountItems.map((item) => (
                 <SidebarMenuItem key={item.to}>
                   <SidebarMenuButton
                     asChild
                     isActive={isActivePath(item.matchPath)}
-                    className="h-11 rounded-xl px-3 data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:shadow-sm"
+                    className="h-8 rounded-md px-2 text-sidebar-foreground/70 data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground"
                   >
                     <Link
                       to={item.to}
@@ -115,18 +113,16 @@ export function AppSidebar() {
                         ? { search: { onboarding: false, redirect: location.pathname } }
                         : {})}
                     >
-                      <div className="flex size-7 items-center justify-center rounded-lg bg-sidebar-accent/70">
-                        <item.icon className="size-4" />
-                      </div>
-                      <span className="font-medium">{t(item.labelKey)}</span>
+                      <item.icon className="size-4 shrink-0" />
+                      <span className="text-xs">{t(item.labelKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
               {administrationItems.length > 0 && (
                 <>
-                  <SidebarSeparator className="my-2" />
-                  <SidebarGroupLabel className="px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-sidebar-foreground/60">
+                  <SidebarSeparator className="my-1" />
+                  <SidebarGroupLabel className="px-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-sidebar-foreground/60">
                     {t('navigation.administration')}
                   </SidebarGroupLabel>
                   {administrationItems.map((item) => (
@@ -134,13 +130,11 @@ export function AppSidebar() {
                       <SidebarMenuButton
                         asChild
                         isActive={isActivePath(item.matchPath)}
-                        className="h-11 rounded-xl px-3 data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:shadow-sm"
+                        className="h-8 rounded-md px-2 text-sidebar-foreground/70 data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground"
                       >
                         <Link to={item.to}>
-                          <div className="flex size-7 items-center justify-center rounded-lg bg-sidebar-accent/70">
-                            <item.icon className="size-4" />
-                          </div>
-                          <span className="font-medium">{t(item.labelKey)}</span>
+                          <item.icon className="size-4 shrink-0" />
+                          <span className="text-xs">{t(item.labelKey)}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -151,19 +145,19 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border/60 p-3 pt-3">
+      <SidebarFooter className="border-t border-sidebar-border/60 p-2">
         <SidebarMenu className="gap-0">
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg" className="h-12 rounded-xl border border-sidebar-border/60 bg-sidebar-accent/35 px-3 hover:bg-sidebar-accent/60">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-sidebar-primary/15 text-sidebar-primary">
-                    <User className="size-4" />
+                <SidebarMenuButton className="h-9 rounded-md px-2 hover:bg-sidebar-accent/60">
+                  <div className="flex size-6 items-center justify-center rounded-full bg-sidebar-primary/15 text-sidebar-primary">
+                    <User className="size-3.5" />
                   </div>
-                  <span className="truncate">
+                  <span className="truncate text-xs">
                     {user?.name || user?.email || t('navigation.account')}
                   </span>
-                  <ChevronUp className="ml-auto" />
+                  <ChevronUp className="ml-auto size-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent

@@ -3,13 +3,15 @@ import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
 import {
   PencilIcon,
-  PlusIcon,
   SearchIcon,
   TrashIcon,
   EyeIcon,
   CheckCircle2Icon,
   ClockIcon,
   XCircleIcon,
+  Loader2,
+  FileText,
+  Plus,
 } from 'lucide-react'
 import { getAdminSession } from '@/middleware'
 import { Button } from '@/components/ui/button'
@@ -42,6 +44,13 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { DistributionType, AgreementStatus } from '@/generated/prisma/enums'
 import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 interface Agreement {
   id: string
@@ -585,31 +594,51 @@ function RouteComponent() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Search and Create */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 flex-1 max-w-md">
-          <Input
-            placeholder="Search by title, owner, or status..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="max-w-sm"
-          />
-          <Button onClick={handleSearch} size="icon" variant="outline">
-            <SearchIcon className="h-4 w-4" />
-          </Button>
-        </div>
-        <Button onClick={() => setCreateDialogOpen(true)}>
-          <PlusIcon className="h-4 w-4 mr-2" />
-          New Agreement
-        </Button>
-      </div>
+    <div className="space-y-4">
+      {/* Hero header */}
+      <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
+        <CardHeader className="gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
+                <FileText className="h-3.5 w-3.5" />
+                Agreement Management
+              </div>
+              <CardTitle className="text-xl">Agreements</CardTitle>
+              <CardDescription className="mt-1">
+                Review and manage all agreements across the system.
+              </CardDescription>
+            </div>
+            <Button
+              onClick={() => setCreateDialogOpen(true)}
+              className="w-full sm:w-auto"
+            >
+              <Plus className="h-4 w-4" />
+              New Agreement
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
 
       {/* Agreements Table */}
-      <div className="bg-background rounded-lg border">
+      <Card className="border-border/70">
+        <CardHeader>
+          <div className="flex items-center gap-2 flex-1 max-w-md">
+            <Input
+              placeholder="Search by title, owner, or status..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="max-w-sm"
+            />
+            <Button onClick={handleSearch} size="icon" variant="outline">
+              <SearchIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/35">
             <TableRow>
               <TableHead>Title</TableHead>
               <TableHead>Owner</TableHead>
@@ -625,8 +654,10 @@ function RouteComponent() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8">
-                  Loading...
+                <TableCell colSpan={9} className="py-8">
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
                 </TableCell>
               </TableRow>
             ) : agreements.length === 0 ? (
@@ -713,6 +744,7 @@ function RouteComponent() {
             )}
           </TableBody>
         </Table>
+        </CardContent>
 
         {/* Pagination */}
         {pagination.totalPages > 1 && (
@@ -750,7 +782,7 @@ function RouteComponent() {
             </div>
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Create Agreement Dialog */}
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>

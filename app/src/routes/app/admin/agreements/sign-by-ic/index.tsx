@@ -1,9 +1,16 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
-import { PenIcon, SearchIcon } from 'lucide-react'
+import { PenIcon, SearchIcon, Stamp } from 'lucide-react'
 import { toast } from 'sonner'
 import { getAdminSession } from '@/middleware'
 import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -152,38 +159,50 @@ function SignByICPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Sign by IC Number</h1>
-        <p className="text-muted-foreground">
-          Search for and sign agreements on behalf of non-registered users
-        </p>
-      </div>
+    <div className="space-y-4">
+      <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
+        <CardHeader className="gap-4">
+          <div>
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
+              <Stamp className="h-3.5 w-3.5" />
+              Sign by IC
+            </div>
+            <CardTitle className="text-xl">Sign by IC Number</CardTitle>
+            <CardDescription className="mt-1">
+              Search for and sign agreements on behalf of non-registered users
+            </CardDescription>
+          </div>
+        </CardHeader>
+      </Card>
       {/* IC Search Section */}
-      <div className="flex items-center gap-4">
-        <div className="flex-1 max-w-md space-y-2">
-          <Label htmlFor="ic-number">IC Number</Label>
-          <Input
-            id="ic-number"
-            placeholder="Enter 12-digit IC number"
-            value={icNumber}
-            onChange={(e) => setIcNumber(e.target.value.replace(/\D/g, '').slice(0, 12))}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            maxLength={12}
-          />
-        </div>
-        <Button
-          onClick={handleSearch}
-          disabled={searching || !icNumber}
-          className="mt-6"
-        >
-          <SearchIcon className="h-4 w-4 mr-2" />
-          Search
-        </Button>
-      </div>
+      <Card className="border-border/70">
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <div className="flex-1 max-w-md space-y-2">
+              <Label htmlFor="ic-number">IC Number</Label>
+              <Input
+                id="ic-number"
+                placeholder="Enter 12-digit IC number"
+                value={icNumber}
+                onChange={(e) => setIcNumber(e.target.value.replace(/\D/g, '').slice(0, 12))}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                maxLength={12}
+              />
+            </div>
+            <Button
+              onClick={handleSearch}
+              disabled={searching || !icNumber}
+              className="mt-6"
+            >
+              <SearchIcon className="h-4 w-4 mr-2" />
+              Search
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
       {/* Results Table */}
       {hasSearched && (
-        <div className="bg-background rounded-lg border">
+        <Card className="border-border/70">
           {agreements.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
@@ -191,9 +210,10 @@ function SignByICPage() {
               </p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader className="bg-muted/35">
+                  <TableRow>
                   <TableHead>Agreement Title</TableHead>
                   <TableHead>Owner</TableHead>
                   <TableHead>Member Name</TableHead>
@@ -239,8 +259,9 @@ function SignByICPage() {
                 ))}
               </TableBody>
             </Table>
+            </CardContent>
           )}
-        </div>
+        </Card>
       )}
       {/* Optional Notes Dialog */}
       <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>

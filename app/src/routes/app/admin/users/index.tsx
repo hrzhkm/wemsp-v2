@@ -19,9 +19,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
-import { PencilIcon, TrashIcon, PlusIcon, SearchIcon } from 'lucide-react'
+import {
+  PencilIcon,
+  TrashIcon,
+  PlusIcon,
+  SearchIcon,
+  Loader2,
+  Users,
+} from 'lucide-react'
 
 interface User {
   id: string
@@ -322,31 +336,51 @@ function RouteComponent() {
   }
 
   return (
-    <div className="space-y-6">
-          {/* Search and Create */}
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2 flex-1 max-w-md">
-              <Input
-                placeholder="Search by name, email, or IC..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="max-w-sm"
-              />
-              <Button onClick={handleSearch} size="icon" variant="outline">
-                <SearchIcon className="h-4 w-4" />
-              </Button>
-            </div>
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <PlusIcon className="h-4 w-4 mr-2" />
-              New User
-            </Button>
-          </div>
+    <div className="space-y-4">
+          {/* Page Header */}
+          <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
+            <CardHeader className="gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
+                    <Users className="h-3.5 w-3.5" />
+                    User Management
+                  </div>
+                  <CardTitle className="text-xl">Users</CardTitle>
+                  <CardDescription className="mt-1">
+                    Manage user accounts, view details, and perform CRUD operations.
+                  </CardDescription>
+                </div>
+                <Button onClick={() => setCreateDialogOpen(true)} className="w-full sm:w-auto">
+                  <PlusIcon className="h-4 w-4" />
+                  New User
+                </Button>
+              </div>
+            </CardHeader>
+          </Card>
 
           {/* Users Table */}
-          <div className="bg-background rounded-lg border">
+          <Card className="border-border/70">
+            <CardHeader>
+              <div className="flex items-center gap-2 max-w-md">
+                <div className="relative flex-1">
+                  <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name, email, or IC..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="pl-9"
+                  />
+                </div>
+                <Button onClick={handleSearch} size="icon" variant="outline">
+                  <SearchIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-muted/35">
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
@@ -362,7 +396,9 @@ function RouteComponent() {
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center py-8">
-                      Loading...
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : users.length === 0 ? (
@@ -482,7 +518,8 @@ function RouteComponent() {
                 </div>
               </div>
             )}
-          </div>
+            </CardContent>
+          </Card>
 
       {/* Create User Dialog */}
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
