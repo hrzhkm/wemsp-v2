@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
-import { requireAdminFromHeaders } from '@/lib/admin-guard'
+import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
 import { corsHeaders } from '@/lib/cors'
 import {
   ensureAgreementMinted,
@@ -12,7 +12,7 @@ import {
   isContractConfigured,
   recordBeneficiarySignature,
   recordOwnerSignature,
-} from '@/lib/contract'
+} from '@/lib/blockchain/contract'
 
 export const Route = createFileRoute('/api/admin/agreements/sign-on-behalf/$')({
   server: {

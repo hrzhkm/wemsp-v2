@@ -15,9 +15,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/auth-client'
 import { getServerSession, requireCompletedProfile } from '@/middleware'
-import { getRoleFromSession, resolveAppGuard } from '@/lib/rbac'
+import { getRoleFromSession, resolveAppGuard } from '@/lib/auth/rbac'
 import { ProfileCompletionDialog } from '@/components/profile-completion-dialog'
 import { useLanguage } from '@/lib/i18n/context'
 import { AssistantFloatingChat } from '@/components/assistant-floating-chat'

@@ -1,7 +1,7 @@
 import Arrow from "../ui/arrow";
 import { Link } from "@tanstack/react-router";
 import { useLanguage } from "@/lib/i18n/context";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/auth-client";
 import { LoginForm } from "@/components/login-form";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 

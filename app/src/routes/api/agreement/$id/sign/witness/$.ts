@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
-import { requireAdminFromHeaders } from '@/lib/admin-guard'
+import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
 import {
   ensureAgreementMinted,
   finalizeAgreement,
@@ -14,7 +14,7 @@ import {
   recordBeneficiarySignature,
   recordOwnerSignature,
   recordWitnessSignature,
-} from '@/lib/contract'
+} from '@/lib/blockchain/contract'
 
 export const witnessSignHandlers = {
   POST: async ({ request, params }: { request: Request; params: { id: string } }) => {

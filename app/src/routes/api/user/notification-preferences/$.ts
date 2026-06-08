@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { prisma } from '@/db'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 
 const VALID_REMINDER_DAYS = [1, 3, 7] as const
 const VALID_LANGUAGES = ['en', 'ms'] as const

@@ -3,7 +3,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { AlertCircle, ArrowLeft, Loader2, Search, User, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import type { FamilyRelationType } from '@/lib/family-types'
+import type { FamilyRelationType } from '@/lib/family/family-types'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { FamilyRelation } from '@/lib/family-types'
+import { FamilyRelation } from '@/lib/family/family-types'
 
 const MALAYSIAN_IC_REGEX = /^\d{12}$/
 

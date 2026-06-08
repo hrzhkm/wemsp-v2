@@ -1,5 +1,5 @@
 import { Contract, JsonRpcProvider, NonceManager, Wallet } from 'ethers'
-import AgreementContractArtifact from '../contract/AgreementContract.json'
+import AgreementContractArtifact from '../../contract/AgreementContract.json'
 import type { Log, LogDescription } from 'ethers'
 
 const RPC_URL = process.env.RPC_URL

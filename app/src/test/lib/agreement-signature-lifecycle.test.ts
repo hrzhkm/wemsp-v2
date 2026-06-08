@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { validateSignature, validateStatusTransition } from '@/lib/agreement-validation'
+import { validateSignature, validateStatusTransition } from '@/lib/agreement/agreement-validation'
 
 describe('agreement signature lifecycle guards', () => {
   it('owner can only sign in DRAFT or PENDING_SIGNATURES', () => {

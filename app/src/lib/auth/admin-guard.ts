@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 
 /**
  * Returns the authenticated user only if their role is ADMIN, else null.

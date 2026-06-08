@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type {WrappedKey} from '@/lib/encryption';
+import type {WrappedKey} from '@/lib/storage/encryption';
 import {
   AUTH_TAG_BYTES,
   EncryptionError,
@@ -12,7 +12,7 @@ import {
   rewrapFek,
   unwrapFek,
   wrapFek
-} from '@/lib/encryption'
+} from '@/lib/storage/encryption'
 
 const SECRET = 'My first pet was named Rex'
 

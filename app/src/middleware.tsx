@@ -1,9 +1,9 @@
 import { createMiddleware } from '@tanstack/react-start'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
-import { requireAdminFromHeaders } from '@/lib/admin-guard'
+import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
 
 /**
  * Check if a user has completed their profile.

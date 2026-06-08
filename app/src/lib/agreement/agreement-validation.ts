@@ -1,5 +1,5 @@
 import { DistributionType, AgreementStatus } from '@/generated/prisma/enums'
-import { validateFaraidShares } from './faraid-rules'
+import { validateFaraidShares } from '../faraid/faraid-rules'
 
 /**
  * Validation result type

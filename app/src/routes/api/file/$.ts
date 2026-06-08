@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getFileFromS3 } from '@/lib/aws'
+import { getFileFromS3 } from '@/lib/storage/aws'
 
 export const Route = createFileRoute('/api/file/$')({
   server: {

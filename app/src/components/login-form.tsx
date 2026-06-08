@@ -17,7 +17,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth/auth-client"
 import { VerificationDialog } from "./verification-dialog"
 
 type AuthMode = "signin" | "signup"

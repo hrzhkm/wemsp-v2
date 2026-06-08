@@ -4,7 +4,7 @@ import { AlertTriangle, CheckCircle2, IdCard, Loader2, Mail, MapPin, Phone, User
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/auth-client'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {

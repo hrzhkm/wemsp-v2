@@ -6,7 +6,7 @@ import {
   validateAgreementInput,
   validateAssets,
   validateStatusTransition,
-} from '@/lib/agreement-validation'
+} from '@/lib/agreement/agreement-validation'
 
 describe('validateAgreementInput', () => {
   it('returns error when title is missing', () => {

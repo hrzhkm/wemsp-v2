@@ -5,7 +5,7 @@ import {
   canAccessAppRoute,
   getUnauthorizedRedirect,
   type AppRole,
-} from '@/lib/rbac'
+} from '@/lib/auth/rbac'
 
 describe('getRoleFromSession', () => {
   it('returns ADMIN when session user role is ADMIN', () => {

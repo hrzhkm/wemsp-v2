@@ -18,7 +18,7 @@ const mocks = vi.hoisted(() => ({
   getOnChainErrorMessage: vi.fn(),
 }))
 
-vi.mock('@/lib/auth', () => ({ auth: { api: { getSession: mocks.getSession } } }))
+vi.mock('@/lib/auth/auth', () => ({ auth: { api: { getSession: mocks.getSession } } }))
 vi.mock('@/db', () => ({
   prisma: {
     agreement: { findUnique: mocks.agreementFindUnique, update: mocks.agreementUpdate },
@@ -26,7 +26,7 @@ vi.mock('@/db', () => ({
     agreementBeneficiary: { update: mocks.beneficiaryUpdate, findMany: mocks.beneficiaryFindMany },
   },
 }))
-vi.mock('@/lib/contract', () => ({
+vi.mock('@/lib/blockchain/contract', () => ({
   isContractConfigured: mocks.isContractConfigured,
   ensureAgreementMinted: mocks.ensureAgreementMinted,
   getAgreementData: mocks.getAgreementData,

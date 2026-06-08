@@ -3,7 +3,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { Filter, Loader2, Plus, RefreshCcw, Search, Sparkles, UserCheck, UserX, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import type { FamilyRelationType } from '@/lib/family-types'
+import type { FamilyRelationType } from '@/lib/family/family-types'
 import type { FamilyMember } from '@/types/family'
 
 import { FamilyMembersTable } from '@/components/family/family-members-table'
@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/auth-client'
 import { useLanguage } from '@/lib/i18n/context'
 import { isRegisteredFamilyMember } from '@/types/family'
 

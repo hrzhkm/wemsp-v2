@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveAppGuard } from '@/lib/rbac'
+import { resolveAppGuard } from '@/lib/auth/rbac'
 
 describe('resolveAppGuard', () => {
   it('redirects a USER away from an admin route', () => {

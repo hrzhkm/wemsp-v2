@@ -11,7 +11,7 @@ import {
   Wallet2,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import type { AppRole } from '@/lib/rbac'
+import type { AppRole } from '@/lib/auth/rbac'
 
 export type NavSection = 'application' | 'account' | 'administration'
 

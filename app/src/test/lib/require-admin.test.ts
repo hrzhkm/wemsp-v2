@@ -4,11 +4,11 @@ const mocks = vi.hoisted(() => ({
   getSession: vi.fn(),
 }))
 
-vi.mock('@/lib/auth', () => ({
+vi.mock('@/lib/auth/auth', () => ({
   auth: { api: { getSession: mocks.getSession } },
 }))
 
-import { requireAdminFromHeaders } from '@/lib/admin-guard'
+import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
 
 describe('requireAdminFromHeaders', () => {
   beforeEach(() => vi.clearAllMocks())

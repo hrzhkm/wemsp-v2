@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
 import { AgreementStatus } from '@/generated/prisma/enums'
-import { canCancelAgreement, canComplete } from '@/lib/agreement-validation'
+import { canCancelAgreement, canComplete } from '@/lib/agreement/agreement-validation'
 
 export const Route = createFileRoute('/api/agreement/$id/status/$')({
   server: {

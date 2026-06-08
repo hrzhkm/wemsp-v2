@@ -20,10 +20,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth/auth-client"
 import { useLanguage } from "@/lib/i18n/context"
 import { getVisibleNavItems } from "@/components/app-nav-items"
-import { getRoleFromSession } from "@/lib/rbac"
+import { getRoleFromSession } from "@/lib/auth/rbac"
 
 export function AppSidebar() {
   const router = useRouter()
