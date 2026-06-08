@@ -25,14 +25,15 @@ const prisma = new PrismaClient({ adapter })
  * ADMIN_PASSWORD in the env and re-seeding actually updates the login password.
  */
 async function ensureAdminAccount() {
-  const email = (process.env.ADMIN_EMAIL || 'admin@wemsp.com').toLowerCase()
-  const password = process.env.ADMIN_PASSWORD || 'admin12345'
+  const email = process.env.ADMIN_EMAIL?.toLowerCase()
+  const password = process.env.ADMIN_PASSWORD
   const name = process.env.ADMIN_NAME || 'System Admin'
 
-  if (!process.env.ADMIN_PASSWORD) {
-    console.warn(
-      '⚠️  ADMIN_PASSWORD not set — using an insecure dev default. ' +
-        'Set ADMIN_PASSWORD (and ADMIN_EMAIL) before seeding anything beyond local dev.',
+  // Never fall back to predictable credentials: a seed run with missing env
+  // vars must fail loudly instead of provisioning a guessable ADMIN account.
+  if (!email || !password) {
+    throw new Error(
+      'ADMIN_EMAIL and ADMIN_PASSWORD must be set before running db:seed.',
     )
   }
 
@@ -43,14 +44,15 @@ async function ensureAdminAccount() {
       await auth.api.signUpEmail({ body: { email, password, name } })
       console.log(`✅ Created admin account: ${email}`)
     } catch (e) {
-      console.error(
-        '❌ Failed to create admin account via better-auth:',
-        e instanceof Error ? e.message : e,
-      )
-      return
+      // Don't swallow the failure: rethrow so main() exits non-zero instead
+      // of reporting success while admin provisioning actually failed.
+      const msg = e instanceof Error ? e.message : String(e)
+      throw new Error(`Failed to create admin account via better-auth: ${msg}`)
     }
   } else {
-    console.log(`ℹ️  Admin account ${email} already exists; syncing password, role, verification.`)
+    console.log(
+      `ℹ️  Admin account ${email} already exists; syncing password, role, verification.`,
+    )
   }
 
   await prisma.user.update({
@@ -65,7 +67,9 @@ async function ensureAdminAccount() {
   if (user) {
     const authContext = await (
       auth as unknown as {
-        $context: Promise<{ password: { hash: (plain: string) => Promise<string> } }>
+        $context: Promise<{
+          password: { hash: (plain: string) => Promise<string> }
+        }>
       }
     ).$context
     const hashedPassword = await authContext.password.hash(password)
@@ -81,7 +85,9 @@ async function ensureAdminAccount() {
     }
   }
 
-  console.log(`✅ ${email} is now ADMIN and email-verified (password login ready).`)
+  console.log(
+    `✅ ${email} is now ADMIN and email-verified (password login ready).`,
+  )
 }
 
 async function main() {
