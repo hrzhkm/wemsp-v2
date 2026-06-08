@@ -63,6 +63,7 @@ async function ensureAdminAccount() {
   // Re-sync the credential password to ADMIN_PASSWORD on every run, using
   // better-auth's own hasher so the stored hash verifies at login. This makes
   // the env value authoritative instead of only being set at creation time.
+  let credentialPasswordReady = false
   const user = await prisma.user.findUnique({ where: { email } })
   if (user) {
     const authContext = await (
@@ -82,11 +83,15 @@ async function ensureAdminAccount() {
         '⚠️  No credential account found to set the password on. ' +
           'The admin may only have a social (e.g. Google) account.',
       )
+    } else {
+      credentialPasswordReady = true
     }
   }
 
   console.log(
-    `✅ ${email} is now ADMIN and email-verified (password login ready).`,
+    credentialPasswordReady
+      ? `✅ ${email} is now ADMIN and email-verified (password login ready).`
+      : `✅ ${email} is now ADMIN and email-verified (no password login configured).`,
   )
 }
 
