@@ -2,7 +2,6 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../src/generated/prisma/client.js'
 
 import { auth } from '../src/lib/auth'
-import { parseAdminEmails } from '../src/lib/admin-allowlist'
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -59,30 +58,9 @@ async function ensureAdminAccount() {
   console.log(`✅ ${email} is now ADMIN and email-verified (password login ready).`)
 }
 
-/**
- * Promotes any already-registered users whose email is in the ADMIN_EMAILS
- * allowlist to ADMIN. Complements ensureAdminAccount() for additional admins
- * who signed up through the normal flow.
- */
-async function promoteAllowlistedAdmins() {
-  const adminEmails = parseAdminEmails(process.env.ADMIN_EMAILS)
-  if (adminEmails.length === 0) {
-    console.log('ℹ️  ADMIN_EMAILS is empty; no additional users promoted to ADMIN.')
-    return
-  }
-
-  const result = await prisma.user.updateMany({
-    where: { email: { in: adminEmails, mode: 'insensitive' } },
-    data: { role: 'ADMIN' },
-  })
-  console.log(`✅ Promoted ${result.count} allowlisted user(s) to ADMIN`)
-  console.log(`   Allowlist: ${adminEmails.join(', ')}`)
-}
-
 async function main() {
   console.log('🌱 Seeding database...')
   await ensureAdminAccount()
-  await promoteAllowlistedAdmins()
 }
 
 main()
