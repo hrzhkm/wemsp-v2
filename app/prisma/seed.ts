@@ -1,7 +1,7 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../src/generated/prisma/client.js'
 
-import { auth } from '../src/lib/auth'
+import { auth } from '../src/lib/auth/auth'
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
