@@ -20,7 +20,9 @@ const prisma = new PrismaClient({ adapter })
  * login) and promote `role` to ADMIN (the field is `input: false`, so it
  * cannot be set via the signup payload and must be elevated server-side).
  *
- * Idempotent: re-running only ensures role + verification on the existing user.
+ * Idempotent AND authoritative: on every run the credential-account password
+ * is re-synced to ADMIN_PASSWORD (using better-auth's own hasher), so changing
+ * ADMIN_PASSWORD in the env and re-seeding actually updates the login password.
  */
 async function ensureAdminAccount() {
   const email = (process.env.ADMIN_EMAIL || 'admin@wemsp.com').toLowerCase()
@@ -48,13 +50,37 @@ async function ensureAdminAccount() {
       return
     }
   } else {
-    console.log(`ℹ️  Admin account ${email} already exists; ensuring role + verification.`)
+    console.log(`ℹ️  Admin account ${email} already exists; syncing password, role, verification.`)
   }
 
   await prisma.user.update({
     where: { email },
     data: { role: 'ADMIN', emailVerified: true },
   })
+
+  // Re-sync the credential password to ADMIN_PASSWORD on every run, using
+  // better-auth's own hasher so the stored hash verifies at login. This makes
+  // the env value authoritative instead of only being set at creation time.
+  const user = await prisma.user.findUnique({ where: { email } })
+  if (user) {
+    const authContext = await (
+      auth as unknown as {
+        $context: Promise<{ password: { hash: (plain: string) => Promise<string> } }>
+      }
+    ).$context
+    const hashedPassword = await authContext.password.hash(password)
+    const result = await prisma.account.updateMany({
+      where: { userId: user.id, providerId: 'credential' },
+      data: { password: hashedPassword },
+    })
+    if (result.count === 0) {
+      console.warn(
+        '⚠️  No credential account found to set the password on. ' +
+          'The admin may only have a social (e.g. Google) account.',
+      )
+    }
+  }
+
   console.log(`✅ ${email} is now ADMIN and email-verified (password login ready).`)
 }
 
