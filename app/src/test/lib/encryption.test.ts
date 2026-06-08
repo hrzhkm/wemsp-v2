@@ -130,6 +130,23 @@ describe('encryption — Tier 2 FEK management', () => {
 
     expect(unwrapped.equals(fek)).toBe(true)
   })
+
+  it.each([['empty string', ''], ['only whitespace', '   \t \n  ']])(
+    'throws EMPTY_SECRET when wrapping with a %s secret',
+    (_label, secret) => {
+      expect(() => wrapFek(generateFek(), secret)).toThrowError(
+        expect.objectContaining({ code: 'EMPTY_SECRET' }),
+      )
+    },
+  )
+
+  it('throws EMPTY_SECRET (not UNWRAP_FAILED) when unwrapping with an empty secret', () => {
+    const wrapped = wrapFek(generateFek(), SECRET)
+
+    expect(() => unwrapFek(wrapped, '   ')).toThrowError(
+      expect.objectContaining({ code: 'EMPTY_SECRET' }),
+    )
+  })
 })
 
 describe('encryption — re-wrap on secret change', () => {

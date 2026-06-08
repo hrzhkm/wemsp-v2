@@ -39,6 +39,7 @@ export type EncryptionErrorCode =
   | 'INVALID_PAYLOAD'
   | 'DECRYPTION_FAILED'
   | 'UNWRAP_FAILED'
+  | 'EMPTY_SECRET'
 
 /**
  * Typed error so callers can branch on `code` without string matching.
@@ -139,7 +140,20 @@ export function generateFek(): Buffer {
  * user's answer do not break unwrapping. Applied identically on wrap and unwrap.
  */
 function normalizeSecret(secret: string): string {
-  return secret.normalize('NFKC').trim().replace(/\s+/g, ' ').toLowerCase()
+  const normalized = secret
+    .normalize('NFKC')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase()
+
+  if (normalized.length === 0) {
+    throw new EncryptionError(
+      'EMPTY_SECRET',
+      'Knowledge-factor secret is empty after normalization',
+    )
+  }
+
+  return normalized
 }
 
 /** Derive an ephemeral 32-byte wrapping key (KEK) from a secret and salt. */
