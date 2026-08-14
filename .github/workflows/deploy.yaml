@@ -29,9 +29,9 @@ jobs:
           VITE_APP_BASE_URL=${{ secrets.VITE_APP_BASE_URL }}
           EOF
 
-      - name: Write app/.env.local
+      - name: Write .env.local
         run: |
-          cat > app/.env.local << EOF
+          cat > .env.local << EOF
           DATABASE_URL=${{ secrets.DATABASE_URL }}
           BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}

@@ -8,13 +8,13 @@ RUN corepack enable
 WORKDIR /app
 
 # Copy package files
-COPY app/package.json app/pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
 # Copy source code
-COPY app/ ./
+COPY . ./
 
 # Build-time public env vars (inlined by Vite at build time)
 ARG VITE_API_BASE_URL
@@ -31,7 +31,7 @@ WORKDIR /app
 RUN corepack enable
 
 # Copy package files
-COPY app/package.json app/pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml ./
 
 # Install production dependencies only
 RUN pnpm install --frozen-lockfile --prod

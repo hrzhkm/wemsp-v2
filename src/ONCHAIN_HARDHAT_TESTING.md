@@ -2,7 +2,7 @@
 
 This guide explains how to run local on-chain testing for:
 - `wemsp-contract` (smart contract repo)
-- `wemsp-v2/app` (backend integration using `src/lib/contract.ts`)
+- `wemsp-v2` (backend integration using `src/lib/contract.ts`)
 
 ---
 
@@ -27,7 +27,7 @@ pnpm install
 ### App repo
 
 ```bash
-cd ~/.../wemsp-v2/app
+cd ~/.../wemsp-v2
 pnpm install
 ```
 
@@ -77,7 +77,7 @@ Capture deployed contract address from output, e.g.:
 
 ## 6) Run app integration smoke flow against local chain
 
-From `wemsp-v2/app`:
+From `wemsp-v2`:
 
 ```bash
 RPC_URL=http://127.0.0.1:8545 \
@@ -98,7 +98,7 @@ Expected behavior:
 
 ## 7) Run app test suite (includes on-chain route mocks)
 
-From `wemsp-v2/app`:
+From `wemsp-v2`:
 
 ```bash
 pnpm test

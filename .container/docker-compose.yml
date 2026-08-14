@@ -29,7 +29,7 @@ services:
     container_name: wemsp-app
     restart: unless-stopped
     env_file:
-    - ../app/.env.local
+    - ../.env.local
     ports:
     - "5050:3000"
     depends_on:

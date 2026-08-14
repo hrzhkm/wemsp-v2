@@ -1,0 +1,10 @@
+.git
+.github
+.container/.env
+.env
+.env.*
+!.env.example
+node_modules
+.output
+.vinxi
+.tanstack
