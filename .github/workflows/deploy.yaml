@@ -40,6 +40,9 @@ jobs:
           GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_APP_PASSWORD=${{ secrets.GOOGLE_APP_PASSWORD }}
           EMAIL_ADMIN=${{ secrets.EMAIL_ADMIN }}
+          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_NAME=${{ secrets.ADMIN_NAME }}
           AWS_REGION=${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -143,6 +146,9 @@ jobs:
           echo "Running Prisma migrations..."
           docker exec -e DATABASE_URL=${{ secrets.DATABASE_URL }} wemsp-app pnpm prisma migrate deploy
         continue-on-error: false
+
+      - name: Seed admin account
+        run: docker exec wemsp-app pnpm prisma db seed
 
       - name: Verify deployment
         run: |
