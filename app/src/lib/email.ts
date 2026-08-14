@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async (to: string, subject: string, text: string) => {
     const mailOptions = {
-        from: process.env.EMAIL_ADMIN,
+        from: process.env.EMAIL_FROM ?? process.env.EMAIL_ADMIN,
         to,
         subject,
         text,
