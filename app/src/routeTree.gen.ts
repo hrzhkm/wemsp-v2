@@ -58,6 +58,7 @@ import { Route as ApiAdminAgreementsSplatRouteImport } from './routes/api/admin/
 import { Route as AppAdminAgreementsSignByIcIndexRouteImport } from './routes/app/admin/agreements/sign-by-ic/index'
 import { Route as AppAdminAgreementsPendingWitnessIndexRouteImport } from './routes/app/admin/agreements/pending-witness/index'
 import { Route as ApiAgreementIdStatusSplatRouteImport } from './routes/api/agreement/$id/status/$'
+import { Route as ApiAgreementIdDocumentSplatRouteImport } from './routes/api/agreement/$id/document/$'
 import { Route as ApiAgreementIdBeneficiariesSplatRouteImport } from './routes/api/agreement/$id/beneficiaries/$'
 import { Route as ApiAgreementIdAssetsSplatRouteImport } from './routes/api/agreement/$id/assets/$'
 import { Route as ApiAgentConversationsIdSplatRouteImport } from './routes/api/agent/conversations/$id/$'
@@ -320,6 +321,12 @@ const ApiAgreementIdStatusSplatRoute =
     path: '/api/agreement/$id/status/$',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAgreementIdDocumentSplatRoute =
+  ApiAgreementIdDocumentSplatRouteImport.update({
+    id: '/api/agreement/$id/document/$',
+    path: '/api/agreement/$id/document/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAgreementIdBeneficiariesSplatRoute =
   ApiAgreementIdBeneficiariesSplatRouteImport.update({
     id: '/api/agreement/$id/beneficiaries/$',
@@ -434,6 +441,7 @@ export interface FileRoutesByFullPath {
   '/api/agent/conversations/$id/$': typeof ApiAgentConversationsIdSplatRoute
   '/api/agreement/$id/assets/$': typeof ApiAgreementIdAssetsSplatRoute
   '/api/agreement/$id/beneficiaries/$': typeof ApiAgreementIdBeneficiariesSplatRoute
+  '/api/agreement/$id/document/$': typeof ApiAgreementIdDocumentSplatRoute
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic': typeof AppAdminAgreementsSignByIcIndexRoute
@@ -495,6 +503,7 @@ export interface FileRoutesByTo {
   '/api/agent/conversations/$id/$': typeof ApiAgentConversationsIdSplatRoute
   '/api/agreement/$id/assets/$': typeof ApiAgreementIdAssetsSplatRoute
   '/api/agreement/$id/beneficiaries/$': typeof ApiAgreementIdBeneficiariesSplatRoute
+  '/api/agreement/$id/document/$': typeof ApiAgreementIdDocumentSplatRoute
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic': typeof AppAdminAgreementsSignByIcIndexRoute
@@ -557,6 +566,7 @@ export interface FileRoutesById {
   '/api/agent/conversations/$id/$': typeof ApiAgentConversationsIdSplatRoute
   '/api/agreement/$id/assets/$': typeof ApiAgreementIdAssetsSplatRoute
   '/api/agreement/$id/beneficiaries/$': typeof ApiAgreementIdBeneficiariesSplatRoute
+  '/api/agreement/$id/document/$': typeof ApiAgreementIdDocumentSplatRoute
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness/': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic/': typeof AppAdminAgreementsSignByIcIndexRoute
@@ -620,6 +630,7 @@ export interface FileRouteTypes {
     | '/api/agent/conversations/$id/$'
     | '/api/agreement/$id/assets/$'
     | '/api/agreement/$id/beneficiaries/$'
+    | '/api/agreement/$id/document/$'
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness'
     | '/app/admin/agreements/sign-by-ic'
@@ -681,6 +692,7 @@ export interface FileRouteTypes {
     | '/api/agent/conversations/$id/$'
     | '/api/agreement/$id/assets/$'
     | '/api/agreement/$id/beneficiaries/$'
+    | '/api/agreement/$id/document/$'
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness'
     | '/app/admin/agreements/sign-by-ic'
@@ -742,6 +754,7 @@ export interface FileRouteTypes {
     | '/api/agent/conversations/$id/$'
     | '/api/agreement/$id/assets/$'
     | '/api/agreement/$id/beneficiaries/$'
+    | '/api/agreement/$id/document/$'
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness/'
     | '/app/admin/agreements/sign-by-ic/'
@@ -779,6 +792,7 @@ export interface RootRouteChildren {
   ApiAgentConversationsIdSplatRoute: typeof ApiAgentConversationsIdSplatRoute
   ApiAgreementIdAssetsSplatRoute: typeof ApiAgreementIdAssetsSplatRoute
   ApiAgreementIdBeneficiariesSplatRoute: typeof ApiAgreementIdBeneficiariesSplatRoute
+  ApiAgreementIdDocumentSplatRoute: typeof ApiAgreementIdDocumentSplatRoute
   ApiAgreementIdStatusSplatRoute: typeof ApiAgreementIdStatusSplatRoute
   ApiAdminAgreementsByIcIcNumberSplatRoute: typeof ApiAdminAgreementsByIcIcNumberSplatRoute
   ApiAgreementIdSignBeneficiarySplatRoute: typeof ApiAgreementIdSignBeneficiarySplatRoute
@@ -1131,6 +1145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgreementIdStatusSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/agreement/$id/document/$': {
+      id: '/api/agreement/$id/document/$'
+      path: '/api/agreement/$id/document/$'
+      fullPath: '/api/agreement/$id/document/$'
+      preLoaderRoute: typeof ApiAgreementIdDocumentSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/agreement/$id/beneficiaries/$': {
       id: '/api/agreement/$id/beneficiaries/$'
       path: '/api/agreement/$id/beneficiaries/$'
@@ -1298,6 +1319,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAgentConversationsIdSplatRoute: ApiAgentConversationsIdSplatRoute,
   ApiAgreementIdAssetsSplatRoute: ApiAgreementIdAssetsSplatRoute,
   ApiAgreementIdBeneficiariesSplatRoute: ApiAgreementIdBeneficiariesSplatRoute,
+  ApiAgreementIdDocumentSplatRoute: ApiAgreementIdDocumentSplatRoute,
   ApiAgreementIdStatusSplatRoute: ApiAgreementIdStatusSplatRoute,
   ApiAdminAgreementsByIcIcNumberSplatRoute:
     ApiAdminAgreementsByIcIcNumberSplatRoute,
