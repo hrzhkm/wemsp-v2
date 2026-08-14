@@ -63,21 +63,15 @@ jobs:
     needs: setup
 
     steps:
-      - name: Stop existing containers
-        run: |
-          cd .container
-          docker compose down || true
-        continue-on-error: true
-
-      - name: Clean up unused Docker resources
-        run: |
-          docker system prune -f --volumes || true
-        continue-on-error: true
-
       - name: Build Docker images
         run: |
           cd .container
-          docker compose build --no-cache
+          for attempt in 1 2 3; do
+            docker compose build --no-cache && exit 0
+            echo "Docker build attempt $attempt failed; retrying in 15 seconds..."
+            sleep 15
+          done
+          exit 1
 
   docker-start:
     name: Start Services
@@ -201,9 +195,3 @@ jobs:
           echo "==================================="
           docker network ls
           docker network inspect .container_wemsp-network || true
-
-      - name: Cleanup on failure
-        run: |
-          cd .container
-          docker compose down
-        continue-on-error: true
