@@ -39,6 +39,9 @@ RUN pnpm install --frozen-lockfile --prod
 # Copy prisma schema, config and migrations (needed for migrate deploy at runtime)
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
+COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/src/lib/auth/auth.ts ./src/lib/auth/auth.ts
+COPY --from=builder /app/src/lib/email.ts ./src/lib/email.ts
 
 # Regenerate Prisma client for production runtime
 RUN pnpm prisma generate
