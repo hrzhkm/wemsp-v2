@@ -22,7 +22,10 @@ const config = defineConfig({
   optimizeDeps: {
     exclude: ['@prisma/client', '@prisma/adapter-pg'],
   },
+  // Keep pdfkit and its bundled font data external so they load from
+  // node_modules at runtime (the production image ships them as deps).
   resolve: {
+    external: ['pdfkit', '@fontpkg/unifont'],
     alias: {
       // Prevent Node.js built-ins from being bundled
       'node:': 'null',
