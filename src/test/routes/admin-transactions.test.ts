@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@/lib/auth/adminGuard', () => ({
   requireAdminFromHeaders: mocks.requireAdminFromHeaders,
 }))
-vi.mock('@/lib/blockchain/agreementEvents', () => ({
+vi.mock('@/lib/blockchain/agreementSubgraph', () => ({
   getAllContractEvents: mocks.getAllContractEvents,
 }))
 vi.mock('@/db', () => ({

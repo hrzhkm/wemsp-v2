@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
 import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
 import { corsHeaders } from '@/lib/cors'
-import { getAllContractEvents } from '@/lib/blockchain/agreementEvents'
+import { getAllContractEvents } from '@/lib/blockchain/agreementSubgraph'
 
 export interface AdminTransactionEvent {
   type: string

@@ -60,6 +60,7 @@ describe('getAgreementOnChainEvents', () => {
   it('returns an empty list when no logs match', async () => {
     mocks.getProvider.mockReturnValue({
       getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
+      getBlockNumber: vi.fn().mockResolvedValue(100),
       getLogs: vi.fn().mockResolvedValue([]),
       getBlock: vi.fn(),
     })
@@ -78,6 +79,7 @@ describe('getAgreementOnChainEvents', () => {
     ]
     mocks.getProvider.mockReturnValue({
       getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
+      getBlockNumber: vi.fn().mockResolvedValue(103),
       getLogs: vi.fn().mockResolvedValue(logs),
       getBlock: vi
         .fn()
@@ -89,7 +91,7 @@ describe('getAgreementOnChainEvents', () => {
     const events = await getAgreementOnChainEvents(5, '0xmint')
 
     expect(mocks.getProvider().getLogs).toHaveBeenCalledWith(
-      expect.objectContaining({ fromBlock: 100, toBlock: 'latest' }),
+      expect.objectContaining({ fromBlock: 100, toBlock: 103 }),
     )
     expect(events).toHaveLength(4)
     expect(events.map((e) => e.type)).toEqual([
@@ -109,6 +111,7 @@ describe('getAgreementOnChainEvents', () => {
   it('falls back to the secondary provider when eth_getLogs hits a range limit', async () => {
     const primary = {
       getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
+      getBlockNumber: vi.fn().mockResolvedValue(101),
       getLogs: vi
         .fn()
         .mockRejectedValue(
@@ -120,6 +123,7 @@ describe('getAgreementOnChainEvents', () => {
     }
     const fallback = {
       getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
+      getBlockNumber: vi.fn().mockResolvedValue(101),
       getLogs: vi
         .fn()
         .mockResolvedValue([
@@ -146,6 +150,7 @@ describe('getAgreementOnChainEvents', () => {
     )
     mocks.getProvider.mockReturnValue({
       getTransactionReceipt: vi.fn().mockResolvedValue(null),
+      getBlockNumber: vi.fn().mockResolvedValue(200),
       getLogs: vi
         .fn()
         .mockResolvedValueOnce([mintLog])
@@ -161,6 +166,41 @@ describe('getAgreementOnChainEvents', () => {
       iface.getEvent('AgreementMinted').topicHash,
     )
     expect(calls[1][0].fromBlock).toBe(200)
+  })
+
+  it('pages through windows when the scan spans more than the log range limit', async () => {
+    mocks.getProvider.mockReturnValue({
+      getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
+      getBlockNumber: vi.fn().mockResolvedValue(25000),
+      getLogs: vi
+        .fn()
+        .mockImplementation((params: { fromBlock: number; toBlock: number }) =>
+          Promise.resolve(
+            params.fromBlock === 100
+              ? [makeLog('OwnerSigned', [5, 1700000000], 100, '0xowner')]
+              : params.fromBlock === 10100
+                ? [makeLog('WitnessSigned', [5, 1700000200], 25000, '0xwit')]
+                : [],
+          ),
+        ),
+      getBlock: vi
+        .fn()
+        .mockImplementation((n: number) =>
+          Promise.resolve({ timestamp: 1700000000 + n }),
+        ),
+    })
+
+    const events = await getAgreementOnChainEvents(5, '0xmint')
+
+    expect(events).toHaveLength(2)
+    const calls = mocks.getProvider().getLogs.mock.calls
+    expect(calls).toHaveLength(3)
+    expect(calls[0][0].fromBlock).toBe(100)
+    expect(calls[0][0].toBlock).toBe(10099)
+    expect(calls[1][0].fromBlock).toBe(10100)
+    expect(calls[1][0].toBlock).toBe(20099)
+    expect(calls[2][0].fromBlock).toBe(20100)
+    expect(calls[2][0].toBlock).toBe(25000)
   })
 })
 
@@ -178,6 +218,7 @@ describe('getAllContractEvents', () => {
 
   it('returns an empty list when the contract has no events', async () => {
     mocks.getProvider.mockReturnValue({
+      getBlockNumber: vi.fn().mockResolvedValue(100),
       getLogs: vi.fn().mockResolvedValue([]),
       getBlock: vi.fn(),
     })
@@ -185,7 +226,7 @@ describe('getAllContractEvents', () => {
     const events = await getAllContractEvents()
     expect(events).toEqual([])
     expect(mocks.getProvider().getLogs).toHaveBeenCalledWith(
-      expect.objectContaining({ fromBlock: 0, toBlock: 'latest' }),
+      expect.objectContaining({ fromBlock: 0, toBlock: 100 }),
     )
   })
 
@@ -198,6 +239,7 @@ describe('getAllContractEvents', () => {
       makeLog('AgreementFinalized', [2, 1700000400], 104, '0xfin2'),
     ]
     mocks.getProvider.mockReturnValue({
+      getBlockNumber: vi.fn().mockResolvedValue(104),
       getLogs: vi.fn().mockResolvedValue(logs),
       getBlock: vi
         .fn()
@@ -232,6 +274,7 @@ describe('getAllContractEvents', () => {
 
   it('falls back to the secondary provider when eth_getLogs hits a range limit', async () => {
     const primary = {
+      getBlockNumber: vi.fn().mockResolvedValue(101),
       getLogs: vi
         .fn()
         .mockRejectedValue(
@@ -242,6 +285,7 @@ describe('getAllContractEvents', () => {
       getBlock: vi.fn(),
     }
     const fallback = {
+      getBlockNumber: vi.fn().mockResolvedValue(101),
       getLogs: vi
         .fn()
         .mockResolvedValue([

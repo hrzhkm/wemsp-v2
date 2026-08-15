@@ -8,6 +8,7 @@ import {
   isTransientError,
   withRetry,
 } from './contract'
+import type { Log } from 'ethers'
 
 export interface AgreementOnChainEvent {
   type: string
@@ -62,6 +63,35 @@ async function withProviderFallback<T>(
   }
 }
 
+// RPC providers cap eth_getLogs to a bounded block range (e.g. 10000 blocks
+// on many nodes). Scan the log in windows so the request never exceeds it.
+const LOG_RANGE_LIMIT = 10000
+
+async function fetchLogsChunked(
+  topics: Array<Array<string>>,
+  fromBlock: number,
+): Promise<Array<Log>> {
+  const latest = await withProviderFallback((provider) =>
+    provider.getBlockNumber(),
+  )
+  const logs: Array<Log> = []
+  let cursor = fromBlock
+  while (cursor <= latest) {
+    const toBlock = Math.min(cursor + LOG_RANGE_LIMIT - 1, latest)
+    const batch = await withProviderFallback((provider) =>
+      provider.getLogs({
+        address: getContractAddress(),
+        topics,
+        fromBlock: cursor,
+        toBlock,
+      }),
+    )
+    logs.push(...batch)
+    cursor = toBlock + 1
+  }
+  return logs
+}
+
 async function resolveFromBlock(
   tokenId: number,
   mintTxHash?: string | null,
@@ -76,16 +106,9 @@ async function resolveFromBlock(
   }
 
   // Fallback: locate the block of the AgreementMinted event for this token.
-  const logs = await withProviderFallback((provider) =>
-    provider.getLogs({
-      address: getContractAddress(),
-      topics: [
-        iface.getEvent('AgreementMinted').topicHash,
-        toBeHex(tokenId, 32),
-      ],
-      fromBlock: 0,
-      toBlock: 'latest',
-    }),
+  const logs = await fetchLogsChunked(
+    [iface.getEvent('AgreementMinted').topicHash, toBeHex(tokenId, 32)],
+    0,
   )
   if (logs.length > 0) {
     return logs[0].blockNumber
@@ -108,14 +131,7 @@ export async function getAgreementOnChainEvents(
     toBeHex(tokenId, 32),
   ]
 
-  const logs = await withProviderFallback((provider) =>
-    provider.getLogs({
-      address: getContractAddress(),
-      topics,
-      fromBlock,
-      toBlock: 'latest',
-    }),
-  )
+  const logs = await fetchLogsChunked(topics, fromBlock)
 
   const blockTimestamps = new Map<number, number>()
   const events: Array<AgreementOnChainEvent> = []
@@ -173,14 +189,7 @@ export async function getAllContractEvents(): Promise<
 > {
   const topics = [EVENT_TYPES.map((name) => iface.getEvent(name).topicHash)]
 
-  const logs = await withProviderFallback((provider) =>
-    provider.getLogs({
-      address: getContractAddress(),
-      topics,
-      fromBlock: 0,
-      toBlock: 'latest',
-    }),
-  )
+  const logs = await fetchLogsChunked(topics, 0)
 
   const blockTimestamps = new Map<number, number>()
   const events: Array<AgreementOnChainEvent> = []
