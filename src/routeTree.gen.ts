@@ -57,6 +57,7 @@ import { Route as ApiAdminAgreementsSplatRouteImport } from './routes/api/admin/
 import { Route as AppAdminAgreementsSignByIcIndexRouteImport } from './routes/app/admin/agreements/sign-by-ic/index'
 import { Route as AppAdminAgreementsPendingWitnessIndexRouteImport } from './routes/app/admin/agreements/pending-witness/index'
 import { Route as ApiAgreementIdStatusSplatRouteImport } from './routes/api/agreement/$id/status/$'
+import { Route as ApiAgreementIdHistorySplatRouteImport } from './routes/api/agreement/$id/history/$'
 import { Route as ApiAgreementIdDocumentSplatRouteImport } from './routes/api/agreement/$id/document/$'
 import { Route as ApiAgreementIdBeneficiariesSplatRouteImport } from './routes/api/agreement/$id/beneficiaries/$'
 import { Route as ApiAgreementIdAssetsSplatRouteImport } from './routes/api/agreement/$id/assets/$'
@@ -317,6 +318,12 @@ const ApiAgreementIdStatusSplatRoute =
     path: '/api/agreement/$id/status/$',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAgreementIdHistorySplatRoute =
+  ApiAgreementIdHistorySplatRouteImport.update({
+    id: '/api/agreement/$id/history/$',
+    path: '/api/agreement/$id/history/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAgreementIdDocumentSplatRoute =
   ApiAgreementIdDocumentSplatRouteImport.update({
     id: '/api/agreement/$id/document/$',
@@ -443,6 +450,7 @@ export interface FileRoutesByFullPath {
   '/api/agreement/$id/assets/$': typeof ApiAgreementIdAssetsSplatRoute
   '/api/agreement/$id/beneficiaries/$': typeof ApiAgreementIdBeneficiariesSplatRoute
   '/api/agreement/$id/document/$': typeof ApiAgreementIdDocumentSplatRoute
+  '/api/agreement/$id/history/$': typeof ApiAgreementIdHistorySplatRoute
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic': typeof AppAdminAgreementsSignByIcIndexRoute
@@ -505,6 +513,7 @@ export interface FileRoutesByTo {
   '/api/agreement/$id/assets/$': typeof ApiAgreementIdAssetsSplatRoute
   '/api/agreement/$id/beneficiaries/$': typeof ApiAgreementIdBeneficiariesSplatRoute
   '/api/agreement/$id/document/$': typeof ApiAgreementIdDocumentSplatRoute
+  '/api/agreement/$id/history/$': typeof ApiAgreementIdHistorySplatRoute
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic': typeof AppAdminAgreementsSignByIcIndexRoute
@@ -568,6 +577,7 @@ export interface FileRoutesById {
   '/api/agreement/$id/assets/$': typeof ApiAgreementIdAssetsSplatRoute
   '/api/agreement/$id/beneficiaries/$': typeof ApiAgreementIdBeneficiariesSplatRoute
   '/api/agreement/$id/document/$': typeof ApiAgreementIdDocumentSplatRoute
+  '/api/agreement/$id/history/$': typeof ApiAgreementIdHistorySplatRoute
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness/': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic/': typeof AppAdminAgreementsSignByIcIndexRoute
@@ -632,6 +642,7 @@ export interface FileRouteTypes {
     | '/api/agreement/$id/assets/$'
     | '/api/agreement/$id/beneficiaries/$'
     | '/api/agreement/$id/document/$'
+    | '/api/agreement/$id/history/$'
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness'
     | '/app/admin/agreements/sign-by-ic'
@@ -694,6 +705,7 @@ export interface FileRouteTypes {
     | '/api/agreement/$id/assets/$'
     | '/api/agreement/$id/beneficiaries/$'
     | '/api/agreement/$id/document/$'
+    | '/api/agreement/$id/history/$'
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness'
     | '/app/admin/agreements/sign-by-ic'
@@ -756,6 +768,7 @@ export interface FileRouteTypes {
     | '/api/agreement/$id/assets/$'
     | '/api/agreement/$id/beneficiaries/$'
     | '/api/agreement/$id/document/$'
+    | '/api/agreement/$id/history/$'
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness/'
     | '/app/admin/agreements/sign-by-ic/'
@@ -794,6 +807,7 @@ export interface RootRouteChildren {
   ApiAgreementIdAssetsSplatRoute: typeof ApiAgreementIdAssetsSplatRoute
   ApiAgreementIdBeneficiariesSplatRoute: typeof ApiAgreementIdBeneficiariesSplatRoute
   ApiAgreementIdDocumentSplatRoute: typeof ApiAgreementIdDocumentSplatRoute
+  ApiAgreementIdHistorySplatRoute: typeof ApiAgreementIdHistorySplatRoute
   ApiAgreementIdStatusSplatRoute: typeof ApiAgreementIdStatusSplatRoute
   ApiAdminAgreementsIdReconcileSplatRoute: typeof ApiAdminAgreementsIdReconcileSplatRoute
   ApiAdminAgreementsByIcIcNumberSplatRoute: typeof ApiAdminAgreementsByIcIcNumberSplatRoute
@@ -1140,6 +1154,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgreementIdStatusSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/agreement/$id/history/$': {
+      id: '/api/agreement/$id/history/$'
+      path: '/api/agreement/$id/history/$'
+      fullPath: '/api/agreement/$id/history/$'
+      preLoaderRoute: typeof ApiAgreementIdHistorySplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/agreement/$id/document/$': {
       id: '/api/agreement/$id/document/$'
       path: '/api/agreement/$id/document/$'
@@ -1321,6 +1342,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAgreementIdAssetsSplatRoute: ApiAgreementIdAssetsSplatRoute,
   ApiAgreementIdBeneficiariesSplatRoute: ApiAgreementIdBeneficiariesSplatRoute,
   ApiAgreementIdDocumentSplatRoute: ApiAgreementIdDocumentSplatRoute,
+  ApiAgreementIdHistorySplatRoute: ApiAgreementIdHistorySplatRoute,
   ApiAgreementIdStatusSplatRoute: ApiAgreementIdStatusSplatRoute,
   ApiAdminAgreementsIdReconcileSplatRoute:
     ApiAdminAgreementsIdReconcileSplatRoute,

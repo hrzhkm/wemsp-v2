@@ -95,7 +95,7 @@ export interface BeneficiarySignatureStatus {
  * whole provider until restart. Instead we retry transient errors and, for
  * reads only, fall back to the secondary RPC via readWithFallback.
  */
-function getProvider(): JsonRpcProvider {
+export function getProvider(): JsonRpcProvider {
 	if (!RPC_URL) {
 		throw new Error('RPC_URL environment variable is not set')
 	}
@@ -106,7 +106,7 @@ function getProvider(): JsonRpcProvider {
 	return _provider
 }
 
-function getFallbackProvider(): JsonRpcProvider | null {
+export function getFallbackProvider(): JsonRpcProvider | null {
 	if (!RPC_URL_FALLBACK) {
 		return null
 	}
