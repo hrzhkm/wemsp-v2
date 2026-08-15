@@ -1,8 +1,10 @@
 import { prisma } from '@/db'
 import {
+  finalizeAgreement,
   getAgreementData,
   getBeneficiarySignatureStatus,
   getContractAddress,
+  getOnChainErrorMessage,
   getOnChainTimestampDate,
   getTokenIdByAgreementId,
   getTokenURI,
@@ -87,6 +89,22 @@ export async function reconcileAgreement(
 
   if (Object.keys(data).length > 0) {
     await prisma.agreement.update({ where: { id: agreementId }, data })
+  }
+
+  // Repair drift where the contract is fully signed but not yet finalized
+  // (e.g. the finalize read raced with the witness confirmation).
+  const fullySigned =
+    onChain.ownerSigned &&
+    onChain.witnessSigned &&
+    onChain.signedCount === onChain.beneficiaryCount
+  if (fullySigned && !onChain.isFinalized) {
+    await finalizeAgreement(tokenId).catch((error) => {
+      const message = getOnChainErrorMessage(error)
+      if (!message.includes('AgreementAlreadyFinalized')) {
+        throw error
+      }
+    })
+    updatedFields.push('finalized')
   }
 
   for (const beneficiary of agreement.beneficiaries) {

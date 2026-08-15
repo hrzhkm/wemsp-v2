@@ -11,6 +11,8 @@ const mocks = vi.hoisted(() => ({
   getBeneficiarySignatureStatus: vi.fn(),
   getContractAddress: vi.fn(),
   getTokenURI: vi.fn(),
+  finalizeAgreement: vi.fn(),
+  getOnChainErrorMessage: vi.fn(),
 }))
 
 vi.mock('@/db', () => ({
@@ -31,6 +33,8 @@ vi.mock('@/lib/blockchain/contract', () => ({
   getBeneficiarySignatureStatus: mocks.getBeneficiarySignatureStatus,
   getContractAddress: mocks.getContractAddress,
   getTokenURI: mocks.getTokenURI,
+  finalizeAgreement: mocks.finalizeAgreement,
+  getOnChainErrorMessage: mocks.getOnChainErrorMessage,
   getOnChainTimestampDate: (timestamp: number) =>
     new Date((timestamp > 0 ? timestamp : Math.floor(Date.now() / 1000)) * 1000),
 }))
@@ -105,6 +109,35 @@ describe('reconcileAgreement', () => {
     expect(result.updatedFields).toContain('tokenId')
     expect(result.updatedFields).toContain('status')
     expect(result.updatedFields).toContain('beneficiary:ben_1')
+  })
+
+  it('finalizes on-chain when fully signed but not yet finalized', async () => {
+    mocks.findAgreement.mockResolvedValueOnce(
+      agreementFixture({
+        tokenId: 5,
+        contractAddress: '0xcontract',
+        metadataUri: 'ipfs://bafy',
+        ownerHasSigned: true,
+        witnessedAt: new Date('2026-01-01T00:00:00Z'),
+        status: 'ACTIVE',
+        beneficiaries: [{ id: 'ben_1', hasSigned: true }],
+      }),
+    )
+    mocks.getAgreementData.mockResolvedValueOnce({
+      ownerSigned: true,
+      ownerSignedAt: 1700000000,
+      witnessSigned: true,
+      witnessedAt: 1700000100,
+      isFinalized: false,
+      signedCount: 1,
+      beneficiaryCount: 1,
+    })
+    mocks.finalizeAgreement.mockResolvedValueOnce({ txHash: '0xfin' })
+
+    const result = await reconcileAgreement('agr_1')
+
+    expect(mocks.finalizeAgreement).toHaveBeenCalledWith(5)
+    expect(result.updatedFields).toContain('finalized')
   })
 
   it('does not overwrite already-consistent state', async () => {

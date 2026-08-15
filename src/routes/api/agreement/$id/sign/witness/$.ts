@@ -115,7 +115,13 @@ export const witnessSignHandlers = {
       }
 
       let finalizeTxHash: string | null = null
-      const fullySigned = await isAgreementFullySigned(tokenId)
+      // The witness tx was just confirmed; a quorum-1 provider read can race
+      // with it, so re-check isFullySigned briefly before finalizing.
+      let fullySigned = await isAgreementFullySigned(tokenId)
+      for (let attempt = 0; attempt < 5 && !fullySigned; attempt++) {
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        fullySigned = await isAgreementFullySigned(tokenId)
+      }
       if (fullySigned) {
         try {
           const finalizeResult = await finalizeAgreement(tokenId)
