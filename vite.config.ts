@@ -9,7 +9,11 @@ import { nitro } from 'nitro/vite'
 const config = defineConfig({
   plugins: [
     devtools(),
-    nitro(),
+    nitro({
+      externals: {
+        noTrace: true,
+      },
+    }),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
@@ -22,8 +26,8 @@ const config = defineConfig({
   optimizeDeps: {
     exclude: ['@prisma/client', '@prisma/adapter-pg'],
   },
-  // Keep pdfkit and its bundled font data external so they load from
-  // node_modules at runtime (the production image ships them as deps).
+  // Keep pdfkit and its font data external (loads from node_modules at
+  // runtime) so the production image can resolve its bundled .afm/.ttf data.
   resolve: {
     external: ['pdfkit', '@fontpkg/unifont'],
     alias: {
