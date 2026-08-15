@@ -66,7 +66,11 @@ describe('agreementHistoryHandlers.GET', () => {
   it('returns an empty event list for an unminted agreement', async () => {
     mocks.getSession.mockResolvedValueOnce({ user: { id: 'u1' } })
     mocks.findUser.mockResolvedValueOnce({ id: 'u1', role: 'USER' })
-    mocks.findAgreement.mockResolvedValueOnce({ id: 'agr_1', tokenId: null, mintTxHash: null })
+    mocks.findAgreement.mockResolvedValueOnce({
+      id: 'agr_1',
+      tokenId: null,
+      mintTxHash: null,
+    })
 
     const response = await agreementHistoryHandlers.GET({
       request: new Request('http://localhost/api/agreement/agr_1/history'),
@@ -89,7 +93,12 @@ describe('agreementHistoryHandlers.GET', () => {
       mintTxHash: '0xmint',
     })
     mocks.getAgreementOnChainEvents.mockResolvedValueOnce([
-      { type: 'AgreementMinted', label: 'Agreement NFT minted', txHash: '0xmint', blockNumber: 5 },
+      {
+        type: 'AgreementMinted',
+        label: 'Agreement NFT minted',
+        txHash: '0xmint',
+        blockNumber: 5,
+      },
     ])
 
     const response = await agreementHistoryHandlers.GET({

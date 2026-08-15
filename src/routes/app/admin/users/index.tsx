@@ -1,4 +1,14 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import { useEffect, useState } from 'react'
+import {
+  Loader2,
+  PencilIcon,
+  PlusIcon,
+  SearchIcon,
+  TrashIcon,
+  Users,
+} from 'lucide-react'
 import { getAdminSession } from '@/middleware'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,16 +36,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { toast } from 'sonner'
-import { useState, useEffect } from 'react'
-import {
-  PencilIcon,
-  TrashIcon,
-  PlusIcon,
-  SearchIcon,
-  Loader2,
-  Users,
-} from 'lucide-react'
 
 interface User {
   id: string
@@ -56,7 +56,7 @@ interface User {
 }
 
 interface UsersResponse {
-  users: User[]
+  users: Array<User>
   pagination: {
     page: number
     limit: number
@@ -114,16 +114,16 @@ interface Agreement {
   status: string
   createdAt: string
   updatedAt: string
-  assets: AgreementAsset[]
-  beneficiaries: Beneficiary[]
+  assets: Array<AgreementAsset>
+  beneficiaries: Array<Beneficiary>
 }
 
 interface UserDetails {
   id: string
   name: string
   email: string
-  assets: Asset[]
-  agreements: Agreement[]
+  assets: Array<Asset>
+  agreements: Array<Agreement>
 }
 
 export const Route = createFileRoute('/app/admin/users/')({
@@ -138,7 +138,7 @@ export const Route = createFileRoute('/app/admin/users/')({
 })
 
 function RouteComponent() {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<Array<User>>([])
   const [loading, setLoading] = useState(true)
   const [pagination, setPagination] = useState({
     page: 1,
@@ -156,7 +156,9 @@ function RouteComponent() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null)
   const [detailsLoading, setDetailsLoading] = useState(false)
-  const [selectedAgreement, setSelectedAgreement] = useState<Agreement | null>(null)
+  const [selectedAgreement, setSelectedAgreement] = useState<Agreement | null>(
+    null,
+  )
 
   // Form states
   const [createForm, setCreateForm] = useState({
@@ -228,7 +230,13 @@ function RouteComponent() {
       if (response.ok) {
         toast.success('User created successfully')
         setCreateDialogOpen(false)
-        setCreateForm({ name: '', email: '', icNumber: '', phoneNumber: '', address: '' })
+        setCreateForm({
+          name: '',
+          email: '',
+          icNumber: '',
+          phoneNumber: '',
+          address: '',
+        })
         fetchUsers(pagination.page, searchQuery)
       } else {
         const error = await response.json()
@@ -309,7 +317,10 @@ function RouteComponent() {
   }
 
   // View user details handlers
-  const openDetailsDialog = async (user: User, _view: 'agreements' | 'assets') => {
+  const openDetailsDialog = async (
+    user: User,
+    _view: 'agreements' | 'assets',
+  ) => {
     setSelectedUser(user)
     setDetailsDialogOpen(true)
     setDetailsLoading(true)
@@ -337,189 +348,194 @@ function RouteComponent() {
 
   return (
     <div className="space-y-4">
-          {/* Page Header */}
-          <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
-            <CardHeader className="gap-4">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
-                    <Users className="h-3.5 w-3.5" />
-                    User Management
-                  </div>
-                  <CardTitle className="text-xl">Users</CardTitle>
-                  <CardDescription className="mt-1">
-                    Manage user accounts, view details, and perform CRUD operations.
-                  </CardDescription>
-                </div>
-                <Button onClick={() => setCreateDialogOpen(true)} className="w-full sm:w-auto">
-                  <PlusIcon className="h-4 w-4" />
-                  New User
-                </Button>
+      {/* Page Header */}
+      <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
+        <CardHeader className="gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
+                <Users className="h-3.5 w-3.5" />
+                User Management
               </div>
-            </CardHeader>
-          </Card>
+              <CardTitle className="text-xl">Users</CardTitle>
+              <CardDescription className="mt-1">
+                Manage user accounts, view details, and perform CRUD operations.
+              </CardDescription>
+            </div>
+            <Button
+              onClick={() => setCreateDialogOpen(true)}
+              className="w-full sm:w-auto"
+            >
+              <PlusIcon className="h-4 w-4" />
+              New User
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
 
-          {/* Users Table */}
-          <Card className="border-border/70">
-            <CardHeader>
-              <div className="flex items-center gap-2 max-w-md">
-                <div className="relative flex-1">
-                  <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Search by name, email, or IC..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    className="pl-9"
-                  />
-                </div>
-                <Button onClick={handleSearch} size="icon" variant="outline">
-                  <SearchIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-            <Table>
-              <TableHeader className="bg-muted/35">
+      {/* Users Table */}
+      <Card className="border-border/70">
+        <CardHeader>
+          <div className="flex items-center gap-2 max-w-md">
+            <div className="relative flex-1">
+              <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search by name, email, or IC..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="pl-9"
+              />
+            </div>
+            <Button onClick={handleSearch} size="icon" variant="outline">
+              <SearchIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader className="bg-muted/35">
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>IC Number</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Email Verified</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead>Stats</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>IC Number</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Email Verified</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Stats</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
-                      <div className="flex items-center justify-center py-8">
-                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              ) : users.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    No users found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">
+                      <a
+                        href={`/app/admin/users/${user.id}`}
+                        className="hover:underline hover:text-primary cursor-pointer"
+                      >
+                        {user.name}
+                      </a>
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.icNumber || '-'}</TableCell>
+                    <TableCell>{user.phoneNumber || '-'}</TableCell>
+                    <TableCell>
+                      {user.emailVerified ? (
+                        <span className="text-green-600">Yes</span>
+                      ) : (
+                        <span className="text-red-600">No</span>
+                      )}
+                    </TableCell>
+                    <TableCell>{formatDate(user.createdAt)}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-3 text-xs">
+                        {user._count.agreements > 0 ? (
+                          <button
+                            onClick={() =>
+                              openDetailsDialog(user, 'agreements')
+                            }
+                            className="hover:underline hover:text-primary cursor-pointer text-muted-foreground"
+                          >
+                            {user._count.agreements} agreements
+                          </button>
+                        ) : (
+                          <span className="text-muted-foreground">
+                            {user._count.agreements} agreements
+                          </span>
+                        )}
+                        <span className="text-muted-foreground">•</span>
+                        {user._count.assets > 0 ? (
+                          <button
+                            onClick={() => openDetailsDialog(user, 'assets')}
+                            className="hover:underline hover:text-primary cursor-pointer text-muted-foreground"
+                          >
+                            {user._count.assets} assets
+                          </button>
+                        ) : (
+                          <span className="text-muted-foreground">
+                            {user._count.assets} assets
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => openEditDialog(user)}
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => openDeleteDialog(user)}
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
-                ) : users.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
-                      No users found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">
-                        <a
-                          href={`/app/admin/users/${user.id}`}
-                          className="hover:underline hover:text-primary cursor-pointer"
-                        >
-                          {user.name}
-                        </a>
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.icNumber || '-'}</TableCell>
-                      <TableCell>{user.phoneNumber || '-'}</TableCell>
-                      <TableCell>
-                        {user.emailVerified ? (
-                          <span className="text-green-600">Yes</span>
-                        ) : (
-                          <span className="text-red-600">No</span>
-                        )}
-                      </TableCell>
-                      <TableCell>{formatDate(user.createdAt)}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-3 text-xs">
-                          {user._count.agreements > 0 ? (
-                            <button
-                              onClick={() => openDetailsDialog(user, 'agreements')}
-                              className="hover:underline hover:text-primary cursor-pointer text-muted-foreground"
-                            >
-                              {user._count.agreements} agreements
-                            </button>
-                          ) : (
-                            <span className="text-muted-foreground">
-                              {user._count.agreements} agreements
-                            </span>
-                          )}
-                          <span className="text-muted-foreground">•</span>
-                          {user._count.assets > 0 ? (
-                            <button
-                              onClick={() => openDetailsDialog(user, 'assets')}
-                              className="hover:underline hover:text-primary cursor-pointer text-muted-foreground"
-                            >
-                              {user._count.assets} assets
-                            </button>
-                          ) : (
-                            <span className="text-muted-foreground">
-                              {user._count.assets} assets
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => openEditDialog(user)}
-                          >
-                            <PencilIcon className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => openDeleteDialog(user)}
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                ))
+              )}
+            </TableBody>
+          </Table>
 
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
-              <div className="flex items-center justify-between px-4 py-4 border-t">
-                <span className="text-sm text-muted-foreground">
-                  Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-                  {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                  {pagination.total} users
-                </span>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={pagination.page === 1}
-                    onClick={() => {
-                      const newPage = pagination.page - 1
-                      setPagination({ ...pagination, page: newPage })
-                      fetchUsers(newPage, searchQuery)
-                    }}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={pagination.page === pagination.totalPages}
-                    onClick={() => {
-                      const newPage = pagination.page + 1
-                      setPagination({ ...pagination, page: newPage })
-                      fetchUsers(newPage, searchQuery)
-                    }}
-                  >
-                    Next
-                  </Button>
-                </div>
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-4 border-t">
+              <span className="text-sm text-muted-foreground">
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
+                of {pagination.total} users
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={pagination.page === 1}
+                  onClick={() => {
+                    const newPage = pagination.page - 1
+                    setPagination({ ...pagination, page: newPage })
+                    fetchUsers(newPage, searchQuery)
+                  }}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={pagination.page === pagination.totalPages}
+                  onClick={() => {
+                    const newPage = pagination.page + 1
+                    setPagination({ ...pagination, page: newPage })
+                    fetchUsers(newPage, searchQuery)
+                  }}
+                >
+                  Next
+                </Button>
               </div>
-            )}
-            </CardContent>
-          </Card>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Create User Dialog */}
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
@@ -536,7 +552,9 @@ function RouteComponent() {
               <Input
                 id="create-name"
                 value={createForm.name}
-                onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, name: e.target.value })
+                }
                 placeholder="Enter user name"
               />
             </div>
@@ -546,7 +564,9 @@ function RouteComponent() {
                 id="create-email"
                 type="email"
                 value={createForm.email}
-                onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, email: e.target.value })
+                }
                 placeholder="user@example.com"
               />
             </div>
@@ -555,7 +575,9 @@ function RouteComponent() {
               <Input
                 id="create-ic"
                 value={createForm.icNumber}
-                onChange={(e) => setCreateForm({ ...createForm, icNumber: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, icNumber: e.target.value })
+                }
                 placeholder="Enter IC number"
               />
             </div>
@@ -564,7 +586,9 @@ function RouteComponent() {
               <Input
                 id="create-phone"
                 value={createForm.phoneNumber}
-                onChange={(e) => setCreateForm({ ...createForm, phoneNumber: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, phoneNumber: e.target.value })
+                }
                 placeholder="+60123456789"
               />
             </div>
@@ -573,16 +597,24 @@ function RouteComponent() {
               <Input
                 id="create-address"
                 value={createForm.address}
-                onChange={(e) => setCreateForm({ ...createForm, address: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, address: e.target.value })
+                }
                 placeholder="Enter address"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setCreateDialogOpen(false)}
+            >
               Cancel
             </Button>
-            <Button onClick={handleCreateUser} disabled={!createForm.name || !createForm.email}>
+            <Button
+              onClick={handleCreateUser}
+              disabled={!createForm.name || !createForm.email}
+            >
               Create User
             </Button>
           </DialogFooter>
@@ -595,7 +627,8 @@ function RouteComponent() {
           <DialogHeader>
             <DialogTitle>Edit User</DialogTitle>
             <DialogDescription>
-              Update user information. Leave fields empty to keep current values.
+              Update user information. Leave fields empty to keep current
+              values.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -604,7 +637,9 @@ function RouteComponent() {
               <Input
                 id="edit-name"
                 value={editForm.name}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, name: e.target.value })
+                }
                 placeholder="Enter user name"
               />
             </div>
@@ -614,7 +649,9 @@ function RouteComponent() {
                 id="edit-email"
                 type="email"
                 value={editForm.email}
-                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, email: e.target.value })
+                }
                 placeholder="user@example.com"
               />
             </div>
@@ -623,7 +660,9 @@ function RouteComponent() {
               <Input
                 id="edit-ic"
                 value={editForm.icNumber}
-                onChange={(e) => setEditForm({ ...editForm, icNumber: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, icNumber: e.target.value })
+                }
                 placeholder="Enter IC number"
               />
             </div>
@@ -632,7 +671,9 @@ function RouteComponent() {
               <Input
                 id="edit-phone"
                 value={editForm.phoneNumber}
-                onChange={(e) => setEditForm({ ...editForm, phoneNumber: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, phoneNumber: e.target.value })
+                }
                 placeholder="+60123456789"
               />
             </div>
@@ -641,7 +682,9 @@ function RouteComponent() {
               <Input
                 id="edit-address"
                 value={editForm.address}
-                onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, address: e.target.value })
+                }
                 placeholder="Enter address"
               />
             </div>
@@ -650,7 +693,9 @@ function RouteComponent() {
                 type="checkbox"
                 id="edit-verified"
                 checked={editForm.emailVerified}
-                onChange={(e) => setEditForm({ ...editForm, emailVerified: e.target.checked })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, emailVerified: e.target.checked })
+                }
                 className="h-4 w-4"
               />
               <Label htmlFor="edit-verified">Email Verified</Label>
@@ -660,7 +705,10 @@ function RouteComponent() {
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleUpdateUser} disabled={!editForm.name || !editForm.email}>
+            <Button
+              onClick={handleUpdateUser}
+              disabled={!editForm.name || !editForm.email}
+            >
               Update User
             </Button>
           </DialogFooter>
@@ -673,32 +721,45 @@ function RouteComponent() {
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this user? This action cannot be undone.
+              Are you sure you want to delete this user? This action cannot be
+              undone.
             </DialogDescription>
           </DialogHeader>
           {selectedUser && (
             <div className="py-4">
               <p className="text-sm">
-                <strong>Name:</strong> {selectedUser.name}<br />
-                <strong>Email:</strong> {selectedUser.email}<br />
+                <strong>Name:</strong> {selectedUser.name}
+                <br />
+                <strong>Email:</strong> {selectedUser.email}
+                <br />
                 <strong>IC Number:</strong> {selectedUser.icNumber || 'N/A'}
               </p>
-              {(selectedUser._count.agreements > 0 || selectedUser._count.assets > 0) && (
+              {(selectedUser._count.agreements > 0 ||
+                selectedUser._count.assets > 0) && (
                 <p className="text-sm text-red-600 mt-2">
-                  Warning: This user has {selectedUser._count.agreements} agreement(s) and {selectedUser._count.assets} asset(s).
-                  You cannot delete users with existing agreements or assets.
+                  Warning: This user has {selectedUser._count.agreements}{' '}
+                  agreement(s) and {selectedUser._count.assets} asset(s). You
+                  cannot delete users with existing agreements or assets.
                 </p>
               )}
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteUser}
-              disabled={selectedUser ? (selectedUser._count.agreements > 0 || selectedUser._count.assets > 0) : true}
+              disabled={
+                selectedUser
+                  ? selectedUser._count.agreements > 0 ||
+                    selectedUser._count.assets > 0
+                  : true
+              }
             >
               Delete User
             </Button>
@@ -735,7 +796,9 @@ function RouteComponent() {
                     Agreements ({userDetails.agreements.length})
                   </h3>
                   {userDetails.agreements.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No agreements found</p>
+                    <p className="text-sm text-muted-foreground">
+                      No agreements found
+                    </p>
                   ) : (
                     <div>
                       <Table>
@@ -757,12 +820,18 @@ function RouteComponent() {
                                 className="cursor-pointer hover:bg-muted/50"
                                 onClick={() =>
                                   setSelectedAgreement(
-                                    selectedAgreement?.id === agreement.id ? null : agreement
+                                    selectedAgreement?.id === agreement.id
+                                      ? null
+                                      : agreement,
                                   )
                                 }
                               >
-                                <TableCell className="font-medium">{agreement.title}</TableCell>
-                                <TableCell>{agreement.distributionType}</TableCell>
+                                <TableCell className="font-medium">
+                                  {agreement.title}
+                                </TableCell>
+                                <TableCell>
+                                  {agreement.distributionType}
+                                </TableCell>
                                 <TableCell>
                                   <span
                                     className={`px-2 py-1 rounded text-xs ${
@@ -777,16 +846,25 @@ function RouteComponent() {
                                   </span>
                                 </TableCell>
                                 <TableCell>{agreement.assets.length}</TableCell>
-                                <TableCell>{agreement.beneficiaries.length}</TableCell>
-                                <TableCell>{formatDate(agreement.createdAt)}</TableCell>
+                                <TableCell>
+                                  {agreement.beneficiaries.length}
+                                </TableCell>
+                                <TableCell>
+                                  {formatDate(agreement.createdAt)}
+                                </TableCell>
                               </TableRow>
                               {selectedAgreement?.id === agreement.id && (
                                 <TableRow>
-                                  <TableCell colSpan={6} className="bg-muted/30">
+                                  <TableCell
+                                    colSpan={6}
+                                    className="bg-muted/30"
+                                  >
                                     <div className="p-4 space-y-4">
                                       {agreement.description && (
                                         <div>
-                                          <h5 className="text-sm font-medium mb-1">Description</h5>
+                                          <h5 className="text-sm font-medium mb-1">
+                                            Description
+                                          </h5>
                                           <p className="text-sm text-muted-foreground">
                                             {agreement.description}
                                           </p>
@@ -796,14 +874,18 @@ function RouteComponent() {
                                       {/* Assets in agreement */}
                                       {agreement.assets.length > 0 && (
                                         <div>
-                                          <h5 className="text-sm font-medium mb-2">Assets:</h5>
+                                          <h5 className="text-sm font-medium mb-2">
+                                            Assets:
+                                          </h5>
                                           <div className="grid grid-cols-2 gap-2">
                                             {agreement.assets.map((aa) => (
                                               <div
                                                 key={aa.id}
                                                 className="text-sm p-3 bg-background border rounded"
                                               >
-                                                <div className="font-medium">{aa.asset.name}</div>
+                                                <div className="font-medium">
+                                                  {aa.asset.name}
+                                                </div>
                                                 <div className="text-muted-foreground text-xs">
                                                   {aa.asset.type}
                                                   {aa.allocatedPercentage &&
@@ -820,49 +902,62 @@ function RouteComponent() {
                                       {/* Beneficiaries */}
                                       {agreement.beneficiaries.length > 0 && (
                                         <div>
-                                          <h5 className="text-sm font-medium mb-2">Beneficiaries:</h5>
+                                          <h5 className="text-sm font-medium mb-2">
+                                            Beneficiaries:
+                                          </h5>
                                           <div className="grid grid-cols-2 gap-2">
-                                            {agreement.beneficiaries.map((beneficiary) => (
-                                              <div
-                                                key={beneficiary.id}
-                                                className="text-sm p-3 bg-background border rounded"
-                                              >
-                                                <div className="font-medium">
-                                                  {beneficiary.familyMember?.familyMemberUser?.name ||
-                                                    beneficiary.nonRegisteredFamilyMember?.name}
+                                            {agreement.beneficiaries.map(
+                                              (beneficiary) => (
+                                                <div
+                                                  key={beneficiary.id}
+                                                  className="text-sm p-3 bg-background border rounded"
+                                                >
+                                                  <div className="font-medium">
+                                                    {beneficiary.familyMember
+                                                      ?.familyMemberUser
+                                                      ?.name ||
+                                                      beneficiary
+                                                        .nonRegisteredFamilyMember
+                                                        ?.name}
+                                                  </div>
+                                                  <div className="text-muted-foreground text-xs">
+                                                    {beneficiary.familyMember
+                                                      ?.relation ||
+                                                      beneficiary
+                                                        .nonRegisteredFamilyMember
+                                                        ?.relation}
+                                                    {beneficiary.sharePercentage &&
+                                                      ` • ${beneficiary.sharePercentage}%`}
+                                                    {beneficiary.shareDescription &&
+                                                      ` • ${beneficiary.shareDescription}`}
+                                                  </div>
+                                                  <div className="flex gap-3 mt-2 text-xs">
+                                                    <span
+                                                      className={
+                                                        beneficiary.hasSigned
+                                                          ? 'text-green-600'
+                                                          : 'text-red-600'
+                                                      }
+                                                    >
+                                                      {beneficiary.hasSigned
+                                                        ? 'Signed'
+                                                        : 'Not Signed'}
+                                                    </span>
+                                                    <span
+                                                      className={
+                                                        beneficiary.isAccepted
+                                                          ? 'text-green-600'
+                                                          : 'text-red-600'
+                                                      }
+                                                    >
+                                                      {beneficiary.isAccepted
+                                                        ? 'Accepted'
+                                                        : 'Not Accepted'}
+                                                    </span>
+                                                  </div>
                                                 </div>
-                                                <div className="text-muted-foreground text-xs">
-                                                  {beneficiary.familyMember?.relation ||
-                                                    beneficiary.nonRegisteredFamilyMember?.relation}
-                                                  {beneficiary.sharePercentage &&
-                                                    ` • ${beneficiary.sharePercentage}%`}
-                                                  {beneficiary.shareDescription &&
-                                                    ` • ${beneficiary.shareDescription}`}
-                                                </div>
-                                                <div className="flex gap-3 mt-2 text-xs">
-                                                  <span
-                                                    className={
-                                                      beneficiary.hasSigned
-                                                        ? 'text-green-600'
-                                                        : 'text-red-600'
-                                                    }
-                                                  >
-                                                    {beneficiary.hasSigned ? 'Signed' : 'Not Signed'}
-                                                  </span>
-                                                  <span
-                                                    className={
-                                                      beneficiary.isAccepted
-                                                        ? 'text-green-600'
-                                                        : 'text-red-600'
-                                                    }
-                                                  >
-                                                    {beneficiary.isAccepted
-                                                      ? 'Accepted'
-                                                      : 'Not Accepted'}
-                                                  </span>
-                                                </div>
-                                              </div>
-                                            ))}
+                                              ),
+                                            )}
                                           </div>
                                         </div>
                                       )}
@@ -884,13 +979,20 @@ function RouteComponent() {
                     Assets ({userDetails.assets.length})
                   </h3>
                   {userDetails.assets.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No assets found</p>
+                    <p className="text-sm text-muted-foreground">
+                      No assets found
+                    </p>
                   ) : (
                     <div className="grid grid-cols-2 gap-4">
                       {userDetails.assets.map((asset) => (
-                        <div key={asset.id} className="border rounded-lg p-4 space-y-2">
+                        <div
+                          key={asset.id}
+                          className="border rounded-lg p-4 space-y-2"
+                        >
                           <h4 className="font-medium">{asset.name}</h4>
-                          <p className="text-sm text-muted-foreground">{asset.type}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {asset.type}
+                          </p>
                           {asset.description && (
                             <p className="text-sm text-muted-foreground">
                               {asset.description}
@@ -921,15 +1023,11 @@ function RouteComponent() {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-8">
-                No details available
-              </div>
+              <div className="text-center py-8">No details available</div>
             )}
           </div>
           <DialogFooter>
-            <Button onClick={() => setDetailsDialogOpen(false)}>
-              Close
-            </Button>
+            <Button onClick={() => setDetailsDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

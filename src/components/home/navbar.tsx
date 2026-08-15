@@ -1,30 +1,26 @@
-import { useState } from 'react';
-import { LoginForm } from '@/components/loginForm';
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { authClient } from '@/lib/auth/authClient';
-import { Link } from '@tanstack/react-router';
-import { useLanguage } from '@/lib/i18n/context';
-import { LanguageSwitcher } from '@/components/languageSwitcher';
+import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
+import { LoginForm } from '@/components/loginForm'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { authClient } from '@/lib/auth/authClient'
+import { useLanguage } from '@/lib/i18n/context'
+import { LanguageSwitcher } from '@/components/languageSwitcher'
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const { t } = useLanguage();
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { data: session } = authClient.useSession()
+  const { t } = useLanguage()
 
   const scrollToSection = (elementId: string) => {
-    setIsMenuOpen(false); // Close mobile menu if open
-    const element = document.getElementById(elementId);
+    setIsMenuOpen(false) // Close mobile menu if open
+    const element = document.getElementById(elementId)
     if (element) {
       element.scrollIntoView({
         behavior: 'smooth',
-        block: 'start'
-      });
+        block: 'start',
+      })
     }
-  };
+  }
 
   return (
     <nav className="fixed w-full z-50 pt-3">
@@ -32,11 +28,15 @@ const Navbar = () => {
       <div className="mx-4 lg:mx-8 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 rounded-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-inset ring-white/10">
         <div className="container mx-auto flex justify-between items-center px-6 py-3 relative">
           {/* Logo - breaking out of navbar */}
-          <button 
-            onClick={() => scrollToSection('header')} 
+          <button
+            onClick={() => scrollToSection('header')}
             className="absolute -top-3 -left-2 hover:scale-105 transition-transform duration-300"
           >
-            <img src="/assets/logo2.png" alt="WEMSP" className="h-20 w-auto drop-shadow-2xl mt-1.5" />
+            <img
+              src="/assets/logo2.png"
+              alt="WEMSP"
+              className="h-20 w-auto drop-shadow-2xl mt-1.5"
+            />
           </button>
           {/* Spacer for the logo */}
           <div className="w-20 lg:w-24" />
@@ -107,7 +107,11 @@ const Navbar = () => {
                 </DialogTrigger>
                 <DialogContent className="p-0 gap-0 max-w-[400px]">
                   <div className="flex items-center justify-center p-6 pb-0">
-                    <img src="/assets/logo2.png" alt="WEMSP" className="h-16 w-auto" />
+                    <img
+                      src="/assets/logo2.png"
+                      alt="WEMSP"
+                      className="h-16 w-auto"
+                    />
                   </div>
                   <div className="p-6 pt-4">
                     <LoginForm className="gap-4" />
@@ -165,7 +169,11 @@ const Navbar = () => {
               </DialogTrigger>
               <DialogContent className="p-0 gap-0 max-w-[400px]">
                 <div className="flex items-center justify-center p-6 pb-0">
-                  <img src="/assets/logo2.png" alt="WEMSP" className="h-16 w-auto" />
+                  <img
+                    src="/assets/logo2.png"
+                    alt="WEMSP"
+                    className="h-16 w-auto"
+                  />
                 </div>
                 <div className="p-6 pt-4">
                   <LoginForm className="gap-4" />
@@ -176,7 +184,7 @@ const Navbar = () => {
         </div>
       )}
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

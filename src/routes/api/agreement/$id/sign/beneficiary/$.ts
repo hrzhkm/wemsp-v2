@@ -209,7 +209,10 @@ export const beneficiarySignHandlers = {
       try {
         reconciliation = await reconcileAgreement(agreementId)
       } catch (reconcileError) {
-        console.error(`Error reconciling agreement ${agreementId}:`, reconcileError)
+        console.error(
+          `Error reconciling agreement ${agreementId}:`,
+          reconcileError,
+        )
       }
 
       return Response.json({

@@ -36,7 +36,9 @@ vi.mock('@/lib/blockchain/contract', () => ({
   finalizeAgreement: mocks.finalizeAgreement,
   getOnChainErrorMessage: mocks.getOnChainErrorMessage,
   getOnChainTimestampDate: (timestamp: number) =>
-    new Date((timestamp > 0 ? timestamp : Math.floor(Date.now() / 1000)) * 1000),
+    new Date(
+      (timestamp > 0 ? timestamp : Math.floor(Date.now() / 1000)) * 1000,
+    ),
 }))
 
 function agreementFixture(overrides: Record<string, unknown> = {}) {

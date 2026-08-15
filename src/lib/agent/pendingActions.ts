@@ -58,7 +58,13 @@ export function parsePendingAction(content: string): PendingAction | null {
     }
 
     if (parsed.kind !== 'ASSET_CREATE') return null
-    if (!parsed.pendingId || !parsed.status || !parsed.asset || !parsed.createdAt) return null
+    if (
+      !parsed.pendingId ||
+      !parsed.status ||
+      !parsed.asset ||
+      !parsed.createdAt
+    )
+      return null
 
     return {
       kind: 'ASSET_CREATE',
@@ -74,7 +80,9 @@ export function parsePendingAction(content: string): PendingAction | null {
   }
 }
 
-export function getPendingActionSummaries(messages: Array<AgentMessageRecord>): Array<AgentPendingActionSummary> {
+export function getPendingActionSummaries(
+  messages: Array<AgentMessageRecord>,
+): Array<AgentPendingActionSummary> {
   return messages
     .filter((message) => message.role === 'SYSTEM')
     .map((message) => parsePendingAction(message.content))

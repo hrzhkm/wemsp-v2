@@ -1,6 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { AlertTriangle, CheckCircle2, IdCard, Loader2, Mail, MapPin, Phone, User, UserCheck, Users } from 'lucide-react'
+import {
+  AlertTriangle,
+  CheckCircle2,
+  IdCard,
+  Loader2,
+  Mail,
+  MapPin,
+  Phone,
+  User,
+  UserCheck,
+  Users,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -39,10 +50,7 @@ export const Route = createFileRoute('/app/profile/edit')({
       typeof search.onboarding === 'boolean'
         ? search.onboarding
         : search.onboarding === 'true',
-    redirect:
-      typeof search.redirect === 'string'
-        ? search.redirect
-        : undefined,
+    redirect: typeof search.redirect === 'string' ? search.redirect : undefined,
   }),
 })
 
@@ -65,11 +73,18 @@ function RouteComponent() {
     phoneNumber: '',
   })
   const [isOnboarding, setIsOnboarding] = useState(false)
-  const [nonRegisteredData, setNonRegisteredData] = useState<Array<NonRegisteredData> | null>(null)
-  const [redirectPath, setRedirectPath] = useState<string | undefined>(undefined)
+  const [nonRegisteredData, setNonRegisteredData] =
+    useState<Array<NonRegisteredData> | null>(null)
+  const [redirectPath, setRedirectPath] = useState<string | undefined>(
+    undefined,
+  )
   const [showClaimConfirmation, setShowClaimConfirmation] = useState(false)
 
-  const { data: session, isPending, refetch: refetchSession } = authClient.useSession()
+  const {
+    data: session,
+    isPending,
+    refetch: refetchSession,
+  } = authClient.useSession()
   const user = session?.user
 
   useEffect(() => {
@@ -134,7 +149,10 @@ function RouteComponent() {
       queryClient.invalidateQueries({
         predicate: (query) => {
           const queryKey = query.queryKey[0] as string
-          return queryKey.startsWith('better-auth') || (typeof queryKey === 'string' && queryKey.includes('session'))
+          return (
+            queryKey.startsWith('better-auth') ||
+            (typeof queryKey === 'string' && queryKey.includes('session'))
+          )
         },
       })
 
@@ -145,10 +163,16 @@ function RouteComponent() {
         if (redirectPath) {
           router.navigate({ to: redirectPath })
         } else {
-          router.navigate({ search: { onboarding: false, redirect: undefined }, to: '/app/profile' })
+          router.navigate({
+            search: { onboarding: false, redirect: undefined },
+            to: '/app/profile',
+          })
         }
       } else {
-        router.navigate({ search: { onboarding: false, redirect: undefined }, to: '/app/profile' })
+        router.navigate({
+          search: { onboarding: false, redirect: undefined },
+          to: '/app/profile',
+        })
       }
     },
   })
@@ -204,7 +228,9 @@ function RouteComponent() {
             <IdCard className="h-8 w-8 text-muted-foreground" />
           </div>
           <h2 className="mb-2 text-xl font-semibold">Access Denied</h2>
-          <p className="text-muted-foreground">Please log in to edit your profile.</p>
+          <p className="text-muted-foreground">
+            Please log in to edit your profile.
+          </p>
         </CardContent>
       </Card>
     )
@@ -216,9 +242,12 @@ function RouteComponent() {
         <div className="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4">
           <UserCheck className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
           <div>
-            <h3 className="font-semibold text-blue-900">We Found Your Information</h3>
+            <h3 className="font-semibold text-blue-900">
+              We Found Your Information
+            </h3>
             <p className="mt-1 text-sm text-blue-700">
-              A family member has already added your IC number. Please verify the records below.
+              A family member has already added your IC number. Please verify
+              the records below.
             </p>
           </div>
         </div>
@@ -229,15 +258,22 @@ function RouteComponent() {
               <Users className="h-5 w-5" />
               Verify Identity
             </CardTitle>
-            <CardDescription>Confirm these records belong to you before linking accounts.</CardDescription>
+            <CardDescription>
+              Confirm these records belong to you before linking accounts.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {nonRegisteredData.map((item) => (
-              <div key={item.id} className="space-y-3 rounded-xl border border-border/70 p-4">
+              <div
+                key={item.id}
+                className="space-y-3 rounded-xl border border-border/70 p-4"
+              >
                 <div className="flex items-center gap-2 text-sm">
                   <span className="text-muted-foreground">Added by:</span>
                   <span className="font-medium">{item.addedBy.name}</span>
-                  <Badge variant="secondary">{formatRelation(item.relation)}</Badge>
+                  <Badge variant="secondary">
+                    {formatRelation(item.relation)}
+                  </Badge>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="flex items-center gap-2 text-sm">
@@ -246,7 +282,9 @@ function RouteComponent() {
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <IdCard className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-mono font-medium">{item.icNumber}</span>
+                    <span className="font-mono font-medium">
+                      {item.icNumber}
+                    </span>
                   </div>
                   {item.phoneNumber ? (
                     <div className="flex items-center gap-2 text-sm">
@@ -265,12 +303,26 @@ function RouteComponent() {
             ))}
 
             <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
-              <p className="mb-2 text-sm font-medium">Your Submitted Information</p>
+              <p className="mb-2 text-sm font-medium">
+                Your Submitted Information
+              </p>
               <div className="grid gap-2 text-sm sm:grid-cols-2">
-                <p><span className="text-muted-foreground">Name:</span> {formData.name}</p>
-                <p><span className="text-muted-foreground">IC:</span> {formData.icNumber}</p>
-                <p><span className="text-muted-foreground">Phone:</span> {formData.phoneNumber}</p>
-                <p><span className="text-muted-foreground">Address:</span> {formData.address}</p>
+                <p>
+                  <span className="text-muted-foreground">Name:</span>{' '}
+                  {formData.name}
+                </p>
+                <p>
+                  <span className="text-muted-foreground">IC:</span>{' '}
+                  {formData.icNumber}
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Phone:</span>{' '}
+                  {formData.phoneNumber}
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Address:</span>{' '}
+                  {formData.address}
+                </p>
               </div>
             </div>
 
@@ -278,10 +330,16 @@ function RouteComponent() {
               <Checkbox
                 checked={confirmClaim}
                 id="confirm-claim"
-                onCheckedChange={(checked: boolean | 'indeterminate') => setConfirmClaim(checked === true)}
+                onCheckedChange={(checked: boolean | 'indeterminate') =>
+                  setConfirmClaim(checked === true)
+                }
               />
-              <label htmlFor="confirm-claim" className="cursor-pointer text-sm leading-relaxed">
-                I confirm this IC number belongs to me, and I want to link my account with these family records.
+              <label
+                htmlFor="confirm-claim"
+                className="cursor-pointer text-sm leading-relaxed"
+              >
+                I confirm this IC number belongs to me, and I want to link my
+                account with these family records.
               </label>
             </div>
 
@@ -298,8 +356,16 @@ function RouteComponent() {
               >
                 Cancel
               </Button>
-              <Button className="w-full sm:w-auto" onClick={handleConfirmClaim} disabled={!confirmClaim || updateProfileMutation.isPending}>
-                {updateProfileMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+              <Button
+                className="w-full sm:w-auto"
+                onClick={handleConfirmClaim}
+                disabled={!confirmClaim || updateProfileMutation.isPending}
+              >
+                {updateProfileMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4" />
+                )}
                 Confirm & Link Account
               </Button>
             </div>
@@ -315,7 +381,9 @@ function RouteComponent() {
         <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
           <div>
-            <h3 className="font-semibold text-amber-900">Complete Your Profile to Continue</h3>
+            <h3 className="font-semibold text-amber-900">
+              Complete Your Profile to Continue
+            </h3>
             <p className="mt-1 text-sm text-amber-700">
               Fill your details below to continue to the requested page.
             </p>
@@ -338,7 +406,12 @@ function RouteComponent() {
               className="w-full sm:w-auto"
               type="button"
               variant="outline"
-              onClick={() => router.navigate({ search: { onboarding: false, redirect: undefined }, to: '/app/profile' })}
+              onClick={() =>
+                router.navigate({
+                  search: { onboarding: false, redirect: undefined },
+                  to: '/app/profile',
+                })
+              }
               disabled={updateProfileMutation.isPending}
             >
               Cancel
@@ -358,7 +431,12 @@ function RouteComponent() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        name: event.target.value,
+                      }))
+                    }
                     placeholder="Enter your full name"
                     className="pl-10"
                   />
@@ -369,7 +447,12 @@ function RouteComponent() {
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <div className="relative">
                   <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input id="email" value={formData.email} disabled className="cursor-not-allowed bg-muted/50 pl-10" />
+                  <Input
+                    id="email"
+                    value={formData.email}
+                    disabled
+                    className="cursor-not-allowed bg-muted/50 pl-10"
+                  />
                 </div>
               </Field>
 
@@ -381,7 +464,9 @@ function RouteComponent() {
                     id="icNumber"
                     value={formData.icNumber}
                     onChange={(event) => {
-                      const value = event.target.value.replace(/\D/g, '').slice(0, 12)
+                      const value = event.target.value
+                        .replace(/\D/g, '')
+                        .slice(0, 12)
                       setFormData((prev) => ({ ...prev, icNumber: value }))
                     }}
                     maxLength={12}
@@ -398,7 +483,12 @@ function RouteComponent() {
                   <Input
                     id="phoneNumber"
                     value={formData.phoneNumber}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, phoneNumber: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        phoneNumber: event.target.value,
+                      }))
+                    }
                     placeholder="+60123456789"
                     className="pl-10"
                   />
@@ -412,7 +502,12 @@ function RouteComponent() {
                   <Input
                     id="address"
                     value={formData.address}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, address: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        address: event.target.value,
+                      }))
+                    }
                     placeholder="Enter your residential address"
                     className="pl-10"
                   />
@@ -426,14 +521,25 @@ function RouteComponent() {
                   className="w-full sm:w-auto"
                   type="button"
                   variant="outline"
-                  onClick={() => router.navigate({ search: { onboarding: false, redirect: undefined }, to: '/app/profile' })}
+                  onClick={() =>
+                    router.navigate({
+                      search: { onboarding: false, redirect: undefined },
+                      to: '/app/profile',
+                    })
+                  }
                   disabled={updateProfileMutation.isPending}
                 >
                   Cancel
                 </Button>
               ) : null}
-              <Button className="w-full sm:w-auto" type="submit" disabled={updateProfileMutation.isPending}>
-                {updateProfileMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              <Button
+                className="w-full sm:w-auto"
+                type="submit"
+                disabled={updateProfileMutation.isPending}
+              >
+                {updateProfileMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
                 Save Changes
               </Button>
             </div>

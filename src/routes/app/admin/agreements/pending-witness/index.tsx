@@ -95,7 +95,9 @@ export const Route = createFileRoute('/app/admin/agreements/pending-witness/')({
 function PendingWitnessPage() {
   const [agreements, setAgreements] = useState<Array<Agreement>>([])
   const [loading, setLoading] = useState(true)
-  const [selectedAgreement, setSelectedAgreement] = useState<Agreement | null>(null)
+  const [selectedAgreement, setSelectedAgreement] = useState<Agreement | null>(
+    null,
+  )
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [witnessing, setWitnessing] = useState(false)
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
@@ -137,15 +139,20 @@ function PendingWitnessPage() {
 
     setWitnessing(true)
     try {
-      const response = await fetch(`/api/agreement/${selectedAgreement.id}/sign/witness/`, {
-        method: 'POST',
-      })
+      const response = await fetch(
+        `/api/agreement/${selectedAgreement.id}/sign/witness/`,
+        {
+          method: 'POST',
+        },
+      )
 
       if (response.ok) {
         const data = await response.json()
         const txHash = data?.onChain?.witnessSignatureTxHash
         if (txHash) {
-          toast.success(`Agreement witnessed on-chain (${txHash.slice(0, 10)}...${txHash.slice(-6)})`)
+          toast.success(
+            `Agreement witnessed on-chain (${txHash.slice(0, 10)}...${txHash.slice(-6)})`,
+          )
         } else {
           toast.success(data.message || 'Agreement witnessed successfully')
         }
@@ -181,8 +188,12 @@ function PendingWitnessPage() {
 
   const totalAssetValue = agreements.reduce(
     (sum, agreement) =>
-      sum + agreement.assets.reduce((assetSum, asset) => assetSum + asset.asset.value, 0),
-    0
+      sum +
+      agreement.assets.reduce(
+        (assetSum, asset) => assetSum + asset.asset.value,
+        0,
+      ),
+    0,
   )
 
   return (
@@ -194,7 +205,9 @@ function PendingWitnessPage() {
               <Stamp className="h-3.5 w-3.5" />
               Pending Witness
             </div>
-            <CardTitle className="text-xl">Pending Witness Agreements</CardTitle>
+            <CardTitle className="text-xl">
+              Pending Witness Agreements
+            </CardTitle>
             <CardDescription className="mt-1">
               Review and witness agreements that have been signed by all parties
             </CardDescription>
@@ -203,15 +216,23 @@ function PendingWitnessPage() {
           {/* Summary Cards */}
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
             <div className="rounded-xl border border-border/70 bg-card/70 p-3 shadow-sm">
-              <div className="text-sm text-muted-foreground">Pending Witness</div>
+              <div className="text-sm text-muted-foreground">
+                Pending Witness
+              </div>
               <p className="text-2xl font-semibold">{agreements.length}</p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/70 p-3 shadow-sm">
-              <div className="text-sm text-muted-foreground">Total Asset Value</div>
-              <p className="text-2xl font-semibold">RM{totalAssetValue.toLocaleString()}</p>
+              <div className="text-sm text-muted-foreground">
+                Total Asset Value
+              </div>
+              <p className="text-2xl font-semibold">
+                RM{totalAssetValue.toLocaleString()}
+              </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/70 p-3 shadow-sm">
-              <div className="text-sm text-muted-foreground">All Parties Signed</div>
+              <div className="text-sm text-muted-foreground">
+                All Parties Signed
+              </div>
               <p className="text-2xl font-semibold text-green-600">
                 <CheckCircle2Icon className="h-6 w-6 inline mr-1" />
                 Yes
@@ -224,91 +245,107 @@ function PendingWitnessPage() {
       {/* Agreements Table */}
       <Card className="border-border/70">
         <CardContent className="p-0">
-        <Table>
-          <TableHeader className="bg-muted/35">
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Owner</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Beneficiaries</TableHead>
-              <TableHead>Assets</TableHead>
-              <TableHead>Effective Date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
+          <Table>
+            <TableHeader className="bg-muted/35">
               <TableRow>
-                <TableCell colSpan={7} className="py-8">
-                  <div className="flex items-center justify-center py-12">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  </div>
-                </TableCell>
+                <TableHead>Title</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Beneficiaries</TableHead>
+                <TableHead>Assets</TableHead>
+                <TableHead>Effective Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ) : agreements.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
-                  <div className="flex flex-col items-center gap-2">
-                    <CheckCircle2Icon className="h-12 w-12 text-green-600" />
-                    <p className="text-lg font-medium">All caught up!</p>
-                    <p className="text-sm text-muted-foreground">
-                      No agreements pending witness signature
-                    </p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              agreements.map((agreement) => {
-                const allSigned = agreement.beneficiaries.every((b) => b.hasSigned)
-                return (
-                  <TableRow key={agreement.id}>
-                    <TableCell className="font-medium">{agreement.title}</TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{agreement.owner.name}</div>
-                        <div className="text-sm text-muted-foreground">{agreement.owner.email}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{agreement.distributionType}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        {agreement.beneficiaries.length} beneficiary
-                        {agreement.beneficiaries.length !== 1 ? 's' : ''}
-                        <div className="text-xs text-muted-foreground">
-                          {agreement.beneficiaries.filter((b) => b.hasSigned).length} signed
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="py-8">
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : agreements.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <div className="flex flex-col items-center gap-2">
+                      <CheckCircle2Icon className="h-12 w-12 text-green-600" />
+                      <p className="text-lg font-medium">All caught up!</p>
+                      <p className="text-sm text-muted-foreground">
+                        No agreements pending witness signature
+                      </p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                agreements.map((agreement) => {
+                  const allSigned = agreement.beneficiaries.every(
+                    (b) => b.hasSigned,
+                  )
+                  return (
+                    <TableRow key={agreement.id}>
+                      <TableCell className="font-medium">
+                        {agreement.title}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">
+                            {agreement.owner.name}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {agreement.owner.email}
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{agreement.assets.length}</TableCell>
-                    <TableCell>{formatDate(agreement.effectiveDate)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => openViewDialog(agreement)}
-                        >
-                          <EyeIcon className="h-4 w-4 mr-2" />
-                          View
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => openWitnessDialog(agreement)}
-                          disabled={!allSigned}
-                        >
-                          <CheckCircle2Icon className="h-4 w-4 mr-2" />
-                          Witness
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              })
-            )}
-          </TableBody>
-        </Table>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">
+                          {agreement.distributionType}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          {agreement.beneficiaries.length} beneficiary
+                          {agreement.beneficiaries.length !== 1 ? 's' : ''}
+                          <div className="text-xs text-muted-foreground">
+                            {
+                              agreement.beneficiaries.filter((b) => b.hasSigned)
+                                .length
+                            }{' '}
+                            signed
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>{agreement.assets.length}</TableCell>
+                      <TableCell>
+                        {formatDate(agreement.effectiveDate)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openViewDialog(agreement)}
+                          >
+                            <EyeIcon className="h-4 w-4 mr-2" />
+                            View
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => openWitnessDialog(agreement)}
+                            disabled={!allSigned}
+                          >
+                            <CheckCircle2Icon className="h-4 w-4 mr-2" />
+                            Witness
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
@@ -318,8 +355,9 @@ function PendingWitnessPage() {
           <DialogHeader>
             <DialogTitle>Witness Agreement</DialogTitle>
             <DialogDescription>
-              You are about to witness this agreement. By confirming, you verify that all parties
-              have signed and the agreement is ready to be activated.
+              You are about to witness this agreement. By confirming, you verify
+              that all parties have signed and the agreement is ready to be
+              activated.
             </DialogDescription>
           </DialogHeader>
           {selectedAgreement && (
@@ -327,7 +365,9 @@ function PendingWitnessPage() {
               <div className="space-y-2">
                 <h3 className="font-semibold">{selectedAgreement.title}</h3>
                 {selectedAgreement.description && (
-                  <p className="text-sm text-muted-foreground">{selectedAgreement.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedAgreement.description}
+                  </p>
                 )}
               </div>
 
@@ -337,7 +377,9 @@ function PendingWitnessPage() {
                   <p className="font-medium">{selectedAgreement.owner.name}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Distribution Type:</span>
+                  <span className="text-muted-foreground">
+                    Distribution Type:
+                  </span>
                   <p>{selectedAgreement.distributionType}</p>
                 </div>
                 <div>
@@ -354,14 +396,21 @@ function PendingWitnessPage() {
                 <p className="text-sm font-medium">Beneficiaries:</p>
                 <div className="border rounded-lg p-3 space-y-1">
                   {selectedAgreement.beneficiaries.map((beneficiary) => (
-                    <div key={beneficiary.id} className="flex items-center justify-between text-sm">
+                    <div
+                      key={beneficiary.id}
+                      className="flex items-center justify-between text-sm"
+                    >
                       <span>{getBeneficiaryName(beneficiary)}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">{beneficiary.sharePercentage}%</span>
+                        <span className="text-muted-foreground">
+                          {beneficiary.sharePercentage}%
+                        </span>
                         {beneficiary.hasSigned ? (
                           <CheckCircle2Icon className="h-4 w-4 text-green-600" />
                         ) : (
-                          <span className="text-xs text-yellow-600">Pending</span>
+                          <span className="text-xs text-yellow-600">
+                            Pending
+                          </span>
                         )}
                       </div>
                     </div>
@@ -371,7 +420,10 @@ function PendingWitnessPage() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button onClick={handleWitness} disabled={witnessing}>
@@ -390,9 +442,13 @@ function PendingWitnessPage() {
           {selectedAgreement && (
             <div className="py-4 space-y-4">
               <div>
-                <h3 className="font-semibold text-lg">{selectedAgreement.title}</h3>
+                <h3 className="font-semibold text-lg">
+                  {selectedAgreement.title}
+                </h3>
                 {selectedAgreement.description && (
-                  <p className="text-sm text-muted-foreground mt-1">{selectedAgreement.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {selectedAgreement.description}
+                  </p>
                 )}
               </div>
 
@@ -400,15 +456,21 @@ function PendingWitnessPage() {
                 <div>
                   <span className="text-muted-foreground">Owner:</span>
                   <p className="font-medium">{selectedAgreement.owner.name}</p>
-                  <p className="text-xs text-muted-foreground">{selectedAgreement.owner.email}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedAgreement.owner.email}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Distribution Type:</span>
+                  <span className="text-muted-foreground">
+                    Distribution Type:
+                  </span>
                   <p>{selectedAgreement.distributionType}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Status:</span>
-                  <p><Badge variant="outline">{selectedAgreement.status}</Badge></p>
+                  <p>
+                    <Badge variant="outline">{selectedAgreement.status}</Badge>
+                  </p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Effective Date:</span>
@@ -428,15 +490,24 @@ function PendingWitnessPage() {
                 <p className="text-sm font-medium">Beneficiaries:</p>
                 <div className="border rounded-lg p-3 space-y-2">
                   {selectedAgreement.beneficiaries.map((beneficiary) => (
-                    <div key={beneficiary.id} className="flex items-center justify-between text-sm p-2 bg-muted/50 rounded">
+                    <div
+                      key={beneficiary.id}
+                      className="flex items-center justify-between text-sm p-2 bg-muted/50 rounded"
+                    >
                       <div className="flex-1">
-                        <p className="font-medium">{getBeneficiaryName(beneficiary)}</p>
+                        <p className="font-medium">
+                          {getBeneficiaryName(beneficiary)}
+                        </p>
                         {beneficiary.shareDescription && (
-                          <p className="text-xs text-muted-foreground">{beneficiary.shareDescription}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {beneficiary.shareDescription}
+                          </p>
                         )}
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="font-medium">{beneficiary.sharePercentage}%</span>
+                        <span className="font-medium">
+                          {beneficiary.sharePercentage}%
+                        </span>
                         {beneficiary.hasSigned ? (
                           <CheckCircle2Icon className="h-5 w-5 text-green-600" />
                         ) : (
@@ -454,18 +525,30 @@ function PendingWitnessPage() {
                 <p className="text-sm font-medium">Assets:</p>
                 <div className="border rounded-lg p-3 space-y-2">
                   {selectedAgreement.assets.map((agreementAsset) => (
-                    <div key={agreementAsset.id} className="text-sm p-2 bg-muted/50 rounded">
+                    <div
+                      key={agreementAsset.id}
+                      className="text-sm p-2 bg-muted/50 rounded"
+                    >
                       <div className="flex justify-between">
-                        <span className="font-medium">{agreementAsset.asset.name}</span>
-                        <span>RM{agreementAsset.asset.value.toLocaleString()}</span>
+                        <span className="font-medium">
+                          {agreementAsset.asset.name}
+                        </span>
+                        <span>
+                          RM{agreementAsset.asset.value.toLocaleString()}
+                        </span>
                       </div>
                       <div className="flex justify-between text-xs text-muted-foreground mt-1">
                         <span>{agreementAsset.asset.type}</span>
-                        {(agreementAsset.allocatedValue || agreementAsset.allocatedPercentage) && (
+                        {(agreementAsset.allocatedValue ||
+                          agreementAsset.allocatedPercentage) && (
                           <span>
-                            {agreementAsset.allocatedValue && `RM${agreementAsset.allocatedValue.toLocaleString()}`}
-                            {agreementAsset.allocatedValue && agreementAsset.allocatedPercentage && ' • '}
-                            {agreementAsset.allocatedPercentage && `${agreementAsset.allocatedPercentage}%`}
+                            {agreementAsset.allocatedValue &&
+                              `RM${agreementAsset.allocatedValue.toLocaleString()}`}
+                            {agreementAsset.allocatedValue &&
+                              agreementAsset.allocatedPercentage &&
+                              ' • '}
+                            {agreementAsset.allocatedPercentage &&
+                              `${agreementAsset.allocatedPercentage}%`}
                           </span>
                         )}
                       </div>

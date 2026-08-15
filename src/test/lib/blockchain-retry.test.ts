@@ -8,19 +8,35 @@ const makeError = (code: string, message: string) =>
 describe('isTransientError', () => {
   it('classifies ethers transient error codes', () => {
     expect(isTransientError(makeError('TIMEOUT', 'request timeout'))).toBe(true)
-    expect(isTransientError(makeError('NETWORK_ERROR', 'network error'))).toBe(true)
-    expect(isTransientError(makeError('SERVER_ERROR', 'server error'))).toBe(true)
+    expect(isTransientError(makeError('NETWORK_ERROR', 'network error'))).toBe(
+      true,
+    )
+    expect(isTransientError(makeError('SERVER_ERROR', 'server error'))).toBe(
+      true,
+    )
   })
 
   it('classifies DNS/connection failures by message', () => {
-    expect(isTransientError(new Error('getaddrinfo EAI_AGAIN base-sepolia.g.alchemy.com'))).toBe(true)
+    expect(
+      isTransientError(
+        new Error('getaddrinfo EAI_AGAIN base-sepolia.g.alchemy.com'),
+      ),
+    ).toBe(true)
     expect(isTransientError(new Error('socket hang up'))).toBe(true)
     expect(isTransientError(new Error('request timeout'))).toBe(true)
   })
 
   it('treats contract reverts and other errors as non-transient', () => {
-    expect(isTransientError(makeError('CALL_EXCEPTION', 'execution reverted: OwnerAlreadySigned'))).toBe(false)
-    expect(isTransientError(new Error('execution reverted: AgreementIdAlreadyExists'))).toBe(false)
+    expect(
+      isTransientError(
+        makeError('CALL_EXCEPTION', 'execution reverted: OwnerAlreadySigned'),
+      ),
+    ).toBe(false)
+    expect(
+      isTransientError(
+        new Error('execution reverted: AgreementIdAlreadyExists'),
+      ),
+    ).toBe(false)
     expect(isTransientError(null)).toBe(false)
     expect(isTransientError(new Error('random failure'))).toBe(false)
   })
@@ -44,7 +60,9 @@ describe('withRetry', () => {
   })
 
   it('throws after exhausting retries', async () => {
-    const op = vi.fn().mockRejectedValue(makeError('TIMEOUT', 'request timeout'))
+    const op = vi
+      .fn()
+      .mockRejectedValue(makeError('TIMEOUT', 'request timeout'))
 
     await expect(withRetry(op)).rejects.toMatchObject({ code: 'TIMEOUT' })
     expect(op.mock.calls.length).toBeGreaterThan(1)
@@ -53,9 +71,13 @@ describe('withRetry', () => {
   it('does not retry non-transient errors', async () => {
     const op = vi
       .fn()
-      .mockRejectedValueOnce(makeError('CALL_EXCEPTION', 'execution reverted: OwnerAlreadySigned'))
+      .mockRejectedValueOnce(
+        makeError('CALL_EXCEPTION', 'execution reverted: OwnerAlreadySigned'),
+      )
 
-    await expect(withRetry(op)).rejects.toMatchObject({ code: 'CALL_EXCEPTION' })
+    await expect(withRetry(op)).rejects.toMatchObject({
+      code: 'CALL_EXCEPTION',
+    })
     expect(op).toHaveBeenCalledTimes(1)
   })
 

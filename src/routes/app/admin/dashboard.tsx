@@ -1,7 +1,12 @@
-import { createFileRoute, redirect, Link } from '@tanstack/react-router'
-import { getAdminSession } from '@/middleware'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { Shield, Users } from 'lucide-react'
+import { getAdminSession } from '@/middleware'
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 export const Route = createFileRoute('/app/admin/dashboard')({
   loader: async () => {
@@ -24,7 +29,9 @@ function RouteComponent() {
               <Shield className="h-3.5 w-3.5" />
               Admin Portal
             </div>
-            <CardTitle className="text-xl">Welcome to the Admin Portal</CardTitle>
+            <CardTitle className="text-xl">
+              Welcome to the Admin Portal
+            </CardTitle>
             <CardDescription className="mt-1">
               Manage agreements, users, and system settings from a single place.
             </CardDescription>
@@ -41,7 +48,8 @@ function RouteComponent() {
               </div>
               <CardTitle className="text-base">User Management</CardTitle>
               <CardDescription>
-                Manage user accounts, view user details, and perform CRUD operations.
+                Manage user accounts, view user details, and perform CRUD
+                operations.
               </CardDescription>
             </CardHeader>
           </Card>

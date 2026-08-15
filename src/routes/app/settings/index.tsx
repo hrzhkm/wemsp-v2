@@ -1,15 +1,39 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Bell, Check, ChevronRight, FileKey, KeyRound, Languages, Loader2, Monitor, Search, Shield, Smartphone } from 'lucide-react'
+import {
+  Bell,
+  Check,
+  ChevronRight,
+  FileKey,
+  KeyRound,
+  Languages,
+  Loader2,
+  Monitor,
+  Search,
+  Shield,
+  Smartphone,
+} from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { authClient } from '@/lib/auth/authClient'
 import { useLanguage } from '@/lib/i18n/context'
@@ -19,7 +43,13 @@ export const Route = createFileRoute('/app/settings/')({
   component: RouteComponent,
 })
 
-type SettingsPanel = 'active-sessions' | 'change-password' | 'document-encryption' | 'language' | 'notifications' | 'two-factor'
+type SettingsPanel =
+  | 'active-sessions'
+  | 'change-password'
+  | 'document-encryption'
+  | 'language'
+  | 'notifications'
+  | 'two-factor'
 type NotificationPreferenceKey =
   | 'emailAgreementStatusUpdates'
   | 'emailExpiryReminders'
@@ -67,16 +97,18 @@ function RouteComponent() {
   const [selectedPanel, setSelectedPanel] = useState<SettingsPanel>('language')
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [revokeOtherSessionsOnPasswordChange, setRevokeOtherSessionsOnPasswordChange] = useState(true)
+  const [
+    revokeOtherSessionsOnPasswordChange,
+    setRevokeOtherSessionsOnPasswordChange,
+  ] = useState(true)
   const [passwordForm, setPasswordForm] = useState({
     confirmNewPassword: '',
     currentPassword: '',
     newPassword: '',
   })
   const [pendingLanguage, setPendingLanguage] = useState<AppLanguage>(language)
-  const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>(
-    DEFAULT_NOTIFICATION_PREFERENCES
-  )
+  const [notificationPreferences, setNotificationPreferences] =
+    useState<NotificationPreferences>(DEFAULT_NOTIFICATION_PREFERENCES)
   const { data: sessionData } = authClient.useSession()
   const currentSessionToken = (sessionData as any)?.session?.token
 
@@ -85,7 +117,9 @@ function RouteComponent() {
     queryFn: async () => {
       const response = await (authClient as any).listSessions()
       if (response?.error) {
-        throw new Error(response.error.message || t('settings.errors.fetchSessions'))
+        throw new Error(
+          response.error.message || t('settings.errors.fetchSessions'),
+        )
       }
       return Array.isArray(response?.data) ? response.data : []
     },
@@ -94,18 +128,23 @@ function RouteComponent() {
   const sessions = useMemo(
     () =>
       (sessionsQuery.data || []).sort(
-        (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       ),
-    [sessionsQuery.data]
+    [sessionsQuery.data],
   )
 
   const notificationPreferencesQuery = useQuery({
     queryKey: ['notification-preferences'],
     queryFn: async () => {
-      const response = await fetch('/api/user/notification-preferences', { method: 'GET' })
+      const response = await fetch('/api/user/notification-preferences', {
+        method: 'GET',
+      })
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || t('settings.errors.loadNotificationPreferences'))
+        throw new Error(
+          data.error || t('settings.errors.loadNotificationPreferences'),
+        )
       }
       return data.settings as UserSettings
     },
@@ -115,7 +154,9 @@ function RouteComponent() {
     if (!notificationPreferencesQuery.data) return
     setNotificationPreferences({
       ...notificationPreferencesQuery.data,
-      reminderDays: [...notificationPreferencesQuery.data.reminderDays].sort((a, b) => a - b),
+      reminderDays: [...notificationPreferencesQuery.data.reminderDays].sort(
+        (a, b) => a - b,
+      ),
     })
     setPendingLanguage(notificationPreferencesQuery.data.preferredLanguage)
   }, [notificationPreferencesQuery.data])
@@ -131,12 +172,16 @@ function RouteComponent() {
       })
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || t('settings.errors.saveNotificationPreferences'))
+        throw new Error(
+          data.error || t('settings.errors.saveNotificationPreferences'),
+        )
       }
       return data.settings as UserSettings
     },
     onError: (error: any) => {
-      toast.error(error.message || t('settings.errors.saveNotificationPreferences'))
+      toast.error(
+        error.message || t('settings.errors.saveNotificationPreferences'),
+      )
     },
     onSuccess: (settings) => {
       queryClient.setQueryData(['notification-preferences'], settings)
@@ -162,7 +207,9 @@ function RouteComponent() {
       })
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || t('settings.errors.saveLanguagePreference'))
+        throw new Error(
+          data.error || t('settings.errors.saveLanguagePreference'),
+        )
       }
       return data.settings as UserSettings
     },
@@ -185,7 +232,9 @@ function RouteComponent() {
         revokeOtherSessions: revokeOtherSessionsOnPasswordChange,
       })
       if (response?.error) {
-        throw new Error(response.error.message || t('settings.errors.changePassword'))
+        throw new Error(
+          response.error.message || t('settings.errors.changePassword'),
+        )
       }
       return response
     },
@@ -208,7 +257,9 @@ function RouteComponent() {
     mutationFn: async () => {
       const response = await (authClient as any).revokeOtherSessions()
       if (response?.error) {
-        throw new Error(response.error.message || t('settings.errors.revokeOtherSessions'))
+        throw new Error(
+          response.error.message || t('settings.errors.revokeOtherSessions'),
+        )
       }
       return response
     },
@@ -225,7 +276,9 @@ function RouteComponent() {
     mutationFn: async (token: string) => {
       const response = await (authClient as any).revokeSession({ token })
       if (response?.error) {
-        throw new Error(response.error.message || t('settings.errors.revokeSession'))
+        throw new Error(
+          response.error.message || t('settings.errors.revokeSession'),
+        )
       }
       return response
     },
@@ -240,7 +293,11 @@ function RouteComponent() {
 
   const onChangePassword = (event: React.FormEvent) => {
     event.preventDefault()
-    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmNewPassword) {
+    if (
+      !passwordForm.currentPassword ||
+      !passwordForm.newPassword ||
+      !passwordForm.confirmNewPassword
+    ) {
       toast.error(t('settings.errors.passwordFieldsRequired'))
       return
     }
@@ -268,7 +325,10 @@ function RouteComponent() {
     })
   }
 
-  const updateNotificationPreference = (key: NotificationPreferenceKey, checked: boolean) => {
+  const updateNotificationPreference = (
+    key: NotificationPreferenceKey,
+    checked: boolean,
+  ) => {
     setNotificationPreferences((prev) => ({
       ...prev,
       [key]: checked,
@@ -291,13 +351,16 @@ function RouteComponent() {
   const normalizedNotificationState = useMemo(
     () => ({
       ...notificationPreferences,
-      reminderDays: [...notificationPreferences.reminderDays].sort((a, b) => a - b),
+      reminderDays: [...notificationPreferences.reminderDays].sort(
+        (a, b) => a - b,
+      ),
     }),
-    [notificationPreferences]
+    [notificationPreferences],
   )
 
   const normalizedServerNotificationState = useMemo(() => {
-    const source = notificationPreferencesQuery.data || DEFAULT_NOTIFICATION_PREFERENCES
+    const source =
+      notificationPreferencesQuery.data || DEFAULT_NOTIFICATION_PREFERENCES
     return {
       emailAgreementStatusUpdates: source.emailAgreementStatusUpdates,
       emailExpiryReminders: source.emailExpiryReminders,
@@ -312,7 +375,10 @@ function RouteComponent() {
   }, [notificationPreferencesQuery.data])
 
   const notificationPreferencesChanged = useMemo(() => {
-    return JSON.stringify(normalizedNotificationState) !== JSON.stringify(normalizedServerNotificationState)
+    return (
+      JSON.stringify(normalizedNotificationState) !==
+      JSON.stringify(normalizedServerNotificationState)
+    )
   }, [normalizedNotificationState, normalizedServerNotificationState])
 
   const saveNotificationPreferences = () => {
@@ -320,7 +386,9 @@ function RouteComponent() {
   }
 
   const languageHasChanges = pendingLanguage !== language
-  const settingsPanels = useMemo<Record<SettingsPanel, { description: string; title: string }>>(
+  const settingsPanels = useMemo<
+    Record<SettingsPanel, { description: string; title: string }>
+  >(
     () => ({
       'active-sessions': {
         description: t('settings.activeSessionsDescription'),
@@ -347,7 +415,7 @@ function RouteComponent() {
         title: t('settings.twoFactorTitle'),
       },
     }),
-    [t]
+    [t],
   )
 
   const leftNavItems = useMemo(
@@ -389,7 +457,7 @@ function RouteComponent() {
         label: t('settings.twoFactorTitle'),
       },
     ],
-    [t]
+    [t],
   )
 
   const filteredNavItems = useMemo(() => {
@@ -398,7 +466,7 @@ function RouteComponent() {
     return leftNavItems.filter(
       (item) =>
         item.label.toLowerCase().includes(term) ||
-        item.description.toLowerCase().includes(term)
+        item.description.toLowerCase().includes(term),
     )
   }, [leftNavItems, searchTerm])
 
@@ -437,8 +505,12 @@ function RouteComponent() {
           <div className="flex justify-end">
             <Button
               type="button"
-              onClick={() => saveLanguagePreferencesMutation.mutate(pendingLanguage)}
-              disabled={!languageHasChanges || saveLanguagePreferencesMutation.isPending}
+              onClick={() =>
+                saveLanguagePreferencesMutation.mutate(pendingLanguage)
+              }
+              disabled={
+                !languageHasChanges || saveLanguagePreferencesMutation.isPending
+              }
             >
               {saveLanguagePreferencesMutation.isPending ? (
                 <>
@@ -463,25 +535,33 @@ function RouteComponent() {
       }> = [
         {
           label: t('settings.notificationTypes.signatureRequestsTitle'),
-          description: t('settings.notificationTypes.signatureRequestsDescription'),
+          description: t(
+            'settings.notificationTypes.signatureRequestsDescription',
+          ),
           emailKey: 'emailSignatureRequests',
           inAppKey: 'inAppSignatureRequests',
         },
         {
           label: t('settings.notificationTypes.agreementStatusUpdatesTitle'),
-          description: t('settings.notificationTypes.agreementStatusUpdatesDescription'),
+          description: t(
+            'settings.notificationTypes.agreementStatusUpdatesDescription',
+          ),
           emailKey: 'emailAgreementStatusUpdates',
           inAppKey: 'inAppAgreementStatusUpdates',
         },
         {
           label: t('settings.notificationTypes.witnessConfirmationTitle'),
-          description: t('settings.notificationTypes.witnessConfirmationDescription'),
+          description: t(
+            'settings.notificationTypes.witnessConfirmationDescription',
+          ),
           emailKey: 'emailWitnessConfirmation',
           inAppKey: 'inAppWitnessConfirmation',
         },
         {
           label: t('settings.notificationTypes.expiryRemindersTitle'),
-          description: t('settings.notificationTypes.expiryRemindersDescription'),
+          description: t(
+            'settings.notificationTypes.expiryRemindersDescription',
+          ),
           emailKey: 'emailExpiryReminders',
           inAppKey: 'inAppExpiryReminders',
         },
@@ -497,10 +577,13 @@ function RouteComponent() {
           ) : null}
 
           {notificationPreferencesQuery.isError ? (
-            <p className="text-sm text-destructive">{t('settings.unableToLoadNotificationPreferences')}</p>
+            <p className="text-sm text-destructive">
+              {t('settings.unableToLoadNotificationPreferences')}
+            </p>
           ) : null}
 
-          {!notificationPreferencesQuery.isLoading && !notificationPreferencesQuery.isError ? (
+          {!notificationPreferencesQuery.isLoading &&
+          !notificationPreferencesQuery.isError ? (
             <>
               <div className="overflow-hidden rounded-lg border border-border/70">
                 <div className="grid grid-cols-[minmax(0,1fr)_5rem_5rem] gap-2 border-b border-border/70 bg-muted/30 px-4 py-2 text-xs font-medium text-muted-foreground">
@@ -517,19 +600,31 @@ function RouteComponent() {
                   >
                     <div className="pr-2">
                       <p className="text-sm font-medium">{item.label}</p>
-                      <p className="text-xs text-muted-foreground">{item.description}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.description}
+                      </p>
                     </div>
                     <div className="flex justify-center">
                       <Checkbox
                         checked={notificationPreferences[item.emailKey]}
-                        onCheckedChange={(checked) => updateNotificationPreference(item.emailKey, Boolean(checked))}
+                        onCheckedChange={(checked) =>
+                          updateNotificationPreference(
+                            item.emailKey,
+                            Boolean(checked),
+                          )
+                        }
                         aria-label={`${item.label} ${t('settings.emailNotificationsSuffix')}`}
                       />
                     </div>
                     <div className="flex justify-center">
                       <Checkbox
                         checked={notificationPreferences[item.inAppKey]}
-                        onCheckedChange={(checked) => updateNotificationPreference(item.inAppKey, Boolean(checked))}
+                        onCheckedChange={(checked) =>
+                          updateNotificationPreference(
+                            item.inAppKey,
+                            Boolean(checked),
+                          )
+                        }
                         aria-label={`${item.label} ${t('settings.inAppNotificationsSuffix')}`}
                       />
                     </div>
@@ -539,8 +634,12 @@ function RouteComponent() {
 
               <div className="space-y-3 rounded-lg border border-border/70 p-4">
                 <div>
-                  <p className="text-sm font-medium">{t('settings.reminderTimingTitle')}</p>
-                  <p className="text-xs text-muted-foreground">{t('settings.reminderTimingDescription')}</p>
+                  <p className="text-sm font-medium">
+                    {t('settings.reminderTimingTitle')}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {t('settings.reminderTimingDescription')}
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {[
@@ -551,7 +650,11 @@ function RouteComponent() {
                     <Button
                       key={item.day}
                       type="button"
-                      variant={notificationPreferences.reminderDays.includes(item.day) ? 'default' : 'outline'}
+                      variant={
+                        notificationPreferences.reminderDays.includes(item.day)
+                          ? 'default'
+                          : 'outline'
+                      }
                       size="sm"
                       onClick={() => toggleReminderDay(item.day)}
                     >
@@ -565,7 +668,10 @@ function RouteComponent() {
                 <Button
                   type="button"
                   onClick={saveNotificationPreferences}
-                  disabled={!notificationPreferencesChanged || saveNotificationPreferencesMutation.isPending}
+                  disabled={
+                    !notificationPreferencesChanged ||
+                    saveNotificationPreferencesMutation.isPending
+                  }
                 >
                   {saveNotificationPreferencesMutation.isPending ? (
                     <>
@@ -588,7 +694,9 @@ function RouteComponent() {
         <form onSubmit={onChangePassword}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="currentPassword">{t('settings.currentPasswordLabel')}</FieldLabel>
+              <FieldLabel htmlFor="currentPassword">
+                {t('settings.currentPasswordLabel')}
+              </FieldLabel>
               <Input
                 id="currentPassword"
                 type="password"
@@ -604,7 +712,9 @@ function RouteComponent() {
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="newPassword">{t('settings.newPasswordLabel')}</FieldLabel>
+              <FieldLabel htmlFor="newPassword">
+                {t('settings.newPasswordLabel')}
+              </FieldLabel>
               <Input
                 id="newPassword"
                 type="password"
@@ -620,7 +730,9 @@ function RouteComponent() {
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="confirmNewPassword">{t('settings.confirmNewPasswordLabel')}</FieldLabel>
+              <FieldLabel htmlFor="confirmNewPassword">
+                {t('settings.confirmNewPasswordLabel')}
+              </FieldLabel>
               <Input
                 id="confirmNewPassword"
                 type="password"
@@ -638,12 +750,18 @@ function RouteComponent() {
             <label className="flex items-center gap-3 text-sm">
               <Checkbox
                 checked={revokeOtherSessionsOnPasswordChange}
-                onCheckedChange={(checked) => setRevokeOtherSessionsOnPasswordChange(Boolean(checked))}
+                onCheckedChange={(checked) =>
+                  setRevokeOtherSessionsOnPasswordChange(Boolean(checked))
+                }
                 disabled={changePasswordMutation.isPending}
               />
               {t('settings.logOutOtherDevicesAfterPasswordChange')}
             </label>
-            <Button type="submit" disabled={changePasswordMutation.isPending} className="w-fit">
+            <Button
+              type="submit"
+              disabled={changePasswordMutation.isPending}
+              className="w-fit"
+            >
               {changePasswordMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -665,7 +783,9 @@ function RouteComponent() {
             <Button
               type="button"
               variant="outline"
-              disabled={revokeOtherSessionsMutation.isPending || sessionsQuery.isPending}
+              disabled={
+                revokeOtherSessionsMutation.isPending || sessionsQuery.isPending
+              }
               onClick={() => revokeOtherSessionsMutation.mutate()}
             >
               {revokeOtherSessionsMutation.isPending ? (
@@ -687,17 +807,25 @@ function RouteComponent() {
           ) : null}
 
           {sessionsQuery.isError ? (
-            <p className="text-sm text-destructive">{t('settings.unableToLoadActiveSessions')}</p>
+            <p className="text-sm text-destructive">
+              {t('settings.unableToLoadActiveSessions')}
+            </p>
           ) : null}
 
-          {!sessionsQuery.isPending && !sessionsQuery.isError && sessions.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t('settings.noActiveSessionsFound')}</p>
+          {!sessionsQuery.isPending &&
+          !sessionsQuery.isError &&
+          sessions.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {t('settings.noActiveSessionsFound')}
+            </p>
           ) : null}
 
           {sessions.length > 0 ? (
             <div className="overflow-hidden rounded-lg border border-border/70">
               {sessions.map((session: any, index: number) => {
-                const isCurrentSession = Boolean(currentSessionToken && session.token === currentSessionToken)
+                const isCurrentSession = Boolean(
+                  currentSessionToken && session.token === currentSessionToken,
+                )
                 return (
                   <div
                     key={session.id}
@@ -705,7 +833,9 @@ function RouteComponent() {
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="text-sm font-medium">
-                        {isCurrentSession ? t('settings.currentDevice') : t('settings.signedInDevice')}
+                        {isCurrentSession
+                          ? t('settings.currentDevice')
+                          : t('settings.signedInDevice')}
                       </div>
                       {!isCurrentSession ? (
                         <Button
@@ -713,7 +843,9 @@ function RouteComponent() {
                           variant="ghost"
                           size="sm"
                           disabled={revokeSessionMutation.isPending}
-                          onClick={() => revokeSessionMutation.mutate(session.token)}
+                          onClick={() =>
+                            revokeSessionMutation.mutate(session.token)
+                          }
                         >
                           {t('settings.logOut')}
                         </Button>
@@ -723,13 +855,23 @@ function RouteComponent() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">{t('settings.createdLabel')}: {formatDateTime(session.createdAt)}</p>
-                    <p className="text-xs text-muted-foreground">{t('settings.expiresLabel')}: {formatDateTime(session.expiresAt)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t('settings.createdLabel')}:{' '}
+                      {formatDateTime(session.createdAt)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {t('settings.expiresLabel')}:{' '}
+                      {formatDateTime(session.expiresAt)}
+                    </p>
                     {session.ipAddress ? (
-                      <p className="text-xs text-muted-foreground">{t('settings.ipLabel')}: {session.ipAddress}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('settings.ipLabel')}: {session.ipAddress}
+                      </p>
                     ) : null}
                     {session.userAgent ? (
-                      <p className="line-clamp-2 break-words text-xs text-muted-foreground">{session.userAgent}</p>
+                      <p className="line-clamp-2 break-words text-xs text-muted-foreground">
+                        {session.userAgent}
+                      </p>
                     ) : null}
                   </div>
                 )
@@ -780,7 +922,9 @@ function RouteComponent() {
 
             <div className="overflow-hidden rounded-lg border border-border/70">
               {filteredNavItems.length === 0 ? (
-                <div className="p-4 text-sm text-muted-foreground">{t('settings.noSettingsMatchSearch')}</div>
+                <div className="p-4 text-sm text-muted-foreground">
+                  {t('settings.noSettingsMatchSearch')}
+                </div>
               ) : (
                 filteredNavItems.map((item, index) => (
                   <button
@@ -793,14 +937,22 @@ function RouteComponent() {
                       }
                     }}
                     className={`flex min-h-[5.5rem] w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors ${
-                      selectedPanel === item.id ? 'bg-primary/10' : 'hover:bg-muted/40'
+                      selectedPanel === item.id
+                        ? 'bg-primary/10'
+                        : 'hover:bg-muted/40'
                     } ${index > 0 ? 'border-t border-border/70' : ''}`}
                   >
                     <div className="flex min-w-0 items-start gap-3">
-                      <span className="mt-0.5 text-muted-foreground">{item.icon}</span>
+                      <span className="mt-0.5 text-muted-foreground">
+                        {item.icon}
+                      </span>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium">{item.label}</p>
-                        <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{item.description}</p>
+                        <p className="truncate text-sm font-medium">
+                          {item.label}
+                        </p>
+                        <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                          {item.description}
+                        </p>
                       </div>
                     </div>
                     <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -816,11 +968,16 @@ function RouteComponent() {
             <CardTitle>{selectedPanelInfo.title}</CardTitle>
             <CardDescription>{selectedPanelInfo.description}</CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 pt-6">{renderPanelContent()}</CardContent>
+          <CardContent className="flex-1 pt-6">
+            {renderPanelContent()}
+          </CardContent>
         </Card>
       </div>
 
-      <Sheet open={isMobile && mobilePanelOpen} onOpenChange={setMobilePanelOpen}>
+      <Sheet
+        open={isMobile && mobilePanelOpen}
+        onOpenChange={setMobilePanelOpen}
+      >
         <SheetContent
           side="right"
           className="inset-0 h-dvh w-[100dvw] max-w-[100dvw] overflow-hidden gap-0 rounded-none border-0 p-0 sm:max-w-[100dvw]"
@@ -829,7 +986,9 @@ function RouteComponent() {
             <SheetTitle>{selectedPanelInfo.title}</SheetTitle>
             <SheetDescription>{selectedPanelInfo.description}</SheetDescription>
           </SheetHeader>
-          <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-4">{renderPanelContent()}</div>
+          <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-4">
+            {renderPanelContent()}
+          </div>
         </SheetContent>
       </Sheet>
     </div>

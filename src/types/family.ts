@@ -1,4 +1,4 @@
-import { FamilyRelationType } from '@/lib/family/familyTypes'
+import type { FamilyRelationType } from '@/lib/family/familyTypes'
 
 export type FamilyMemberType = 'registered' | 'non-registered'
 
@@ -26,10 +26,14 @@ export interface NonRegisteredFamilyMember {
 
 export type FamilyMember = RegisteredFamilyMember | NonRegisteredFamilyMember
 
-export function isRegisteredFamilyMember(member: FamilyMember): member is RegisteredFamilyMember {
+export function isRegisteredFamilyMember(
+  member: FamilyMember,
+): member is RegisteredFamilyMember {
   return member.type === 'registered'
 }
 
-export function isNonRegisteredFamilyMember(member: FamilyMember): member is NonRegisteredFamilyMember {
+export function isNonRegisteredFamilyMember(
+  member: FamilyMember,
+): member is NonRegisteredFamilyMember {
   return member.type === 'non-registered'
 }

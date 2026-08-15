@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { validateSignature, validateStatusTransition } from '@/lib/agreement/agreementValidation'
+import {
+  validateSignature,
+  validateStatusTransition,
+} from '@/lib/agreement/agreementValidation'
 
 describe('agreement signature lifecycle guards', () => {
   it('owner can only sign in DRAFT or PENDING_SIGNATURES', () => {
@@ -8,7 +11,7 @@ describe('agreement signature lifecycle guards', () => {
     })
 
     expect(result.valid).toBe(false)
-    expect(result.errors[0]).toMatch(/Owner can only sign agreements/) 
+    expect(result.errors[0]).toMatch(/Owner can only sign agreements/)
   })
 
   it('beneficiary cannot sign when not in PENDING_SIGNATURES', () => {
@@ -17,7 +20,7 @@ describe('agreement signature lifecycle guards', () => {
     })
 
     expect(result.valid).toBe(false)
-    expect(result.errors[0]).toMatch(/Beneficiaries can only sign agreements/) 
+    expect(result.errors[0]).toMatch(/Beneficiaries can only sign agreements/)
   })
 
   it('witness requires admin role and PENDING_WITNESS status', () => {
@@ -33,9 +36,13 @@ describe('agreement signature lifecycle guards', () => {
   })
 
   it('transition to PENDING_WITNESS requires all beneficiaries signed', () => {
-    const result = validateStatusTransition('PENDING_SIGNATURES', 'PENDING_WITNESS', {
-      allBeneficiariesSigned: false,
-    })
+    const result = validateStatusTransition(
+      'PENDING_SIGNATURES',
+      'PENDING_WITNESS',
+      {
+        allBeneficiariesSigned: false,
+      },
+    )
 
     expect(result.valid).toBe(false)
     expect(result.errors[0]).toContain('All beneficiaries must sign')

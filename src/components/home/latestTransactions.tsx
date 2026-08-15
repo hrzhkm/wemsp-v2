@@ -1,71 +1,85 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+ 
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Loader2, ExternalLink, Clock, Hash } from 'lucide-react';
-import { format } from 'date-fns';
-import { getLatestTransactions, LatestTransaction, getTransactionDescription, getTransactionTypeDisplayName } from '@/services/latestTransactions';
-import { CONTRACT_ADDRESS } from '@/lib/blockchain/config';
+import { useEffect, useState } from 'react'
+import { Clock, ExternalLink, Hash, Loader2 } from 'lucide-react'
+import { format } from 'date-fns'
+import type {
+  LatestTransaction} from '@/services/latestTransactions';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  getLatestTransactions,
+  getTransactionDescription,
+  getTransactionTypeDisplayName,
+} from '@/services/latestTransactions'
+import { CONTRACT_ADDRESS } from '@/lib/blockchain/config'
 
 export default function LatestTransactions() {
-  const [transactions, setTransactions] = useState<LatestTransaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [transactions, setTransactions] = useState<Array<LatestTransaction>>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
 
   useEffect(() => {
     const fetchTransactions = async (isInitialLoad = false) => {
       try {
         if (isInitialLoad) {
-          setLoading(true);
+          setLoading(true)
         }
-        setError(null);
-        const latestTxs = await getLatestTransactions(5); // Get latest 5 transactions
-        setTransactions(latestTxs);
-        setLastUpdate(new Date());
+        setError(null)
+        const latestTxs = await getLatestTransactions(5) // Get latest 5 transactions
+        setTransactions(latestTxs)
+        setLastUpdate(new Date())
       } catch (err) {
-        console.error('Error fetching latest transactions:', err);
-        setError('Failed to load blockchain transactions. This may be due to network connectivity or The Graph API being temporarily unavailable.');
+        console.error('Error fetching latest transactions:', err)
+        setError(
+          'Failed to load blockchain transactions. This may be due to network connectivity or The Graph API being temporarily unavailable.',
+        )
       } finally {
         if (isInitialLoad) {
-          setLoading(false);
+          setLoading(false)
         }
       }
-    };
+    }
 
     // Initial fetch
-    fetchTransactions(true);
+    fetchTransactions(true)
 
     // Set up periodic refresh every 30 seconds
-    const interval = setInterval(() => fetchTransactions(false), 30000);
+    const interval = setInterval(() => fetchTransactions(false), 30000)
 
     // Cleanup interval on component unmount
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(interval)
+  }, [])
 
   const getBadgeVariant = (type: string) => {
     switch (type) {
       case 'created':
-        return 'default';
+        return 'default'
       case 'signed':
-        return 'secondary';
+        return 'secondary'
       case 'admin_signed':
-        return 'success';
+        return 'success'
       case 'completed':
-        return 'success';
+        return 'success'
       case 'signer_added':
-        return 'outline';
+        return 'outline'
       default:
-        return 'outline';
+        return 'outline'
     }
-  };
+  }
 
   const formatTransactionHash = (hash: string) => {
-    return `${hash.slice(0, 6)}...${hash.slice(-4)}`;
-  };
+    return `${hash.slice(0, 6)}...${hash.slice(-4)}`
+  }
 
   return (
     <div id="blockchain" className="bg-white py-20 w-full">
@@ -73,18 +87,14 @@ export default function LatestTransactions() {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Blockchain Transparency</h2>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-            All agreements and transactions are recorded on the blockchain for complete transparency and immutability.
-            View the latest activity from our smart contract.
+            All agreements and transactions are recorded on the blockchain for
+            complete transparency and immutability. View the latest activity
+            from our smart contract.
           </p>
           <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
             <Hash className="h-4 w-4" />
             <span>Contract: {CONTRACT_ADDRESS}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="p-0 h-auto"
-            >
+            <Button variant="ghost" size="sm" asChild className="p-0 h-auto">
               <a
                 href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESS}`}
                 target="_blank"
@@ -124,21 +134,26 @@ export default function LatestTransactions() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setError(null);
-                    setLoading(true);
+                    setError(null)
+                    setLoading(true)
                     const fetchTransactions = async () => {
                       try {
-                        const latestTxs = await getLatestTransactions(5);
-                        setTransactions(latestTxs);
-                        setLastUpdate(new Date());
+                        const latestTxs = await getLatestTransactions(5)
+                        setTransactions(latestTxs)
+                        setLastUpdate(new Date())
                       } catch (err) {
-                        console.error('Error fetching latest transactions:', err);
-                        setError('Failed to load blockchain transactions. This may be due to network connectivity or The Graph API being temporarily unavailable.');
+                        console.error(
+                          'Error fetching latest transactions:',
+                          err,
+                        )
+                        setError(
+                          'Failed to load blockchain transactions. This may be due to network connectivity or The Graph API being temporarily unavailable.',
+                        )
                       } finally {
-                        setLoading(false);
+                        setLoading(false)
                       }
-                    };
-                    fetchTransactions();
+                    }
+                    fetchTransactions()
                   }}
                   className="mt-4"
                 >
@@ -158,7 +173,9 @@ export default function LatestTransactions() {
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-2">
-                        <Badge variant={getBadgeVariant(transaction.type) as any}>
+                        <Badge
+                          variant={getBadgeVariant(transaction.type) as any}
+                        >
                           {getTransactionTypeDisplayName(transaction.type)}
                         </Badge>
                         <span className="text-sm text-gray-500">
@@ -195,12 +212,9 @@ export default function LatestTransactions() {
                     </Button>
                   </div>
                 ))}
-                
+
                 <div className="text-center pt-4">
-                  <Button
-                    variant="outline"
-                    asChild
-                  >
+                  <Button variant="outline" asChild>
                     <a
                       href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESS}`}
                       target="_blank"
@@ -217,5 +231,5 @@ export default function LatestTransactions() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

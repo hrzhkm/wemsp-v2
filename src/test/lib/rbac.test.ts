@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
+import type {AppRole} from '@/lib/auth/rbac';
 import {
-  getRoleFromSession,
-  isAdmin,
+  
   canAccessAppRoute,
+  getRoleFromSession,
   getUnauthorizedRedirect,
-  type AppRole,
+  isAdmin
 } from '@/lib/auth/rbac'
 
 describe('getRoleFromSession', () => {
@@ -40,7 +41,9 @@ describe('canAccessAppRoute', () => {
   it('blocks admin route prefixes for USER', () => {
     expect(canAccessAppRoute('USER', '/app/admin')).toBe(false)
     expect(canAccessAppRoute('USER', '/app/admin/users')).toBe(false)
-    expect(canAccessAppRoute('USER', '/app/admin/agreements/pending-witness')).toBe(false)
+    expect(
+      canAccessAppRoute('USER', '/app/admin/agreements/pending-witness'),
+    ).toBe(false)
   })
 
   it('allows admin route prefixes for ADMIN', () => {

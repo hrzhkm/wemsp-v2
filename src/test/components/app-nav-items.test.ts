@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { getVisibleNavItems, adminNavItems, type NavItem } from '@/components/appNavItems'
+import type {NavItem} from '@/components/appNavItems';
+import {
+  
+  adminNavItems,
+  getVisibleNavItems
+} from '@/components/appNavItems'
 
 describe('getVisibleNavItems', () => {
   it('hides admin-only items from USER', () => {
@@ -37,6 +42,7 @@ describe('getVisibleNavItems', () => {
         'navigation.adminAssets',
         'navigation.adminAgreements',
         'navigation.adminPendingWitness',
+        'navigation.adminTransactions',
       ]),
     )
   })

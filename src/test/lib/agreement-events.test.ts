@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Interface, toBeHex } from 'ethers'
 
-import { getAgreementOnChainEvents } from '@/lib/blockchain/agreementEvents'
+import {
+  getAgreementOnChainEvents,
+  getAllContractEvents,
+} from '@/lib/blockchain/agreementEvents'
 import AgreementContractArtifact from '@/contract/AgreementContract.json'
 
 const mocks = vi.hoisted(() => ({
@@ -24,7 +27,13 @@ vi.mock('@/lib/blockchain/contract', () => ({
 
 const iface = new Interface(AgreementContractArtifact.abi)
 
-function makeLog(eventName: string, args: Array<unknown>, blockNumber: number, txHash: string, index = 0) {
+function makeLog(
+  eventName: string,
+  args: Array<unknown>,
+  blockNumber: number,
+  txHash: string,
+  index = 0,
+) {
   const fragment = iface.encodeEventLog(eventName as never, args as never)
   return {
     address: '0xcontract',
@@ -40,7 +49,9 @@ describe('getAgreementOnChainEvents', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mocks.getContractAddress.mockReturnValue('0xcontract')
-    mocks.getExplorerUrl.mockImplementation((h: string) => `https://explorer/${h}`)
+    mocks.getExplorerUrl.mockImplementation(
+      (h: string) => `https://explorer/${h}`,
+    )
     mocks.getFallbackProvider.mockReturnValue(null)
     mocks.isTransientError.mockReturnValue(false)
     mocks.withRetry.mockImplementation((op: () => Promise<unknown>) => op())
@@ -68,7 +79,11 @@ describe('getAgreementOnChainEvents', () => {
     mocks.getProvider.mockReturnValue({
       getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
       getLogs: vi.fn().mockResolvedValue(logs),
-      getBlock: vi.fn().mockImplementation((n: number) => Promise.resolve({ timestamp: 1700000000 + (n - 100) * 100 })),
+      getBlock: vi
+        .fn()
+        .mockImplementation((n: number) =>
+          Promise.resolve({ timestamp: 1700000000 + (n - 100) * 100 }),
+        ),
     })
 
     const events = await getAgreementOnChainEvents(5, '0xmint')
@@ -94,18 +109,22 @@ describe('getAgreementOnChainEvents', () => {
   it('falls back to the secondary provider when eth_getLogs hits a range limit', async () => {
     const primary = {
       getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
-      getLogs: vi.fn().mockRejectedValue(
-        new Error(
-          'Under the Free tier plan, you can make eth_getLogs requests with up to a 10 block range.',
+      getLogs: vi
+        .fn()
+        .mockRejectedValue(
+          new Error(
+            'Under the Free tier plan, you can make eth_getLogs requests with up to a 10 block range.',
+          ),
         ),
-      ),
       getBlock: vi.fn(),
     }
     const fallback = {
       getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
-      getLogs: vi.fn().mockResolvedValue([
-        makeLog('OwnerSigned', [5, 1700000000], 101, '0xowner'),
-      ]),
+      getLogs: vi
+        .fn()
+        .mockResolvedValue([
+          makeLog('OwnerSigned', [5, 1700000000], 101, '0xowner'),
+        ]),
       getBlock: vi.fn().mockResolvedValue({ timestamp: 1700000000 }),
     }
     mocks.getProvider.mockReturnValue(primary)
@@ -119,7 +138,12 @@ describe('getAgreementOnChainEvents', () => {
   })
 
   it('falls back to the minted-event block when there is no mint tx hash', async () => {
-    const mintLog = makeLog('AgreementMinted', [5, 'agr-1', 'ipfs://x', 2], 200, '0xmint')
+    const mintLog = makeLog(
+      'AgreementMinted',
+      [5, 'agr-1', 'ipfs://x', 2],
+      200,
+      '0xmint',
+    )
     mocks.getProvider.mockReturnValue({
       getTransactionReceipt: vi.fn().mockResolvedValue(null),
       getLogs: vi
@@ -133,7 +157,105 @@ describe('getAgreementOnChainEvents', () => {
 
     expect(events).toEqual([])
     const calls = mocks.getProvider().getLogs.mock.calls
-    expect(calls[0][0].topics[0]).toEqual(iface.getEvent('AgreementMinted').topicHash)
+    expect(calls[0][0].topics[0]).toEqual(
+      iface.getEvent('AgreementMinted').topicHash,
+    )
     expect(calls[1][0].fromBlock).toBe(200)
+  })
+})
+
+describe('getAllContractEvents', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mocks.getContractAddress.mockReturnValue('0xcontract')
+    mocks.getExplorerUrl.mockImplementation(
+      (h: string) => `https://explorer/${h}`,
+    )
+    mocks.getFallbackProvider.mockReturnValue(null)
+    mocks.isTransientError.mockReturnValue(false)
+    mocks.withRetry.mockImplementation((op: () => Promise<unknown>) => op())
+  })
+
+  it('returns an empty list when the contract has no events', async () => {
+    mocks.getProvider.mockReturnValue({
+      getLogs: vi.fn().mockResolvedValue([]),
+      getBlock: vi.fn(),
+    })
+
+    const events = await getAllContractEvents()
+    expect(events).toEqual([])
+    expect(mocks.getProvider().getLogs).toHaveBeenCalledWith(
+      expect.objectContaining({ fromBlock: 0, toBlock: 'latest' }),
+    )
+  })
+
+  it('decodes events across multiple tokens and attaches tokenId', async () => {
+    const logs = [
+      makeLog('AgreementMinted', [1, 'agr-1', 'ipfs://x', 2], 100, '0xmint1'),
+      makeLog('OwnerSigned', [1, 1700000000], 101, '0xown1'),
+      makeLog('AgreementMinted', [2, 'agr-2', 'ipfs://y', 1], 102, '0xmint2'),
+      makeLog('BeneficiarySigned', [2, 'ben_9', 1700000300], 103, '0xben2'),
+      makeLog('AgreementFinalized', [2, 1700000400], 104, '0xfin2'),
+    ]
+    mocks.getProvider.mockReturnValue({
+      getLogs: vi.fn().mockResolvedValue(logs),
+      getBlock: vi
+        .fn()
+        .mockImplementation((n: number) =>
+          Promise.resolve({ timestamp: 1700000000 + (n - 100) * 100 }),
+        ),
+    })
+
+    const events = await getAllContractEvents()
+
+    expect(events).toHaveLength(5)
+    expect(events[0]).toMatchObject({
+      type: 'AgreementMinted',
+      tokenId: 1,
+      detail: '2 beneficiaries',
+    })
+    expect(events[1]).toMatchObject({ type: 'OwnerSigned', tokenId: 1 })
+    expect(events[2]).toMatchObject({ type: 'AgreementMinted', tokenId: 2 })
+    expect(events[3]).toMatchObject({
+      type: 'BeneficiarySigned',
+      tokenId: 2,
+      beneficiaryId: 'ben_9',
+    })
+    expect(events[4]).toMatchObject({
+      type: 'AgreementFinalized',
+      tokenId: 2,
+    })
+    expect(events[4].txHash).toBe('0xfin2')
+    expect(events[4].explorerUrl).toBe('https://explorer/0xfin2')
+    expect(new Date(events[4].occurredAt).getTime()).toBe(1700000400 * 1000)
+  })
+
+  it('falls back to the secondary provider when eth_getLogs hits a range limit', async () => {
+    const primary = {
+      getLogs: vi
+        .fn()
+        .mockRejectedValue(
+          new Error(
+            'Under the Free tier plan, you can make eth_getLogs requests with up to a 10 block range.',
+          ),
+        ),
+      getBlock: vi.fn(),
+    }
+    const fallback = {
+      getLogs: vi
+        .fn()
+        .mockResolvedValue([
+          makeLog('OwnerSigned', [1, 1700000000], 101, '0xown1'),
+        ]),
+      getBlock: vi.fn().mockResolvedValue({ timestamp: 1700000000 }),
+    }
+    mocks.getProvider.mockReturnValue(primary)
+    mocks.getFallbackProvider.mockReturnValue(fallback)
+
+    const events = await getAllContractEvents()
+
+    expect(events).toHaveLength(1)
+    expect(events[0].type).toBe('OwnerSigned')
+    expect(fallback.getLogs).toHaveBeenCalled()
   })
 })

@@ -1,15 +1,15 @@
-import { useState } from "react"
-import { toast } from "sonner"
-import { Mail, CheckCircle2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { CheckCircle2, Mail } from 'lucide-react'
+import { createAuthClient } from 'better-auth/client'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { createAuthClient } from "better-auth/client"
+} from '@/components/ui/dialog'
 
 const authClient = createAuthClient()
 
@@ -37,12 +37,14 @@ export function VerificationDialog({
       })
 
       if (data.error) {
-        toast.error(data.error.message || "Failed to resend verification email.")
+        toast.error(
+          data.error.message || 'Failed to resend verification email.',
+        )
       } else {
-        toast.success("Verification email sent! Please check your inbox.")
+        toast.success('Verification email sent! Please check your inbox.')
       }
     } catch (err) {
-      toast.error("An unexpected error occurred. Please try again.")
+      toast.error('An unexpected error occurred. Please try again.')
     } finally {
       setIsResending(false)
     }
@@ -57,14 +59,18 @@ export function VerificationDialog({
           </div>
           <DialogTitle className="text-center">Verify your email</DialogTitle>
           <DialogDescription className="text-center">
-            We've sent a verification link to <span className="font-medium">{email}</span>.
-            Please check your inbox and click the link to verify your account.
+            We've sent a verification link to{' '}
+            <span className="font-medium">{email}</span>. Please check your
+            inbox and click the link to verify your account.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
             <CheckCircle2 className="h-5 w-5 text-green-500" />
-            <p>After clicking the link, you'll be automatically signed in and redirected.</p>
+            <p>
+              After clicking the link, you'll be automatically signed in and
+              redirected.
+            </p>
           </div>
           <Button
             variant="outline"
@@ -72,7 +78,7 @@ export function VerificationDialog({
             onClick={handleResend}
             disabled={isResending}
           >
-            {isResending ? "Resending..." : "Resend verification email"}
+            {isResending ? 'Resending...' : 'Resend verification email'}
           </Button>
         </div>
       </DialogContent>

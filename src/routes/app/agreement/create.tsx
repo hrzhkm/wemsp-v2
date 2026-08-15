@@ -1,5 +1,10 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Ban, FileText, Info, Loader2, Package, Users, X } from 'lucide-react'
+import { toast } from 'sonner'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { DistributionType } from '@/generated/prisma/enums'
+import type {BeneficiaryWithShare, FamilyMember} from '@/lib/faraid/faraidCalculator';
 import { authClient } from '@/lib/auth/authClient'
 import {
   Card,
@@ -18,19 +23,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Loader2, X, FileText, Package, Users, Info, Ban } from 'lucide-react'
-import { toast } from 'sonner'
-import { useState, useEffect, useMemo, useRef } from 'react'
-import { DistributionType } from '@/generated/prisma/enums'
-import {
-  calculateAutoFaraidDistribution,
-  type FamilyMember,
-  type BeneficiaryWithShare,
+  
+  
+  calculateAutoFaraidDistribution
 } from '@/lib/faraid/faraidCalculator'
 
 export const Route = createFileRoute('/app/agreement/create')({
@@ -86,9 +83,11 @@ function RouteComponent() {
 
   // Get IDs of assets that are already allocated in active agreements
   const allocatedAssetIds = useMemo(() => {
-    const activeAgreements = agreementsData?.agreements?.filter(
-      (agreement: any) => !['CANCELLED', 'COMPLETED', 'EXPIRED'].includes(agreement.status)
-    ) || []
+    const activeAgreements =
+      agreementsData?.agreements?.filter(
+        (agreement: any) =>
+          !['CANCELLED', 'COMPLETED', 'EXPIRED'].includes(agreement.status),
+      ) || []
 
     const assetIds = new Set<number>()
     activeAgreements.forEach((agreement: any) => {
@@ -100,8 +99,11 @@ function RouteComponent() {
     return assetIds
   }, [agreementsData])
   const allMembers = useMemo(
-    () => [...(familyData?.registered || []), ...(familyData?.nonRegistered || [])],
-    [familyData?.registered, familyData?.nonRegistered]
+    () => [
+      ...(familyData?.registered || []),
+      ...(familyData?.nonRegistered || []),
+    ],
+    [familyData?.registered, familyData?.nonRegistered],
   )
 
   const [formData, setFormData] = useState({
@@ -113,21 +115,25 @@ function RouteComponent() {
   })
 
   // Selected assets as IDs
-  const [selectedAssetIds, setSelectedAssetIds] = useState<number[]>([])
+  const [selectedAssetIds, setSelectedAssetIds] = useState<Array<number>>([])
 
   // Beneficiaries: array of member IDs with their shares
-  const [beneficiaries, setBeneficiaries] = useState<Array<{
-    memberId: number
-    type: 'registered' | 'non-registered'
-    name: string
-    relation: string
-    sharePercentage: number
-  }>>([])
+  const [beneficiaries, setBeneficiaries] = useState<
+    Array<{
+      memberId: number
+      type: 'registered' | 'non-registered'
+      name: string
+      relation: string
+      sharePercentage: number
+    }>
+  >([])
 
   // Faraid calculation result
-  const [faraidResult, setFaraidResult] = useState<BeneficiaryWithShare[] | null>(null)
+  const [faraidResult, setFaraidResult] = useState<
+    Array<BeneficiaryWithShare> | null
+  >(null)
   const [faraidDescription, setFaraidDescription] = useState<string>('')
-  const [faraidWarnings, setFaraidWarnings] = useState<string[]>([])
+  const [faraidWarnings, setFaraidWarnings] = useState<Array<string>>([])
 
   // Track the last calculated distribution type and member IDs to prevent infinite loops
   const faraidCalculationRef = useRef<{
@@ -139,16 +145,22 @@ function RouteComponent() {
   useEffect(() => {
     if (formData.distributionType === 'FARAID' && allMembers.length > 0) {
       // Create a stable key from member IDs
-      const currentMemberIds = allMembers.map((m: any) => m.id).sort().join(',')
+      const currentMemberIds = allMembers
+        .map((m: any) => m.id)
+        .sort()
+        .join(',')
 
       // Check if we've already calculated for this exact set of members
-      if (faraidCalculationRef.current?.memberIds === currentMemberIds &&
-          faraidCalculationRef.current?.distributionType === formData.distributionType) {
+      if (
+        faraidCalculationRef.current?.memberIds === currentMemberIds &&
+        faraidCalculationRef.current?.distributionType ===
+          formData.distributionType
+      ) {
         return // Skip - already calculated
       }
 
       // Convert family members to the format expected by the calculator
-      const familyMembers: FamilyMember[] = allMembers.map((member: any) => ({
+      const familyMembers: Array<FamilyMember> = allMembers.map((member: any) => ({
         id: member.id,
         type: member.type,
         name: member.name,
@@ -170,7 +182,7 @@ function RouteComponent() {
           name: b.name,
           relation: b.relation,
           sharePercentage: b.sharePercentage,
-        }))
+        })),
       )
 
       // Track this calculation
@@ -196,10 +208,11 @@ function RouteComponent() {
         distributionType: formData.distributionType,
         effectiveDate: formData.effectiveDate || null,
         expiryDate: formData.expiryDate || null,
-        assets: selectedAssetIds.map(assetId => ({ assetId })),
-        beneficiaries: beneficiaries.map(b => ({
+        assets: selectedAssetIds.map((assetId) => ({ assetId })),
+        beneficiaries: beneficiaries.map((b) => ({
           familyMemberId: b.type === 'registered' ? b.memberId : undefined,
-          nonRegisteredFamilyMemberId: b.type === 'non-registered' ? b.memberId : undefined,
+          nonRegisteredFamilyMemberId:
+            b.type === 'non-registered' ? b.memberId : undefined,
           sharePercentage: b.sharePercentage,
           relation: b.relation,
         })),
@@ -221,7 +234,10 @@ function RouteComponent() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['agreements'] })
       toast.success('Agreement created successfully')
-      router.navigate({ to: `/app/agreement/view/$id`, params: { id: data.agreement.id } })
+      router.navigate({
+        to: `/app/agreement/view/$id`,
+        params: { id: data.agreement.id },
+      })
     },
     onError: (error: Error) => {
       console.error('Error creating agreement:', error)
@@ -243,7 +259,7 @@ function RouteComponent() {
     setSelectedAssetIds((prev) =>
       prev.includes(assetId)
         ? prev.filter((id) => id !== assetId)
-        : [...prev, assetId]
+        : [...prev, assetId],
     )
   }
 
@@ -272,8 +288,8 @@ function RouteComponent() {
   const updateBeneficiaryShare = (memberId: number, share: number) => {
     setBeneficiaries(
       beneficiaries.map((b) =>
-        b.memberId === memberId ? { ...b, sharePercentage: share } : b
-      )
+        b.memberId === memberId ? { ...b, sharePercentage: share } : b,
+      ),
     )
   }
 
@@ -309,7 +325,9 @@ function RouteComponent() {
     const totalShare = getTotalShare()
     const tolerance = formData.distributionType === 'FARAID' ? 5 : 0.1 // More tolerance for Faraid due to rounding
     if (Math.abs(totalShare - 100) > tolerance) {
-      toast.error(`Total shares must equal 100%. Current total: ${totalShare.toFixed(1)}%`)
+      toast.error(
+        `Total shares must equal 100%. Current total: ${totalShare.toFixed(1)}%`,
+      )
       return
     }
 
@@ -331,7 +349,9 @@ function RouteComponent() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <CardTitle>Create Agreement</CardTitle>
-              <CardDescription>Create a new Islamic asset distribution agreement</CardDescription>
+              <CardDescription>
+                Create a new Islamic asset distribution agreement
+              </CardDescription>
             </div>
             <Button
               type="button"
@@ -366,13 +386,18 @@ function RouteComponent() {
 
               {/* Description Field */}
               <Field className="group">
-                <FieldLabel htmlFor="description" className="text-sm font-medium">
+                <FieldLabel
+                  htmlFor="description"
+                  className="text-sm font-medium"
+                >
                   Description
                 </FieldLabel>
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange('description', e.target.value)
+                  }
                   placeholder="Optional description of this agreement"
                   rows={3}
                 />
@@ -380,20 +405,32 @@ function RouteComponent() {
 
               {/* Distribution Type Field */}
               <Field className="group">
-                <FieldLabel htmlFor="distributionType" className="text-sm font-medium">
+                <FieldLabel
+                  htmlFor="distributionType"
+                  className="text-sm font-medium"
+                >
                   Distribution Type <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Select
                   value={formData.distributionType}
-                  onValueChange={(value) => handleInputChange('distributionType', value as DistributionType)}
+                  onValueChange={(value) =>
+                    handleInputChange(
+                      'distributionType',
+                      value as DistributionType,
+                    )
+                  }
                 >
                   <SelectTrigger id="distributionType" className="h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="FARAID">Faraid (Islamic Inheritance Law)</SelectItem>
+                    <SelectItem value="FARAID">
+                      Faraid (Islamic Inheritance Law)
+                    </SelectItem>
                     <SelectItem value="HIBAH">Hibah (Gift)</SelectItem>
-                    <SelectItem value="WASIYYAH">Wasiyyah (Will - up to 1/3)</SelectItem>
+                    <SelectItem value="WASIYYAH">
+                      Wasiyyah (Will - up to 1/3)
+                    </SelectItem>
                     <SelectItem value="WAKAF">Wakaf (Endowment)</SelectItem>
                   </SelectContent>
                 </Select>
@@ -402,26 +439,36 @@ function RouteComponent() {
               {/* Dates */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field className="group">
-                  <FieldLabel htmlFor="effectiveDate" className="text-sm font-medium">
+                  <FieldLabel
+                    htmlFor="effectiveDate"
+                    className="text-sm font-medium"
+                  >
                     Effective Date
                   </FieldLabel>
                   <Input
                     id="effectiveDate"
                     type="date"
                     value={formData.effectiveDate}
-                    onChange={(e) => handleInputChange('effectiveDate', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('effectiveDate', e.target.value)
+                    }
                     className="h-10"
                   />
                 </Field>
                 <Field className="group">
-                  <FieldLabel htmlFor="expiryDate" className="text-sm font-medium">
+                  <FieldLabel
+                    htmlFor="expiryDate"
+                    className="text-sm font-medium"
+                  >
                     Expiry Date
                   </FieldLabel>
                   <Input
                     id="expiryDate"
                     type="date"
                     value={formData.expiryDate}
-                    onChange={(e) => handleInputChange('expiryDate', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('expiryDate', e.target.value)
+                    }
                     className="h-10"
                   />
                 </Field>
@@ -453,8 +500,8 @@ function RouteComponent() {
                             isAllocated
                               ? 'bg-muted/30 opacity-60 cursor-not-allowed'
                               : isSelected
-                              ? 'border-primary bg-primary/5 cursor-pointer'
-                              : 'cursor-pointer hover:bg-muted/50'
+                                ? 'border-primary bg-primary/5 cursor-pointer'
+                                : 'cursor-pointer hover:bg-muted/50'
                           }`}
                           onClick={() => !isAllocated && toggleAsset(asset.id)}
                         >
@@ -464,11 +511,14 @@ function RouteComponent() {
                             <Package className="h-5 w-5 text-muted-foreground shrink-0" />
                           )}
                           <div className="flex-1">
-                            <div className={`font-medium ${isAllocated ? 'text-muted-foreground' : ''}`}>
+                            <div
+                              className={`font-medium ${isAllocated ? 'text-muted-foreground' : ''}`}
+                            >
                               {asset.name}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {formatAssetType(asset.type)} • ${asset.value.toLocaleString()}
+                              {formatAssetType(asset.type)} • $
+                              {asset.value.toLocaleString()}
                               {isAllocated && ' • Already allocated'}
                             </div>
                           </div>
@@ -476,7 +526,9 @@ function RouteComponent() {
                             type="checkbox"
                             checked={isSelected}
                             disabled={isAllocated}
-                            onChange={() => !isAllocated && toggleAsset(asset.id)}
+                            onChange={() =>
+                              !isAllocated && toggleAsset(asset.id)
+                            }
                             className="shrink-0"
                             onClick={(e) => e.stopPropagation()}
                           />
@@ -490,7 +542,9 @@ function RouteComponent() {
               {/* Beneficiaries */}
               <Field className="group">
                 <FieldLabel className="text-sm font-medium">
-                  {formData.distributionType === 'FARAID' ? 'Faraid Distribution' : 'Add Beneficiaries'}{' '}
+                  {formData.distributionType === 'FARAID'
+                    ? 'Faraid Distribution'
+                    : 'Add Beneficiaries'}{' '}
                   <span className="text-destructive">*</span>
                 </FieldLabel>
                 <p className="text-sm text-muted-foreground mt-1 mb-3">
@@ -508,7 +562,9 @@ function RouteComponent() {
                         <Info className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                         <div className="flex-1 text-sm">
                           <p className="font-medium mb-1">Faraid Calculation</p>
-                          <p className="text-muted-foreground">{faraidDescription}</p>
+                          <p className="text-muted-foreground">
+                            {faraidDescription}
+                          </p>
                         </div>
                       </div>
                     )}
@@ -526,9 +582,13 @@ function RouteComponent() {
                     {beneficiaries.length === 0 && (
                       <div className="text-center py-8 text-muted-foreground border rounded-lg">
                         <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                        <p>No eligible family members for Faraid distribution found.</p>
+                        <p>
+                          No eligible family members for Faraid distribution
+                          found.
+                        </p>
                         <p className="text-sm mt-1">
-                          Please add family members with eligible relations (Father, Mother, Husband, Wife, Daughter, Son, etc.)
+                          Please add family members with eligible relations
+                          (Father, Mother, Husband, Wife, Daughter, Son, etc.)
                         </p>
                       </div>
                     )}
@@ -539,20 +599,33 @@ function RouteComponent() {
                         <table className="w-full">
                           <thead>
                             <tr className="border-b bg-muted/50">
-                              <th className="text-left py-2 px-4 text-sm font-medium">Name</th>
-                              <th className="text-left py-2 px-4 text-sm font-medium">Relation</th>
-                              <th className="text-right py-2 px-4 text-sm font-medium">Faraid Share</th>
+                              <th className="text-left py-2 px-4 text-sm font-medium">
+                                Name
+                              </th>
+                              <th className="text-left py-2 px-4 text-sm font-medium">
+                                Relation
+                              </th>
+                              <th className="text-right py-2 px-4 text-sm font-medium">
+                                Faraid Share
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
                             {faraidResult?.map((beneficiary) => (
-                              <tr key={beneficiary.memberId} className="border-b last:border-b-0">
-                                <td className="py-3 px-4 font-medium">{beneficiary.name}</td>
+                              <tr
+                                key={beneficiary.memberId}
+                                className="border-b last:border-b-0"
+                              >
+                                <td className="py-3 px-4 font-medium">
+                                  {beneficiary.name}
+                                </td>
                                 <td className="py-3 px-4 text-sm text-muted-foreground">
                                   {beneficiary.relation}
                                 </td>
                                 <td className="py-3 px-4 text-right">
-                                  <div className="font-medium">{beneficiary.shareFormatted}</div>
+                                  <div className="font-medium">
+                                    {beneficiary.shareFormatted}
+                                  </div>
                                 </td>
                               </tr>
                             ))}
@@ -577,7 +650,9 @@ function RouteComponent() {
                     {/* Available family members */}
                     <div className="space-y-2 mb-4">
                       {allMembers.map((member: any) => {
-                        const isAdded = beneficiaries.find((b) => b.memberId === member.id)
+                        const isAdded = beneficiaries.find(
+                          (b) => b.memberId === member.id,
+                        )
                         return (
                           <div
                             key={member.id}
@@ -587,7 +662,10 @@ function RouteComponent() {
                             <div className="flex-1">
                               <div className="font-medium">{member.name}</div>
                               <div className="text-sm text-muted-foreground">
-                                {member.relation} {member.type === 'registered' ? `• ${member.email}` : `• ${member.icNumber}`}
+                                {member.relation}{' '}
+                                {member.type === 'registered'
+                                  ? `• ${member.email}`
+                                  : `• ${member.icNumber}`}
                               </div>
                             </div>
                             <Button
@@ -611,16 +689,27 @@ function RouteComponent() {
                         <table className="w-full">
                           <thead>
                             <tr className="border-b bg-muted/50">
-                              <th className="text-left py-2 px-4 text-sm font-medium">Name</th>
-                              <th className="text-left py-2 px-4 text-sm font-medium">Relation</th>
-                              <th className="text-right py-2 px-4 text-sm font-medium">Share %</th>
+                              <th className="text-left py-2 px-4 text-sm font-medium">
+                                Name
+                              </th>
+                              <th className="text-left py-2 px-4 text-sm font-medium">
+                                Relation
+                              </th>
+                              <th className="text-right py-2 px-4 text-sm font-medium">
+                                Share %
+                              </th>
                               <th className="w-12"></th>
                             </tr>
                           </thead>
                           <tbody>
                             {beneficiaries.map((beneficiary) => (
-                              <tr key={beneficiary.memberId} className="border-b last:border-b-0">
-                                <td className="py-2 px-4">{beneficiary.name}</td>
+                              <tr
+                                key={beneficiary.memberId}
+                                className="border-b last:border-b-0"
+                              >
+                                <td className="py-2 px-4">
+                                  {beneficiary.name}
+                                </td>
                                 <td className="py-2 px-4 text-sm text-muted-foreground">
                                   {beneficiary.relation}
                                 </td>
@@ -632,7 +721,10 @@ function RouteComponent() {
                                     step="0.1"
                                     value={beneficiary.sharePercentage}
                                     onChange={(e) =>
-                                      updateBeneficiaryShare(beneficiary.memberId, parseFloat(e.target.value) || 0)
+                                      updateBeneficiaryShare(
+                                        beneficiary.memberId,
+                                        parseFloat(e.target.value) || 0,
+                                      )
                                     }
                                     className="w-full max-w-28 text-right h-9"
                                   />
@@ -642,7 +734,9 @@ function RouteComponent() {
                                     type="button"
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => removeBeneficiary(beneficiary.memberId)}
+                                    onClick={() =>
+                                      removeBeneficiary(beneficiary.memberId)
+                                    }
                                     className="text-destructive h-8 w-8 p-0"
                                   >
                                     <X className="h-4 w-4" />
@@ -665,7 +759,8 @@ function RouteComponent() {
                         </table>
                         {Math.abs(getTotalShare() - 100) > 0.1 && (
                           <div className="p-3 text-sm text-amber-700 bg-amber-50 border-t">
-                            Total shares must equal 100%. Current: {getTotalShare().toFixed(1)}%
+                            Total shares must equal 100%. Current:{' '}
+                            {getTotalShare().toFixed(1)}%
                           </div>
                         )}
                       </div>

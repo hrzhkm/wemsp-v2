@@ -356,94 +356,94 @@ function RouteComponent() {
           <Table>
             <TableHeader className="bg-muted/35">
               <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Owner</TableHead>
-              <TableHead>Value</TableHead>
-              <TableHead>Document</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead>Stats</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={8} className="py-8">
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                  </div>
-                </TableCell>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead>Value</TableHead>
+                <TableHead>Document</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead>Stats</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ) : assets.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} className="text-center py-8">
-                  No assets found
-                </TableCell>
-              </TableRow>
-            ) : (
-              assets.map((asset) => (
-                <TableRow key={asset.id}>
-                  <TableCell className="font-medium">{asset.name}</TableCell>
-                  <TableCell>
-                    <span className="px-2 py-1 rounded text-xs bg-secondary">
-                      {asset.type}
-                    </span>
-                  </TableCell>
-                  <TableCell>{asset.user.name}</TableCell>
-                  <TableCell className="font-medium">
-                    {formatCurrency(asset.value)}
-                  </TableCell>
-                  <TableCell>
-                    {asset.documentUrl ? (
-                      <a
-                        href={asset.documentUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline flex items-center gap-1"
-                      >
-                        <FileTextIcon className="h-4 w-4" />
-                        View
-                      </a>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell>{formatDate(asset.createdAt)}</TableCell>
-                  <TableCell>
-                    {asset._count.agreementAssets > 0 ? (
-                      <span className="text-sm">
-                        {asset._count.agreementAssets} agreement
-                        {asset._count.agreementAssets > 1 ? 's' : ''}
-                      </span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => openEditDialog(asset)}
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => openDeleteDialog(asset)}
-                        disabled={asset._count.agreementAssets > 0}
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </Button>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="py-8">
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     </div>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : assets.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    No assets found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                assets.map((asset) => (
+                  <TableRow key={asset.id}>
+                    <TableCell className="font-medium">{asset.name}</TableCell>
+                    <TableCell>
+                      <span className="px-2 py-1 rounded text-xs bg-secondary">
+                        {asset.type}
+                      </span>
+                    </TableCell>
+                    <TableCell>{asset.user.name}</TableCell>
+                    <TableCell className="font-medium">
+                      {formatCurrency(asset.value)}
+                    </TableCell>
+                    <TableCell>
+                      {asset.documentUrl ? (
+                        <a
+                          href={asset.documentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline flex items-center gap-1"
+                        >
+                          <FileTextIcon className="h-4 w-4" />
+                          View
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>{formatDate(asset.createdAt)}</TableCell>
+                    <TableCell>
+                      {asset._count.agreementAssets > 0 ? (
+                        <span className="text-sm">
+                          {asset._count.agreementAssets} agreement
+                          {asset._count.agreementAssets > 1 ? 's' : ''}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => openEditDialog(asset)}
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => openDeleteDialog(asset)}
+                          disabled={asset._count.agreementAssets > 0}
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
 
         {/* Pagination */}

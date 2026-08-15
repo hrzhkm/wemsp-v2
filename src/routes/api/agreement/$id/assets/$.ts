@@ -7,7 +7,13 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
   server: {
     handlers: {
       // POST /api/agreement/{id}/assets - Add asset to agreement
-      POST: async ({ request, params }: { request: Request; params: { id: string } }) => {
+      POST: async ({
+        request,
+        params,
+      }: {
+        request: Request
+        params: { id: string }
+      }) => {
         const session = await auth.api.getSession({
           headers: request.headers,
         })
@@ -25,7 +31,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!assetId) {
             return Response.json(
               { error: 'Asset ID is required' },
-              { status: 400 }
+              { status: 400 },
             )
           }
 
@@ -40,7 +46,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!agreement) {
             return Response.json(
               { error: 'Agreement not found' },
-              { status: 404 }
+              { status: 404 },
             )
           }
 
@@ -48,7 +54,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (agreement.status !== 'DRAFT') {
             return Response.json(
               { error: 'Can only add assets to DRAFT agreements' },
-              { status: 403 }
+              { status: 403 },
             )
           }
 
@@ -63,7 +69,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!asset) {
             return Response.json(
               { error: 'Asset not found or does not belong to you' },
-              { status: 404 }
+              { status: 404 },
             )
           }
 
@@ -78,7 +84,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (existing) {
             return Response.json(
               { error: 'Asset is already in this agreement' },
-              { status: 409 }
+              { status: 409 },
             )
           }
 
@@ -90,7 +96,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!validation.valid) {
             return Response.json(
               { error: 'Validation failed', details: validation.errors },
-              { status: 400 }
+              { status: 400 },
             )
           }
 
@@ -108,32 +114,41 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
             },
           })
 
-          return Response.json({
-            success: true,
-            agreementAsset: {
-              id: agreementAsset.id,
-              allocatedValue: agreementAsset.allocatedValue,
-              allocatedPercentage: agreementAsset.allocatedPercentage,
-              notes: agreementAsset.notes,
-              asset: {
-                id: agreementAsset.asset.id,
-                name: agreementAsset.asset.name,
-                type: agreementAsset.asset.type,
-                value: agreementAsset.asset.value,
+          return Response.json(
+            {
+              success: true,
+              agreementAsset: {
+                id: agreementAsset.id,
+                allocatedValue: agreementAsset.allocatedValue,
+                allocatedPercentage: agreementAsset.allocatedPercentage,
+                notes: agreementAsset.notes,
+                asset: {
+                  id: agreementAsset.asset.id,
+                  name: agreementAsset.asset.name,
+                  type: agreementAsset.asset.type,
+                  value: agreementAsset.asset.value,
+                },
               },
             },
-          }, { status: 201 })
+            { status: 201 },
+          )
         } catch (error) {
           console.error('Error adding asset to agreement:', error)
           return Response.json(
             { error: 'Internal Server Error' },
-            { status: 500 }
+            { status: 500 },
           )
         }
       },
 
       // PUT /api/agreement/{id}/assets - Update asset allocation
-      PUT: async ({ request, params }: { request: Request; params: { id: string } }) => {
+      PUT: async ({
+        request,
+        params,
+      }: {
+        request: Request
+        params: { id: string }
+      }) => {
         const session = await auth.api.getSession({
           headers: request.headers,
         })
@@ -146,12 +161,17 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
 
         try {
           const body = await request.json()
-          const { agreementAssetId, allocatedValue, allocatedPercentage, notes } = body
+          const {
+            agreementAssetId,
+            allocatedValue,
+            allocatedPercentage,
+            notes,
+          } = body
 
           if (!agreementAssetId) {
             return Response.json(
               { error: 'AgreementAsset ID is required' },
-              { status: 400 }
+              { status: 400 },
             )
           }
 
@@ -166,7 +186,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!agreement) {
             return Response.json(
               { error: 'Agreement not found' },
-              { status: 404 }
+              { status: 404 },
             )
           }
 
@@ -174,7 +194,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (agreement.status !== 'DRAFT') {
             return Response.json(
               { error: 'Can only edit DRAFT agreements' },
-              { status: 403 }
+              { status: 403 },
             )
           }
 
@@ -189,7 +209,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!existing) {
             return Response.json(
               { error: 'AgreementAsset not found' },
-              { status: 404 }
+              { status: 404 },
             )
           }
 
@@ -197,8 +217,14 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           const agreementAsset = await prisma.agreementAsset.update({
             where: { id: agreementAssetId },
             data: {
-              allocatedValue: allocatedValue !== undefined ? allocatedValue : existing.allocatedValue,
-              allocatedPercentage: allocatedPercentage !== undefined ? allocatedPercentage : existing.allocatedPercentage,
+              allocatedValue:
+                allocatedValue !== undefined
+                  ? allocatedValue
+                  : existing.allocatedValue,
+              allocatedPercentage:
+                allocatedPercentage !== undefined
+                  ? allocatedPercentage
+                  : existing.allocatedPercentage,
               notes: notes !== undefined ? notes : existing.notes,
             },
             include: {
@@ -225,13 +251,19 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           console.error('Error updating agreement asset:', error)
           return Response.json(
             { error: 'Internal Server Error' },
-            { status: 500 }
+            { status: 500 },
           )
         }
       },
 
       // DELETE /api/agreement/{id}/assets - Remove asset from agreement
-      DELETE: async ({ request, params }: { request: Request; params: { id: string } }) => {
+      DELETE: async ({
+        request,
+        params,
+      }: {
+        request: Request
+        params: { id: string }
+      }) => {
         const session = await auth.api.getSession({
           headers: request.headers,
         })
@@ -249,7 +281,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!agreementAssetId) {
             return Response.json(
               { error: 'AgreementAsset ID is required' },
-              { status: 400 }
+              { status: 400 },
             )
           }
 
@@ -264,7 +296,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!agreement) {
             return Response.json(
               { error: 'Agreement not found' },
-              { status: 404 }
+              { status: 404 },
             )
           }
 
@@ -272,7 +304,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (agreement.status !== 'DRAFT') {
             return Response.json(
               { error: 'Can only edit DRAFT agreements' },
-              { status: 403 }
+              { status: 403 },
             )
           }
 
@@ -287,7 +319,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!existing) {
             return Response.json(
               { error: 'AgreementAsset not found' },
-              { status: 404 }
+              { status: 404 },
             )
           }
 
@@ -304,13 +336,19 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           console.error('Error removing asset from agreement:', error)
           return Response.json(
             { error: 'Internal Server Error' },
-            { status: 500 }
+            { status: 500 },
           )
         }
       },
 
       // GET /api/agreement/{id}/assets - List assets in agreement
-      GET: async ({ request, params }: { request: Request; params: { id: string } }) => {
+      GET: async ({
+        request,
+        params,
+      }: {
+        request: Request
+        params: { id: string }
+      }) => {
         const session = await auth.api.getSession({
           headers: request.headers,
         })
@@ -333,7 +371,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           if (!agreement) {
             return Response.json(
               { error: 'Agreement not found' },
-              { status: 404 }
+              { status: 404 },
             )
           }
 
@@ -370,7 +408,7 @@ export const Route = createFileRoute('/api/agreement/$id/assets/$')({
           console.error('Error fetching agreement assets:', error)
           return Response.json(
             { error: 'Internal Server Error' },
-            { status: 500 }
+            { status: 500 },
           )
         }
       },

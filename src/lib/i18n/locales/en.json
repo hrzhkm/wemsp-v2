@@ -189,6 +189,7 @@
       "adminAssets": "Manage Assets",
       "adminAgreements": "Manage Agreements",
       "adminPendingWitness": "Pending Witness",
+      "adminTransactions": "Transactions",
       "administration": "Administration"
     },
     "breadcrumbs": {

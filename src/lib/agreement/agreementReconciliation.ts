@@ -47,7 +47,11 @@ export async function reconcileAgreement(
 
   const tokenId = await getTokenIdByAgreementId(agreementId)
   if (tokenId === 0) {
-    return { agreementId, tokenId: agreement.tokenId ?? null, updatedFields: [] }
+    return {
+      agreementId,
+      tokenId: agreement.tokenId ?? null,
+      updatedFields: [],
+    }
   }
 
   const updatedFields: Array<string> = []

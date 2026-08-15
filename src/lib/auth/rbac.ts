@@ -13,7 +13,7 @@ const UNAUTHORIZED_REDIRECT = '/app/dashboard'
 
 // Route prefixes that require the ADMIN role. Matched by exact path or
 // `${prefix}/` boundary so lookalikes (e.g. /app/administration) are not gated.
-const appRoutePermissions: Record<string, AppRole[]> = {
+const appRoutePermissions: Record<string, Array<AppRole>> = {
   '/app/admin': ['ADMIN'],
 }
 
@@ -33,8 +33,13 @@ export function isAdmin(role: AppRole): boolean {
 
 export function canAccessAppRoute(role: AppRole, routePath: string): boolean {
   const normalized = normalizeAppRoutePath(routePath)
-  for (const [protectedPath, requiredRoles] of Object.entries(appRoutePermissions)) {
-    if (normalized === protectedPath || normalized.startsWith(`${protectedPath}/`)) {
+  for (const [protectedPath, requiredRoles] of Object.entries(
+    appRoutePermissions,
+  )) {
+    if (
+      normalized === protectedPath ||
+      normalized.startsWith(`${protectedPath}/`)
+    ) {
       return requiredRoles.includes(role)
     }
   }

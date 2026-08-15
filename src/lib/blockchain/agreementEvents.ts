@@ -16,6 +16,7 @@ export interface AgreementOnChainEvent {
   explorerUrl: string
   blockNumber: number
   occurredAt: string
+  tokenId?: number
   beneficiaryId?: string
   detail?: string
 }
@@ -78,7 +79,10 @@ async function resolveFromBlock(
   const logs = await withProviderFallback((provider) =>
     provider.getLogs({
       address: getContractAddress(),
-      topics: [iface.getEvent('AgreementMinted').topicHash, toBeHex(tokenId, 32)],
+      topics: [
+        iface.getEvent('AgreementMinted').topicHash,
+        toBeHex(tokenId, 32),
+      ],
       fromBlock: 0,
       toBlock: 'latest',
     }),
@@ -138,6 +142,7 @@ export async function getAgreementOnChainEvents(
       explorerUrl: getExplorerUrl(log.transactionHash),
       blockNumber: log.blockNumber,
       occurredAt: new Date(timestamp * 1000).toISOString(),
+      tokenId: Number(log.topics[1]),
     }
 
     if (parsed.name === 'BeneficiarySigned') {
@@ -151,6 +156,74 @@ export async function getAgreementOnChainEvents(
     events.push(event)
   }
 
-  events.sort((a, b) => a.blockNumber - b.blockNumber || a.occurredAt.localeCompare(b.occurredAt))
+  events.sort(
+    (a, b) =>
+      a.blockNumber - b.blockNumber || a.occurredAt.localeCompare(b.occurredAt),
+  )
+  return events
+}
+
+/**
+ * Fetch every lifecycle event the contract has ever emitted (across all
+ * agreements) directly from the event log. Used by the admin transaction
+ * history page. Returns an empty array when the contract has no events.
+ */
+export async function getAllContractEvents(): Promise<
+  Array<AgreementOnChainEvent>
+> {
+  const topics = [EVENT_TYPES.map((name) => iface.getEvent(name).topicHash)]
+
+  const logs = await withProviderFallback((provider) =>
+    provider.getLogs({
+      address: getContractAddress(),
+      topics,
+      fromBlock: 0,
+      toBlock: 'latest',
+    }),
+  )
+
+  const blockTimestamps = new Map<number, number>()
+  const events: Array<AgreementOnChainEvent> = []
+
+  for (const log of logs) {
+    const parsed = iface.parseLog({ topics: [...log.topics], data: log.data })
+    if (!parsed) {
+      continue
+    }
+
+    let timestamp = blockTimestamps.get(log.blockNumber)
+    if (timestamp === undefined) {
+      const block = await withProviderFallback((provider) =>
+        provider.getBlock(log.blockNumber),
+      )
+      timestamp = block?.timestamp ?? Math.floor(Date.now() / 1000)
+      blockTimestamps.set(log.blockNumber, timestamp)
+    }
+
+    const event: AgreementOnChainEvent = {
+      type: parsed.name,
+      label: EVENT_LABELS[parsed.name] ?? parsed.name,
+      txHash: log.transactionHash,
+      explorerUrl: getExplorerUrl(log.transactionHash),
+      blockNumber: log.blockNumber,
+      occurredAt: new Date(timestamp * 1000).toISOString(),
+      tokenId: Number(log.topics[1]),
+    }
+
+    if (parsed.name === 'BeneficiarySigned') {
+      event.beneficiaryId = parsed.args.beneficiaryId
+    } else if (parsed.name === 'AgreementMinted') {
+      event.detail = `${parsed.args.beneficiaryCount} beneficiaries`
+    } else if (parsed.name === 'AgreementUpdated') {
+      event.detail = parsed.args.newMetadataUri
+    }
+
+    events.push(event)
+  }
+
+  events.sort(
+    (a, b) =>
+      a.blockNumber - b.blockNumber || a.occurredAt.localeCompare(b.occurredAt),
+  )
   return events
 }

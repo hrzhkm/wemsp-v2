@@ -15,7 +15,10 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           // Extract user ID from URL
@@ -24,7 +27,10 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           const userId = pathParts[pathParts.length - 1]
 
           if (!userId) {
-            return Response.json({ error: 'User ID is required' }, { status: 400, headers: corsHeaders })
+            return Response.json(
+              { error: 'User ID is required' },
+              { status: 400, headers: corsHeaders },
+            )
           }
 
           // Get user by ID
@@ -55,13 +61,19 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           })
 
           if (!user) {
-            return Response.json({ error: 'User not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'User not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
           return Response.json({ user }, { headers: corsHeaders })
         } catch (error) {
           console.error('Error fetching user:', error)
-          return Response.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders })
+          return Response.json(
+            { error: 'Internal server error' },
+            { status: 500, headers: corsHeaders },
+          )
         }
       },
 
@@ -70,7 +82,10 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           // Extract user ID from URL
@@ -79,11 +94,15 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           const userId = pathParts[pathParts.length - 1]
 
           if (!userId) {
-            return Response.json({ error: 'User ID is required' }, { status: 400, headers: corsHeaders })
+            return Response.json(
+              { error: 'User ID is required' },
+              { status: 400, headers: corsHeaders },
+            )
           }
 
           const body = await request.json()
-          const { name, email, icNumber, phoneNumber, address, emailVerified } = body
+          const { name, email, icNumber, phoneNumber, address, emailVerified } =
+            body
 
           // Check if user exists
           const existingUser = await prisma.user.findUnique({
@@ -91,7 +110,10 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           })
 
           if (!existingUser) {
-            return Response.json({ error: 'User not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'User not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
           // Check if email is being changed and if new email already exists
@@ -103,7 +125,7 @@ export const Route = createFileRoute('/api/admin/users/$id')({
             if (emailExists) {
               return Response.json(
                 { error: 'Email already exists' },
-                { status: 400, headers: corsHeaders }
+                { status: 400, headers: corsHeaders },
               )
             }
           }
@@ -118,7 +140,7 @@ export const Route = createFileRoute('/api/admin/users/$id')({
             if (icExists) {
               return Response.json(
                 { error: 'IC number already exists' },
-                { status: 400, headers: corsHeaders }
+                { status: 400, headers: corsHeaders },
               )
             }
 
@@ -146,7 +168,9 @@ export const Route = createFileRoute('/api/admin/users/$id')({
             data: {
               ...(name && { name }),
               ...(email && { email }),
-              ...(phoneNumber !== undefined && { phoneNumber: phoneNumber || null }),
+              ...(phoneNumber !== undefined && {
+                phoneNumber: phoneNumber || null,
+              }),
               ...(address !== undefined && { address: address || null }),
               ...(emailVerified !== undefined && { emailVerified }),
             },
@@ -167,7 +191,10 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           return Response.json({ user: updatedUser }, { headers: corsHeaders })
         } catch (error) {
           console.error('Error updating user:', error)
-          return Response.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders })
+          return Response.json(
+            { error: 'Internal server error' },
+            { status: 500, headers: corsHeaders },
+          )
         }
       },
 
@@ -176,7 +203,10 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           // Extract user ID from URL
@@ -185,7 +215,10 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           const userId = pathParts[pathParts.length - 1]
 
           if (!userId) {
-            return Response.json({ error: 'User ID is required' }, { status: 400, headers: corsHeaders })
+            return Response.json(
+              { error: 'User ID is required' },
+              { status: 400, headers: corsHeaders },
+            )
           }
 
           // Check if user exists
@@ -202,11 +235,17 @@ export const Route = createFileRoute('/api/admin/users/$id')({
           })
 
           if (!existingUser) {
-            return Response.json({ error: 'User not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'User not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
           // Check if user has agreements or assets
-          if (existingUser._count.agreements > 0 || existingUser._count.assets > 0) {
+          if (
+            existingUser._count.agreements > 0 ||
+            existingUser._count.assets > 0
+          ) {
             return Response.json(
               {
                 error: 'Cannot delete user with existing agreements or assets',
@@ -215,7 +254,7 @@ export const Route = createFileRoute('/api/admin/users/$id')({
                   assets: existingUser._count.assets,
                 },
               },
-              { status: 400, headers: corsHeaders }
+              { status: 400, headers: corsHeaders },
             )
           }
 
@@ -224,10 +263,16 @@ export const Route = createFileRoute('/api/admin/users/$id')({
             where: { id: userId },
           })
 
-          return Response.json({ success: true, message: 'User deleted successfully' }, { headers: corsHeaders })
+          return Response.json(
+            { success: true, message: 'User deleted successfully' },
+            { headers: corsHeaders },
+          )
         } catch (error) {
           console.error('Error deleting user:', error)
-          return Response.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders })
+          return Response.json(
+            { error: 'Internal server error' },
+            { status: 500, headers: corsHeaders },
+          )
         }
       },
     },

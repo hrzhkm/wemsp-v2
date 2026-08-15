@@ -31,7 +31,9 @@ Domain reminders:
 - Family members can be registered or non-registered.
 - Explain in simple terms unless user asks for technical detail.`
 
-export function buildAgentSystemPrompt(languagePreference: AgentResponseLanguage = 'en') {
+export function buildAgentSystemPrompt(
+  languagePreference: AgentResponseLanguage = 'en',
+) {
   const languageRules =
     languagePreference === 'ms'
       ? `\n\nLanguage rules:\n- Default to Malay (Bahasa Melayu) for your replies.\n- If the user writes in English or explicitly asks for English, switch to English.\n- If the user mixes Malay and English, prefer natural Malay while keeping key technical terms clear.`
