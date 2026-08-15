@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { AlertCircle, ArrowLeft, Loader2, Search, User, UserPlus } from 'lucide-react'
+import { Loader2, Search, User, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import type { FamilyRelationType } from '@/lib/family/family-types'
@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { FamilyRelation } from '@/lib/family/family-types'
+import { formatMalaysianIc } from '@/lib/family/malaysian-ic'
 
 const MALAYSIAN_IC_REGEX = /^\d{12}$/
 
@@ -329,44 +330,19 @@ function RouteComponent() {
 
   return (
     <div className="space-y-4">
-      <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
-        <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <CardTitle className="text-xl">Add Family Member</CardTitle>
-            <CardDescription className="mt-1">
-              Search by IC first, then confirm details and relationship.
-            </CardDescription>
-          </div>
-          <Button variant="outline" onClick={() => router.navigate({ to: '/app/family' })}>
-            <ArrowLeft className="h-4 w-4" />
-            Back to Family
-          </Button>
-        </CardHeader>
-      </Card>
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <Card className="border-border/70">
           <CardHeader>
             <CardTitle className="text-base">1. Search By IC Number</CardTitle>
-            <CardDescription>Use a 12-digit Malaysian IC number to locate an existing record.</CardDescription>
+            <CardDescription>Enter their Malaysian IC number to find an existing record.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-xl border border-border/70 bg-muted/25 p-3">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Format example: <span className="font-medium text-foreground">950815105567</span></p>
-                  <p className="text-xs text-muted-foreground">Digits only, no spaces or dashes.</p>
-                </div>
-              </div>
-            </div>
-
             <div className="flex flex-col gap-2">
               <Label htmlFor="ic-number">IC Number</Label>
               <div className="relative">
                 <Input
                   id="ic-number"
-                  value={icNumber}
+                  value={formatMalaysianIc(icNumber)}
                   onChange={handleIcChange}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter') {
@@ -374,9 +350,9 @@ function RouteComponent() {
                       handleSearch()
                     }
                   }}
-                  placeholder="Enter 12-digit IC number"
+                  placeholder="Enter IC number"
                   className="pr-28"
-                  maxLength={12}
+                  maxLength={14}
                 />
                 <Button
                   type="button"

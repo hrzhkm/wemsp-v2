@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { Filter, Loader2, Plus, Search, Sparkles, Users, Wallet, WalletCards } from 'lucide-react'
+import { Filter, Loader2, Plus, Search, Users, Wallet, WalletCards } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import type { Asset } from '@/components/assets/assets-table'
@@ -151,10 +151,6 @@ function RouteComponent() {
         <CardHeader className="gap-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
-                <Sparkles className="h-3.5 w-3.5" />
-                {t('assetsPage.overview')}
-              </div>
               <CardTitle className="text-xl">{t('assetsPage.title')}</CardTitle>
               <CardDescription className="mt-1">
                 {t('assetsPage.subtitle')}

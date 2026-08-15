@@ -1,18 +1,12 @@
 import { useMutation } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { ArrowLeft, DollarSign, FileText, Loader2, Package, Tag, Upload, X } from 'lucide-react'
+import { DollarSign, FileText, Loader2, Package, Tag, Upload, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import type { AssetType as AssetTypeEnum } from '@/generated/prisma/enums'
 
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import {
@@ -139,21 +133,6 @@ function RouteComponent() {
 
   return (
     <div className="space-y-4">
-      <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
-        <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <CardTitle className="text-xl">Add Asset</CardTitle>
-            <CardDescription className="mt-1">
-              Add a new asset with value and optional supporting document.
-            </CardDescription>
-          </div>
-          <Button variant="outline" onClick={() => router.navigate({ to: '/app/assets' })}>
-            <ArrowLeft className="h-4 w-4" />
-            Back to Assets
-          </Button>
-        </CardHeader>
-      </Card>
-
       <Card className="border-border/70">
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-6">

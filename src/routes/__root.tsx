@@ -49,10 +49,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'WEMSP-V2',
+        title: 'WEMSP',
       },
     ],
     links: [
+      {
+        rel: 'icon',
+        href: '/assets/logo2.png',
+        type: 'image/png',
+      },
       {
         rel: 'stylesheet',
         href: appCss,
