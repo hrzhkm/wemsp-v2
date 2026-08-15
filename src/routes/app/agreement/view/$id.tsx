@@ -33,6 +33,7 @@ import { FieldGroup } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { authClient } from '@/lib/auth/authClient'
 import { getStatusColor, getStatusDescription } from '@/lib/agreement/agreementWorkflow'
+import { AgreementTimeline } from '@/components/agreement/agreementTimeline'
 
 export const Route = createFileRoute('/app/agreement/view/$id')({
   component: RouteComponent,
@@ -61,9 +62,22 @@ function RouteComponent() {
       return response.json()
     },
     enabled: !!id,
+    refetchInterval: 5000,
   })
 
   const agreement = agreementData?.agreement
+
+  // Fetch on-chain transaction history
+  const { data: historyData } = useQuery({
+    queryKey: ['agreement-history', id],
+    queryFn: async () => {
+      const response = await fetch(`/api/agreement/${id}/history`)
+      if (!response.ok) throw new Error('Failed to fetch agreement history')
+      return response.json()
+    },
+    enabled: !!id,
+    refetchInterval: 5000,
+  })
 
   // Sign as owner mutation
   const signOwnerMutation = useMutation({
@@ -81,6 +95,7 @@ function RouteComponent() {
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ['agreement', id] })
+      queryClient.invalidateQueries({ queryKey: ['agreement-history', id] })
       queryClient.invalidateQueries({ queryKey: ['agreements'] })
 
       const txHash = data?.onChain?.ownerSignatureTxHash
@@ -119,6 +134,7 @@ function RouteComponent() {
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ['agreement', id] })
+      queryClient.invalidateQueries({ queryKey: ['agreement-history', id] })
       queryClient.invalidateQueries({ queryKey: ['agreements'] })
 
       const txHash = data?.onChain?.beneficiarySignatureTxHash
@@ -151,6 +167,7 @@ function RouteComponent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['agreement', id] })
+      queryClient.invalidateQueries({ queryKey: ['agreement-history', id] })
       queryClient.invalidateQueries({ queryKey: ['agreements'] })
       toast.success('Agreement cancelled successfully')
     },
@@ -176,6 +193,7 @@ function RouteComponent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['agreement', id] })
+      queryClient.invalidateQueries({ queryKey: ['agreement-history', id] })
       queryClient.invalidateQueries({ queryKey: ['agreements'] })
       toast.success('Agreement submitted for signatures')
     },
@@ -201,6 +219,7 @@ function RouteComponent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['agreement', id] })
+      queryClient.invalidateQueries({ queryKey: ['agreement-history', id] })
       queryClient.invalidateQueries({ queryKey: ['agreements'] })
       toast.success('Agreement marked as completed')
     },
@@ -593,6 +612,18 @@ function RouteComponent() {
               </table>
             </div>
           </div>
+
+          {/* On-chain Transaction History */}
+          <AgreementTimeline
+            events={historyData?.events ?? []}
+            beneficiaries={agreement.beneficiaries.map((b: any) => ({
+              id: b.id,
+              name:
+                b.familyMember?.user?.name ||
+                b.nonRegisteredFamilyMember?.name ||
+                'Unknown',
+            }))}
+          />
 
           {/* Assets Section */}
           <div>
