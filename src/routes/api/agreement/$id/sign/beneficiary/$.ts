@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
 import { ensureAgreementMintedWithMetadata } from '@/lib/agreement/agreementMetadata'
+import { reconcileAgreement } from '@/lib/agreement/agreementReconciliation'
 import {
   getAgreementData,
   getBeneficiarySignatureStatus,
@@ -203,6 +204,14 @@ export const beneficiarySignHandlers = {
         })
       }
 
+      // Auto-check: confirm DB and on-chain state agree before responding
+      let reconciliation: { updatedFields: Array<string> } | null = null
+      try {
+        reconciliation = await reconcileAgreement(agreementId)
+      } catch (reconcileError) {
+        console.error(`Error reconciling agreement ${agreementId}:`, reconcileError)
+      }
+
       return Response.json({
         success: true,
         message: accept
@@ -215,6 +224,7 @@ export const beneficiarySignHandlers = {
           isAccepted: updatedBeneficiary.isAccepted,
         },
         agreementStatus: newStatus,
+        reconciliation,
         onChain,
       })
     } catch (error) {

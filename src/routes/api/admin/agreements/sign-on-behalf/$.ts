@@ -3,6 +3,7 @@ import { prisma } from '@/db'
 import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
 import { corsHeaders } from '@/lib/cors'
 import { ensureAgreementMintedWithMetadata } from '@/lib/agreement/agreementMetadata'
+import { reconcileAgreement } from '@/lib/agreement/agreementReconciliation'
 import {
   getAgreementData,
   getBeneficiarySignatureStatus,
@@ -167,11 +168,20 @@ export const adminSignOnBehalfHandlers = {
         })
       }
 
+      // Auto-check: confirm DB and on-chain state agree before responding
+      let reconciliation: { updatedFields: Array<string> } | null = null
+      try {
+        reconciliation = await reconcileAgreement(agreement.id)
+      } catch (reconcileError) {
+        console.error(`Error reconciling agreement ${agreement.id}:`, reconcileError)
+      }
+
       return Response.json(
         {
           success: true,
           message: 'Beneficiary signed successfully by admin proxy',
           agreementStatus: nextStatus,
+          reconciliation,
           onChain: {
             tokenId,
             beneficiarySignatureTxHash: beneficiaryTxHash,

@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   updateAgreementMetadata: vi.fn(),
   ensureAgreementMintedWithMetadata: vi.fn(),
   refreshAgreementMetadataUri: vi.fn(),
+  agreementDelete: vi.fn(),
 }))
 
 vi.mock('@/lib/auth/auth', () => ({
@@ -31,6 +32,7 @@ vi.mock('@/db', () => ({
       findFirst: mocks.findFirst,
       update: mocks.update,
       create: vi.fn(),
+      delete: mocks.agreementDelete,
     },
     asset: { findMany: mocks.assetFindMany },
     familyMember: { findFirst: mocks.familyMemberFindFirst },
@@ -267,5 +269,52 @@ describe('agreementHandlers auth + lifecycle', () => {
     expect(response.status).toBe(201)
     expect(mocks.ensureAgreementMintedWithMetadata).not.toHaveBeenCalled()
     expect(body.onChain).toBeNull()
+  })
+
+  it('POST rolls back the agreement and returns 503 when minting fails', async () => {
+    mocks.getSession.mockResolvedValueOnce({ user: { id: 'u1' } })
+    mocks.assetFindMany.mockResolvedValueOnce([{ id: 1, userId: 'u1' }])
+    mocks.familyMemberFindFirst.mockResolvedValueOnce({ id: 1, userId: 'u1' })
+    mocks.transaction.mockImplementationOnce((callback) => {
+      return callback({
+        agreement: {
+          create: vi.fn().mockResolvedValueOnce({
+            id: 'agr_new',
+            title: 'Hibah Car',
+            status: 'DRAFT',
+          }),
+        },
+        agreementAsset: { createMany: vi.fn().mockResolvedValueOnce({ count: 1 }) },
+        agreementBeneficiary: {
+          create: vi.fn().mockResolvedValueOnce({ id: 'ben_1' }),
+        },
+      })
+    })
+    mocks.isContractConfigured.mockReturnValueOnce(true)
+    mocks.ensureAgreementMintedWithMetadata.mockRejectedValueOnce(
+      new Error('request timeout'),
+    )
+    mocks.agreementDelete.mockResolvedValueOnce({ id: 'agr_new' })
+
+    const request = new Request('http://localhost/api/agreement/agreement', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: 'Hibah Car',
+        description: null,
+        distributionType: 'HIBAH',
+        assets: [{ assetId: 1 }],
+        beneficiaries: [
+          { familyMemberId: 1, relation: 'DAUGHTER', sharePercentage: 100 },
+        ],
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    const response = await agreementHandlers.POST({ request })
+    const body = await response.json()
+
+    expect(response.status).toBe(503)
+    expect(body.error).toContain('On-chain minting is temporarily unavailable')
+    expect(mocks.agreementDelete).toHaveBeenCalledWith({ where: { id: 'agr_new' } })
   })
 })
