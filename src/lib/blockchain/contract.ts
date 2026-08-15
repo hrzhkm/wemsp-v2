@@ -435,6 +435,11 @@ export async function isAgreementFullySigned(tokenId: number): Promise<boolean> 
 	return withRetry(() => contract.isFullySigned(tokenId))
 }
 
+export async function isAgreementFinalized(tokenId: number): Promise<boolean> {
+	const data = await getAgreementData(tokenId)
+	return data.isFinalized
+}
+
 export async function getTokenIdByAgreementId(agreementId: string): Promise<number> {
 	const contract = getContract()
 	const tokenId = await withRetry(() => contract.getTokenIdByAgreementId(agreementId))
