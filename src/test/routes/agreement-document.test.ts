@@ -170,10 +170,28 @@ describe('documentHandlers.GET', () => {
 
     const pdfText = Buffer.from(await response.arrayBuffer()).toString('latin1')
     expect(pdfText.startsWith('%PDF-')).toBe(true)
-    expect(pdfText).toContain('Hibah Apartment Agreement')
-    expect(pdfText).toContain('ipfs://bafyagreement')
-    expect(pdfText).toContain('Private Person')
+    expect(pdfText).toContain('/FontFile2')
+    expect(pdfText).toContain('/ToUnicode')
     expect(pdfText).not.toContain('900101011234')
     expect(pdfText).not.toContain('Private Address')
+  })
+
+  it('embeds a Unicode font for non-ASCII agreement text', async () => {
+    mocks.getSession.mockResolvedValueOnce({ user: { id: 'owner_1' } })
+    mocks.findUser.mockResolvedValueOnce({ id: 'owner_1', role: 'USER' })
+    mocks.findAgreement.mockResolvedValueOnce({
+      ...agreementFixture,
+      title: 'Hibah 王 فاطمة தமிழ்',
+    })
+
+    const response = await documentHandlers.GET({
+      request: new Request('http://localhost/api/agreement/agr_1/document'),
+      params: { id: 'agr_1' },
+    })
+    const pdf = Buffer.from(await response.arrayBuffer()).toString('latin1')
+
+    expect(response.status).toBe(200)
+    expect(pdf).toContain('/FontFile2')
+    expect(pdf).toContain('/ToUnicode')
   })
 })

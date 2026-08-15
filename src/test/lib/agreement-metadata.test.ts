@@ -14,6 +14,8 @@ const mocks = vi.hoisted(() => ({
   encryptForIpfs: vi.fn(),
   ensureAgreementMinted: vi.fn(),
   getContractAddress: vi.fn(),
+  getTokenIdByAgreementId: vi.fn(),
+  getTokenURI: vi.fn(),
 }))
 
 vi.mock('@/db', () => ({
@@ -37,6 +39,8 @@ vi.mock('@/lib/storage/ipfs', () => ({
 vi.mock('@/lib/blockchain/contract', () => ({
   ensureAgreementMinted: mocks.ensureAgreementMinted,
   getContractAddress: mocks.getContractAddress,
+  getTokenIdByAgreementId: mocks.getTokenIdByAgreementId,
+  getTokenURI: mocks.getTokenURI,
 }))
 
 const baseAgreement = {
@@ -87,6 +91,7 @@ describe('agreement metadata service', () => {
       gatewayUrl: 'https://gateway/ipfs/bafy123',
     })
     mocks.getContractAddress.mockReturnValue('0xcontract')
+    mocks.getTokenIdByAgreementId.mockResolvedValue(0)
   })
 
   it('builds minimal audit metadata without private descriptions or notes', () => {
@@ -210,5 +215,31 @@ describe('agreement metadata service', () => {
     })
     expect(result.metadataUri).toBe('ipfs://bafy123')
     expect(result.tokenId).toBe(7)
+  })
+
+  it('reconciles an existing on-chain token before uploading metadata', async () => {
+    mocks.getTokenIdByAgreementId.mockResolvedValueOnce(7)
+    mocks.getTokenURI.mockResolvedValueOnce('wemsp://legacy/agreement-1')
+    mocks.agreementUpdate.mockResolvedValueOnce({})
+
+    const result = await ensureAgreementMintedWithMetadata('agreement-1', [
+      'beneficiary-1',
+    ])
+
+    expect(result).toEqual({
+      tokenId: 7,
+      wasMinted: false,
+      metadataUri: 'wemsp://legacy/agreement-1',
+    })
+    expect(mocks.uploadEncryptedJsonToIpfs).not.toHaveBeenCalled()
+    expect(mocks.ensureAgreementMinted).not.toHaveBeenCalled()
+    expect(mocks.agreementUpdate).toHaveBeenCalledWith({
+      where: { id: 'agreement-1' },
+      data: {
+        tokenId: 7,
+        contractAddress: '0xcontract',
+        metadataUri: 'wemsp://legacy/agreement-1',
+      },
+    })
   })
 })

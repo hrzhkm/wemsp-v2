@@ -95,7 +95,7 @@ export const documentHandlers = {
         return Response.json({ error: 'Agreement not found' }, { status: 404 })
       }
 
-      const pdf = buildAgreementPdf(agreement)
+      const pdf = await buildAgreementPdf(agreement)
       const fileName = `agreement-${sanitizeFileName(agreement.id)}.pdf`
 
       return new Response(pdf, {

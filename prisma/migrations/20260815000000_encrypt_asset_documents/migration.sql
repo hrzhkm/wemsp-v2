@@ -1,3 +1,10 @@
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM "asset" WHERE "documentUrl" IS NOT NULL) THEN
+        RAISE EXCEPTION 'Legacy asset documents must be migrated before enabling encrypted R2 storage';
+    END IF;
+END $$;
+
 -- CreateTable
 CREATE TABLE "user_document_encryption_key" (
     "userId" TEXT NOT NULL,

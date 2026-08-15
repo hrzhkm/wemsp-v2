@@ -4,6 +4,8 @@ import { prisma } from '@/db'
 import {
   ensureAgreementMinted,
   getContractAddress,
+  getTokenIdByAgreementId,
+  getTokenURI,
 } from '@/lib/blockchain/contract'
 import {
   encryptForIpfs,
@@ -161,6 +163,20 @@ export async function ensureAgreementMintedWithMetadata(
   agreementId: string,
   beneficiaryIds: Array<string>,
 ): Promise<EnsureAgreementMintedWithMetadataResult> {
+  const existingTokenId = await getTokenIdByAgreementId(agreementId)
+  if (existingTokenId > 0) {
+    const metadataUri = await getTokenURI(existingTokenId)
+    await prisma.agreement.update({
+      where: { id: agreementId },
+      data: {
+        tokenId: existingTokenId,
+        contractAddress: getContractAddress(),
+        metadataUri,
+      },
+    })
+    return { tokenId: existingTokenId, wasMinted: false, metadataUri }
+  }
+
   const { metadataUri } = await ensureAgreementMetadataUri(agreementId)
   const mintResult = await ensureAgreementMinted(
     agreementId,

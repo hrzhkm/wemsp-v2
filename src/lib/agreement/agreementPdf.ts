@@ -1,3 +1,9 @@
+import { createRequire } from 'node:module'
+import { readFileSync } from 'node:fs'
+import PDFDocument from 'pdfkit'
+
+const require = createRequire(import.meta.url)
+
 type PdfAgreement = {
   id: string
   title: string
@@ -64,38 +70,48 @@ const LINE_HEIGHT = 15
 const FONT_SIZE = 10
 const TITLE_FONT_SIZE = 16
 const MAX_TEXT_CHARS = 92
+const unicodeFont = new Uint8Array(
+  readFileSync(require.resolve('@fontpkg/unifont/unifont-15.0.01.ttf')),
+)
 
-export function buildAgreementPdf(agreement: PdfAgreement): Buffer {
+export function buildAgreementPdf(agreement: PdfAgreement): Promise<Buffer> {
   const lines = buildAgreementDocumentLines(agreement)
   const pages = paginate(lines)
-  const objects: Array<string> = []
-  const helveticaObjectNumber = 3 + pages.length * 2
-  const helveticaBoldObjectNumber = helveticaObjectNumber + 1
 
-  objects.push('<< /Type /Catalog /Pages 2 0 R >>')
+  return new Promise((resolve, reject) => {
+    const document = new PDFDocument({ autoFirstPage: false, margin: MARGIN })
+    const chunks: Array<Buffer> = []
 
-  const pageObjectNumbers = pages.map((_, index) => 3 + index * 2)
-  objects.push(
-    `<< /Type /Pages /Kids [${pageObjectNumbers.map((objectNumber) => `${objectNumber} 0 R`).join(' ')}] /Count ${pages.length} >>`,
-  )
+    document.on('data', (chunk: Buffer) => chunks.push(chunk))
+    document.on('end', () => resolve(Buffer.concat(chunks)))
+    document.on('error', reject)
+    document.registerFont('Unicode', unicodeFont)
 
-  pages.forEach((pageLines, index) => {
-    const pageObjectNumber = 3 + index * 2
-    const contentObjectNumber = pageObjectNumber + 1
-    const content = buildPageContent(pageLines, index + 1, pages.length)
+    pages.forEach((pageLines, pageIndex) => {
+      document.addPage({ size: [PAGE_WIDTH, PAGE_HEIGHT], margin: MARGIN })
+      let y = MARGIN
 
-    objects.push(
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_WIDTH} ${PAGE_HEIGHT}] /Resources << /Font << /F1 ${helveticaObjectNumber} 0 R /F2 ${helveticaBoldObjectNumber} 0 R >> >> /Contents ${contentObjectNumber} 0 R >>`,
-    )
-    objects.push(
-      `<< /Length ${Buffer.byteLength(content, 'latin1')} >>\nstream\n${content}\nendstream`,
-    )
+      for (const item of pageLines) {
+        document
+          .font('Unicode')
+          .fontSize(item.title ? TITLE_FONT_SIZE : FONT_SIZE)
+          .text(item.text, MARGIN, y, { lineBreak: false })
+        y += LINE_HEIGHT
+      }
+
+      document
+        .font('Unicode')
+        .fontSize(8)
+        .text(
+          `Page ${pageIndex + 1} of ${pages.length}`,
+          MARGIN,
+          PAGE_HEIGHT - MARGIN + 10,
+          { lineBreak: false },
+        )
+    })
+
+    document.end()
   })
-
-  objects.push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>')
-  objects.push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>')
-
-  return assemblePdf(objects)
 }
 
 function buildAgreementDocumentLines(
@@ -257,79 +273,6 @@ function paginate(
   }
 
   return pages.length > 0 ? pages : [[line('')]]
-}
-
-function buildPageContent(
-  lines: Array<{ text: string; bold?: boolean; title?: boolean }>,
-  pageNumber: number,
-  pageCount: number,
-) {
-  const commands = ['BT']
-  let y = PAGE_HEIGHT - MARGIN
-
-  for (const item of lines) {
-    const font = item.bold || item.title ? 'F2' : 'F1'
-    const size = item.title ? TITLE_FONT_SIZE : FONT_SIZE
-    commands.push(`/${font} ${size} Tf`)
-    commands.push(`${MARGIN} ${y} Td`)
-    commands.push(`(${escapePdfText(item.text)}) Tj`)
-    commands.push(`${-MARGIN} ${-LINE_HEIGHT} Td`)
-    y -= LINE_HEIGHT
-  }
-
-  commands.push('/F1 8 Tf')
-  commands.push(`${MARGIN} ${MARGIN - 18} Td`)
-  commands.push(`(Page ${pageNumber} of ${pageCount}) Tj`)
-  commands.push('ET')
-
-  return commands.join('\n')
-}
-
-function assemblePdf(objects: Array<string>) {
-  const objectBodies = objects.map((object, index) => {
-    const objectNumber = index + 1
-    return `${objectNumber} 0 obj\n${object}\nendobj\n`
-  })
-
-  const header = '%PDF-1.4\n'
-  let offset = Buffer.byteLength(header, 'latin1')
-  const offsets = [0]
-
-  for (const body of objectBodies) {
-    offsets.push(offset)
-    offset += Buffer.byteLength(body, 'latin1')
-  }
-
-  const xrefOffset = offset
-  const xref = [
-    `xref\n0 ${objects.length + 1}`,
-    '0000000000 65535 f ',
-    ...offsets
-      .slice(1)
-      .map((item) => `${item.toString().padStart(10, '0')} 00000 n `),
-  ].join('\n')
-
-  const trailer = [
-    '',
-    'trailer',
-    `<< /Size ${objects.length + 1} /Root 1 0 R >>`,
-    'startxref',
-    String(xrefOffset),
-    '%%EOF',
-  ].join('\n')
-
-  const pdf = `${header}${objectBodies.join('')}${xref}${trailer}`
-
-  return Buffer.from(pdf, 'latin1')
-}
-
-function escapePdfText(text: string) {
-  return text
-    .normalize('NFKD')
-    .replace(/[^\x20-\x7E]/g, '')
-    .replace(/\\/g, '\\\\')
-    .replace(/\(/g, '\\(')
-    .replace(/\)/g, '\\)')
 }
 
 function formatDate(value: Date | string | null) {
