@@ -91,6 +91,33 @@ describe('getAgreementOnChainEvents', () => {
     expect(new Date(events[3].occurredAt).getTime()).toBe(1700000300 * 1000)
   })
 
+  it('falls back to the secondary provider when eth_getLogs hits a range limit', async () => {
+    const primary = {
+      getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
+      getLogs: vi.fn().mockRejectedValue(
+        new Error(
+          'Under the Free tier plan, you can make eth_getLogs requests with up to a 10 block range.',
+        ),
+      ),
+      getBlock: vi.fn(),
+    }
+    const fallback = {
+      getTransactionReceipt: vi.fn().mockResolvedValue({ blockNumber: 100 }),
+      getLogs: vi.fn().mockResolvedValue([
+        makeLog('OwnerSigned', [5, 1700000000], 101, '0xowner'),
+      ]),
+      getBlock: vi.fn().mockResolvedValue({ timestamp: 1700000000 }),
+    }
+    mocks.getProvider.mockReturnValue(primary)
+    mocks.getFallbackProvider.mockReturnValue(fallback)
+
+    const events = await getAgreementOnChainEvents(5, '0xmint')
+
+    expect(events).toHaveLength(1)
+    expect(events[0].type).toBe('OwnerSigned')
+    expect(fallback.getLogs).toHaveBeenCalled()
+  })
+
   it('falls back to the minted-event block when there is no mint tx hash', async () => {
     const mintLog = makeLog('AgreementMinted', [5, 'agr-1', 'ipfs://x', 2], 200, '0xmint')
     mocks.getProvider.mockReturnValue({

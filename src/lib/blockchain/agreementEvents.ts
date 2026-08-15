@@ -40,6 +40,13 @@ const EVENT_LABELS: Record<string, string> = {
 
 const iface = new Interface(AgreementContractArtifact.abi)
 
+// Alchemy's free tier caps eth_getLogs to a small block range; Infura does
+// not. Treat that provider limitation like a transient error so we fall back.
+function isProviderRangeError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error)
+  return /eth_getLogs|block range|Free tier/i.test(message)
+}
+
 async function withProviderFallback<T>(
   operation: (provider: ReturnType<typeof getProvider>) => Promise<T>,
 ): Promise<T> {
@@ -47,7 +54,7 @@ async function withProviderFallback<T>(
     return await withRetry(() => operation(getProvider()))
   } catch (error) {
     const fallback = getFallbackProvider()
-    if (isTransientError(error) && fallback) {
+    if ((isTransientError(error) || isProviderRangeError(error)) && fallback) {
       return await withRetry(() => operation(fallback))
     }
     throw error
