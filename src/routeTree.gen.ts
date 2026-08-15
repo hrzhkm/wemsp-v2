@@ -39,6 +39,7 @@ import { Route as AppAssetsViewIndexRouteImport } from './routes/app/assets/view
 import { Route as AppAssetsEditIndexRouteImport } from './routes/app/assets/edit/index'
 import { Route as AppAgreementViewIndexRouteImport } from './routes/app/agreement/view/index'
 import { Route as AppAdminUsersIndexRouteImport } from './routes/app/admin/users/index'
+import { Route as AppAdminTransactionsIndexRouteImport } from './routes/app/admin/transactions/index'
 import { Route as AppAdminAssetsIndexRouteImport } from './routes/app/admin/assets/index'
 import { Route as AppAdminAgreementsIndexRouteImport } from './routes/app/admin/agreements/index'
 import { Route as AppAssetsViewIdRouteImport } from './routes/app/assets/view/$id'
@@ -52,6 +53,7 @@ import { Route as ApiAgentPendingActionsConfirmRouteImport } from './routes/api/
 import { Route as ApiAgentConversationsSplatRouteImport } from './routes/api/agent/conversations/$'
 import { Route as ApiAdminUsersIdRouteImport } from './routes/api/admin/users/$id'
 import { Route as ApiAdminUsersSplatRouteImport } from './routes/api/admin/users/$'
+import { Route as ApiAdminTransactionsSplatRouteImport } from './routes/api/admin/transactions/$'
 import { Route as ApiAdminAssetsSplatRouteImport } from './routes/api/admin/assets/$'
 import { Route as ApiAdminAgreementsSplatRouteImport } from './routes/api/admin/agreements/$'
 import { Route as AppAdminAgreementsSignByIcIndexRouteImport } from './routes/app/admin/agreements/sign-by-ic/index'
@@ -221,6 +223,12 @@ const AppAdminUsersIndexRoute = AppAdminUsersIndexRouteImport.update({
   path: '/admin/users/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminTransactionsIndexRoute =
+  AppAdminTransactionsIndexRouteImport.update({
+    id: '/admin/transactions/',
+    path: '/admin/transactions/',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppAdminAssetsIndexRoute = AppAdminAssetsIndexRouteImport.update({
   id: '/admin/assets/',
   path: '/admin/assets/',
@@ -290,6 +298,12 @@ const ApiAdminUsersSplatRoute = ApiAdminUsersSplatRouteImport.update({
   path: '/api/admin/users/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminTransactionsSplatRoute =
+  ApiAdminTransactionsSplatRouteImport.update({
+    id: '/api/admin/transactions/$',
+    path: '/api/admin/transactions/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminAssetsSplatRoute = ApiAdminAssetsSplatRouteImport.update({
   id: '/api/admin/assets/$',
   path: '/api/admin/assets/$',
@@ -426,6 +440,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsIndexRoute
   '/api/admin/agreements/$': typeof ApiAdminAgreementsSplatRoute
   '/api/admin/assets/$': typeof ApiAdminAssetsSplatRoute
+  '/api/admin/transactions/$': typeof ApiAdminTransactionsSplatRoute
   '/api/admin/users/$': typeof ApiAdminUsersSplatRoute
   '/api/admin/users/$id': typeof ApiAdminUsersIdRoute
   '/api/agent/conversations/$': typeof ApiAgentConversationsSplatRoute
@@ -439,6 +454,7 @@ export interface FileRoutesByFullPath {
   '/app/assets/view/$id': typeof AppAssetsViewIdRoute
   '/app/admin/agreements': typeof AppAdminAgreementsIndexRoute
   '/app/admin/assets': typeof AppAdminAssetsIndexRoute
+  '/app/admin/transactions': typeof AppAdminTransactionsIndexRoute
   '/app/admin/users': typeof AppAdminUsersIndexRoute
   '/app/agreement/view': typeof AppAgreementViewIndexRoute
   '/app/assets/edit': typeof AppAssetsEditIndexRoute
@@ -489,6 +505,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsIndexRoute
   '/api/admin/agreements/$': typeof ApiAdminAgreementsSplatRoute
   '/api/admin/assets/$': typeof ApiAdminAssetsSplatRoute
+  '/api/admin/transactions/$': typeof ApiAdminTransactionsSplatRoute
   '/api/admin/users/$': typeof ApiAdminUsersSplatRoute
   '/api/admin/users/$id': typeof ApiAdminUsersIdRoute
   '/api/agent/conversations/$': typeof ApiAgentConversationsSplatRoute
@@ -502,6 +519,7 @@ export interface FileRoutesByTo {
   '/app/assets/view/$id': typeof AppAssetsViewIdRoute
   '/app/admin/agreements': typeof AppAdminAgreementsIndexRoute
   '/app/admin/assets': typeof AppAdminAssetsIndexRoute
+  '/app/admin/transactions': typeof AppAdminTransactionsIndexRoute
   '/app/admin/users': typeof AppAdminUsersIndexRoute
   '/app/agreement/view': typeof AppAgreementViewIndexRoute
   '/app/assets/edit': typeof AppAssetsEditIndexRoute
@@ -553,6 +571,7 @@ export interface FileRoutesById {
   '/app/settings/': typeof AppSettingsIndexRoute
   '/api/admin/agreements/$': typeof ApiAdminAgreementsSplatRoute
   '/api/admin/assets/$': typeof ApiAdminAssetsSplatRoute
+  '/api/admin/transactions/$': typeof ApiAdminTransactionsSplatRoute
   '/api/admin/users/$': typeof ApiAdminUsersSplatRoute
   '/api/admin/users/$id': typeof ApiAdminUsersIdRoute
   '/api/agent/conversations/$': typeof ApiAgentConversationsSplatRoute
@@ -566,6 +585,7 @@ export interface FileRoutesById {
   '/app/assets/view/$id': typeof AppAssetsViewIdRoute
   '/app/admin/agreements/': typeof AppAdminAgreementsIndexRoute
   '/app/admin/assets/': typeof AppAdminAssetsIndexRoute
+  '/app/admin/transactions/': typeof AppAdminTransactionsIndexRoute
   '/app/admin/users/': typeof AppAdminUsersIndexRoute
   '/app/agreement/view/': typeof AppAgreementViewIndexRoute
   '/app/assets/edit/': typeof AppAssetsEditIndexRoute
@@ -618,6 +638,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/api/admin/agreements/$'
     | '/api/admin/assets/$'
+    | '/api/admin/transactions/$'
     | '/api/admin/users/$'
     | '/api/admin/users/$id'
     | '/api/agent/conversations/$'
@@ -631,6 +652,7 @@ export interface FileRouteTypes {
     | '/app/assets/view/$id'
     | '/app/admin/agreements'
     | '/app/admin/assets'
+    | '/app/admin/transactions'
     | '/app/admin/users'
     | '/app/agreement/view'
     | '/app/assets/edit'
@@ -681,6 +703,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/api/admin/agreements/$'
     | '/api/admin/assets/$'
+    | '/api/admin/transactions/$'
     | '/api/admin/users/$'
     | '/api/admin/users/$id'
     | '/api/agent/conversations/$'
@@ -694,6 +717,7 @@ export interface FileRouteTypes {
     | '/app/assets/view/$id'
     | '/app/admin/agreements'
     | '/app/admin/assets'
+    | '/app/admin/transactions'
     | '/app/admin/users'
     | '/app/agreement/view'
     | '/app/assets/edit'
@@ -744,6 +768,7 @@ export interface FileRouteTypes {
     | '/app/settings/'
     | '/api/admin/agreements/$'
     | '/api/admin/assets/$'
+    | '/api/admin/transactions/$'
     | '/api/admin/users/$'
     | '/api/admin/users/$id'
     | '/api/agent/conversations/$'
@@ -757,6 +782,7 @@ export interface FileRouteTypes {
     | '/app/assets/view/$id'
     | '/app/admin/agreements/'
     | '/app/admin/assets/'
+    | '/app/admin/transactions/'
     | '/app/admin/users/'
     | '/app/agreement/view/'
     | '/app/assets/edit/'
@@ -793,6 +819,7 @@ export interface RootRouteChildren {
   ApiUploadIndexRoute: typeof ApiUploadIndexRoute
   ApiAdminAgreementsSplatRoute: typeof ApiAdminAgreementsSplatRoute
   ApiAdminAssetsSplatRoute: typeof ApiAdminAssetsSplatRoute
+  ApiAdminTransactionsSplatRoute: typeof ApiAdminTransactionsSplatRoute
   ApiAdminUsersSplatRoute: typeof ApiAdminUsersSplatRoute
   ApiAdminUsersIdRoute: typeof ApiAdminUsersIdRoute
   ApiAgentConversationsSplatRoute: typeof ApiAgentConversationsSplatRoute
@@ -1028,6 +1055,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminUsersIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/transactions/': {
+      id: '/app/admin/transactions/'
+      path: '/admin/transactions'
+      fullPath: '/app/admin/transactions'
+      preLoaderRoute: typeof AppAdminTransactionsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/assets/': {
       id: '/app/admin/assets/'
       path: '/admin/assets'
@@ -1117,6 +1151,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/users/$'
       fullPath: '/api/admin/users/$'
       preLoaderRoute: typeof ApiAdminUsersSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/transactions/$': {
+      id: '/api/admin/transactions/$'
+      path: '/api/admin/transactions/$'
+      fullPath: '/api/admin/transactions/$'
+      preLoaderRoute: typeof ApiAdminTransactionsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/assets/$': {
@@ -1270,6 +1311,7 @@ interface AppRouteChildren {
   AppAssetsViewIdRoute: typeof AppAssetsViewIdRoute
   AppAdminAgreementsIndexRoute: typeof AppAdminAgreementsIndexRoute
   AppAdminAssetsIndexRoute: typeof AppAdminAssetsIndexRoute
+  AppAdminTransactionsIndexRoute: typeof AppAdminTransactionsIndexRoute
   AppAdminUsersIndexRoute: typeof AppAdminUsersIndexRoute
   AppAgreementViewIndexRoute: typeof AppAgreementViewIndexRoute
   AppAssetsEditIndexRoute: typeof AppAssetsEditIndexRoute
@@ -1300,6 +1342,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAssetsViewIdRoute: AppAssetsViewIdRoute,
   AppAdminAgreementsIndexRoute: AppAdminAgreementsIndexRoute,
   AppAdminAssetsIndexRoute: AppAdminAssetsIndexRoute,
+  AppAdminTransactionsIndexRoute: AppAdminTransactionsIndexRoute,
   AppAdminUsersIndexRoute: AppAdminUsersIndexRoute,
   AppAgreementViewIndexRoute: AppAgreementViewIndexRoute,
   AppAssetsEditIndexRoute: AppAssetsEditIndexRoute,
@@ -1325,6 +1368,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiUploadIndexRoute: ApiUploadIndexRoute,
   ApiAdminAgreementsSplatRoute: ApiAdminAgreementsSplatRoute,
   ApiAdminAssetsSplatRoute: ApiAdminAssetsSplatRoute,
+  ApiAdminTransactionsSplatRoute: ApiAdminTransactionsSplatRoute,
   ApiAdminUsersSplatRoute: ApiAdminUsersSplatRoute,
   ApiAdminUsersIdRoute: ApiAdminUsersIdRoute,
   ApiAgentConversationsSplatRoute: ApiAgentConversationsSplatRoute,

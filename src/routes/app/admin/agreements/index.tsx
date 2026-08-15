@@ -2,17 +2,18 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
 import {
-  PencilIcon,
-  SearchIcon,
-  TrashIcon,
-  EyeIcon,
   CheckCircle2Icon,
   ClockIcon,
-  XCircleIcon,
-  Loader2,
+  EyeIcon,
   FileText,
+  Loader2,
+  PencilIcon,
   Plus,
+  SearchIcon,
+  TrashIcon,
+  XCircleIcon,
 } from 'lucide-react'
+import type { AgreementStatus, DistributionType } from '@/generated/prisma/enums'
 import { getAdminSession } from '@/middleware'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,7 +43,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
-import { DistributionType, AgreementStatus } from '@/generated/prisma/enums'
 import { Badge } from '@/components/ui/badge'
 import {
   Card,
@@ -151,8 +151,12 @@ function RouteComponent() {
   const [agreements, setAgreements] = useState<Array<Agreement>>([])
   const [users, setUsers] = useState<Array<User>>([])
   const [userAssets, setUserAssets] = useState<Array<Asset>>([])
-  const [userFamilyMembers, setUserFamilyMembers] = useState<Array<FamilyMember>>([])
-  const [userNonRegisteredMembers, setUserNonRegisteredMembers] = useState<Array<NonRegisteredFamilyMember>>([])
+  const [userFamilyMembers, setUserFamilyMembers] = useState<
+    Array<FamilyMember>
+  >([])
+  const [userNonRegisteredMembers, setUserNonRegisteredMembers] = useState<
+    Array<NonRegisteredFamilyMember>
+  >([])
   const [loading, setLoading] = useState(true)
   const [pagination, setPagination] = useState({
     page: 1,
@@ -169,7 +173,9 @@ function RouteComponent() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
   const [witnessDialogOpen, setWitnessDialogOpen] = useState(false)
   const [witnessing, setWitnessing] = useState(false)
-  const [selectedAgreement, setSelectedAgreement] = useState<Agreement | null>(null)
+  const [selectedAgreement, setSelectedAgreement] = useState<Agreement | null>(
+    null,
+  )
 
   // Form states
   const [createForm, setCreateForm] = useState({
@@ -179,8 +185,8 @@ function RouteComponent() {
     effectiveDate: '',
     expiryDate: '',
     ownerId: '',
-    assets: [] as AgreementAssetInput[],
-    beneficiaries: [] as AgreementBeneficiaryInput[],
+    assets: [] as Array<AgreementAssetInput>,
+    beneficiaries: [] as Array<AgreementBeneficiaryInput>,
   })
   const [editForm, setEditForm] = useState({
     title: '',
@@ -189,8 +195,8 @@ function RouteComponent() {
     effectiveDate: '',
     expiryDate: '',
     ownerId: '',
-    assets: [] as AgreementAssetInput[],
-    beneficiaries: [] as AgreementBeneficiaryInput[],
+    assets: [] as Array<AgreementAssetInput>,
+    beneficiaries: [] as Array<AgreementBeneficiaryInput>,
   })
 
   // Fetch agreements
@@ -278,9 +284,19 @@ function RouteComponent() {
   // Owner change handler
   const handleOwnerChange = (userId: string, isEdit = false) => {
     if (isEdit) {
-      setEditForm({ ...editForm, ownerId: userId, assets: [], beneficiaries: [] })
+      setEditForm({
+        ...editForm,
+        ownerId: userId,
+        assets: [],
+        beneficiaries: [],
+      })
     } else {
-      setCreateForm({ ...createForm, ownerId: userId, assets: [], beneficiaries: [] })
+      setCreateForm({
+        ...createForm,
+        ownerId: userId,
+        assets: [],
+        beneficiaries: [],
+      })
     }
     if (userId) {
       fetchUserAssets(userId)
@@ -297,7 +313,7 @@ function RouteComponent() {
     const form = isEdit ? editForm : createForm
     const existingIndex = form.assets.findIndex((a) => a.assetId === asset.id)
 
-    let newAssets: AgreementAssetInput[]
+    let newAssets: Array<AgreementAssetInput>
     if (existingIndex >= 0) {
       newAssets = form.assets.filter((a) => a.assetId !== asset.id)
     } else {
@@ -311,12 +327,25 @@ function RouteComponent() {
     }
   }
 
-  const updateAssetAllocation = (assetId: number, field: 'allocatedValue' | 'allocatedPercentage' | 'notes', value: string | number, isEdit = false) => {
+  const updateAssetAllocation = (
+    assetId: number,
+    field: 'allocatedValue' | 'allocatedPercentage' | 'notes',
+    value: string | number,
+    isEdit = false,
+  ) => {
     const form = isEdit ? editForm : createForm
     const newAssets = form.assets.map((a) =>
       a.assetId === assetId
-        ? { ...a, [field]: field === 'notes' ? value : value === '' ? undefined : Number(value) }
-        : a
+        ? {
+            ...a,
+            [field]:
+              field === 'notes'
+                ? value
+                : value === ''
+                  ? undefined
+                  : Number(value),
+          }
+        : a,
     )
 
     if (isEdit) {
@@ -327,7 +356,11 @@ function RouteComponent() {
   }
 
   // Beneficiary handlers
-  const addBeneficiary = (type: 'registered' | 'non-registered', memberId: number, isEdit = false) => {
+  const addBeneficiary = (
+    type: 'registered' | 'non-registered',
+    memberId: number,
+    isEdit = false,
+  ) => {
     const form = isEdit ? editForm : createForm
 
     const newBeneficiary: AgreementBeneficiaryInput = {
@@ -360,10 +393,14 @@ function RouteComponent() {
     }
   }
 
-  const updateBeneficiaryShare = (index: number, sharePercentage: number, isEdit = false) => {
+  const updateBeneficiaryShare = (
+    index: number,
+    sharePercentage: number,
+    isEdit = false,
+  ) => {
     const form = isEdit ? editForm : createForm
     const newBeneficiaries = form.beneficiaries.map((b, i) =>
-      i === index ? { ...b, sharePercentage } : b
+      i === index ? { ...b, sharePercentage } : b,
     )
 
     if (isEdit) {
@@ -373,10 +410,14 @@ function RouteComponent() {
     }
   }
 
-  const updateBeneficiaryDescription = (index: number, shareDescription: string, isEdit = false) => {
+  const updateBeneficiaryDescription = (
+    index: number,
+    shareDescription: string,
+    isEdit = false,
+  ) => {
     const form = isEdit ? editForm : createForm
     const newBeneficiaries = form.beneficiaries.map((b, i) =>
-      i === index ? { ...b, shareDescription } : b
+      i === index ? { ...b, shareDescription } : b,
     )
 
     if (isEdit) {
@@ -387,7 +428,7 @@ function RouteComponent() {
   }
 
   // Get total shares
-  const getTotalShares = (beneficiaries: AgreementBeneficiaryInput[]) => {
+  const getTotalShares = (beneficiaries: Array<AgreementBeneficiaryInput>) => {
     return beneficiaries.reduce((sum, b) => sum + (b.sharePercentage || 0), 0)
   }
 
@@ -444,8 +485,12 @@ function RouteComponent() {
         title: agreement.title,
         description: agreement.description || '',
         distributionType: agreement.distributionType,
-        effectiveDate: agreement.effectiveDate ? agreement.effectiveDate.split('T')[0] : '',
-        expiryDate: agreement.expiryDate ? agreement.expiryDate.split('T')[0] : '',
+        effectiveDate: agreement.effectiveDate
+          ? agreement.effectiveDate.split('T')[0]
+          : '',
+        expiryDate: agreement.expiryDate
+          ? agreement.expiryDate.split('T')[0]
+          : '',
         ownerId: agreement.owner.id,
         assets: data.agreement.assets || [],
         beneficiaries: data.agreement.beneficiaries || [],
@@ -458,11 +503,14 @@ function RouteComponent() {
     if (!selectedAgreement) return
 
     try {
-      const response = await fetch(`/api/admin/agreements/${selectedAgreement.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editForm),
-      })
+      const response = await fetch(
+        `/api/admin/agreements/${selectedAgreement.id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editForm),
+        },
+      )
 
       if (response.ok) {
         toast.success('Agreement updated successfully')
@@ -489,9 +537,12 @@ function RouteComponent() {
     if (!selectedAgreement) return
 
     try {
-      const response = await fetch(`/api/admin/agreements/${selectedAgreement.id}`, {
-        method: 'DELETE',
-      })
+      const response = await fetch(
+        `/api/admin/agreements/${selectedAgreement.id}`,
+        {
+          method: 'DELETE',
+        },
+      )
 
       if (response.ok) {
         toast.success('Agreement deleted successfully')
@@ -525,9 +576,12 @@ function RouteComponent() {
 
     setWitnessing(true)
     try {
-      const response = await fetch(`/api/agreement/${selectedAgreement.id}/sign/witness/`, {
-        method: 'POST',
-      })
+      const response = await fetch(
+        `/api/agreement/${selectedAgreement.id}/sign/witness/`,
+        {
+          method: 'POST',
+        },
+      )
 
       if (response.ok) {
         const data = await response.json()
@@ -560,7 +614,10 @@ function RouteComponent() {
 
   // Get status badge
   const getStatusBadge = (status: AgreementStatus) => {
-    const variants: Record<AgreementStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    const variants: Record<
+      AgreementStatus,
+      'default' | 'secondary' | 'destructive' | 'outline'
+    > = {
       DRAFT: 'secondary',
       PENDING_SIGNATURES: 'outline',
       PENDING_WITNESS: 'outline',
@@ -570,11 +627,7 @@ function RouteComponent() {
       EXPIRED: 'destructive',
     }
 
-    return (
-      <Badge variant={variants[status]}>
-        {status.replace(/_/g, ' ')}
-      </Badge>
-    )
+    return <Badge variant={variants[status]}>{status.replace(/_/g, ' ')}</Badge>
   }
 
   // Get status icon
@@ -637,113 +690,115 @@ function RouteComponent() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-        <Table>
-          <TableHeader className="bg-muted/35">
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Owner</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Assets</TableHead>
-              <TableHead>Beneficiaries</TableHead>
-              <TableHead>Progress</TableHead>
-              <TableHead>Effective</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
+          <Table>
+            <TableHeader className="bg-muted/35">
               <TableRow>
-                <TableCell colSpan={9} className="py-8">
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                  </div>
-                </TableCell>
+                <TableHead>Title</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Assets</TableHead>
+                <TableHead>Beneficiaries</TableHead>
+                <TableHead>Progress</TableHead>
+                <TableHead>Effective</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ) : agreements.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center py-8">
-                  No agreements found
-                </TableCell>
-              </TableRow>
-            ) : (
-              agreements.map((agreement) => (
-                <TableRow key={agreement.id}>
-                  <TableCell className="font-medium">{agreement.title}</TableCell>
-                  <TableCell>{agreement.owner.name}</TableCell>
-                  <TableCell>
-                    <span className="px-2 py-1 rounded text-xs bg-secondary">
-                      {agreement.distributionType}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(agreement.status)}
-                      {getStatusBadge(agreement.status)}
-                    </div>
-                  </TableCell>
-                  <TableCell>{agreement._count.assets}</TableCell>
-                  <TableCell>
-                    {agreement._count.beneficiaries} (
-                    {agreement.signedBeneficiaryCount} signed)
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">
-                      {agreement.ownerHasSigned ? (
-                        <span className="text-green-600">Owner ✓</span>
-                      ) : (
-                        <span className="text-muted-foreground">Owner</span>
-                      )}
-                      {agreement.witnessedAt && (
-                        <span className="ml-2 text-green-600">Witness ✓</span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>{formatDate(agreement.effectiveDate)}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => openViewDialog(agreement)}
-                      >
-                        <EyeIcon className="h-4 w-4" />
-                      </Button>
-                      {agreement.status === 'PENDING_WITNESS' && (
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => openWitnessDialog(agreement)}
-                        >
-                          <CheckCircle2Icon className="h-4 w-4 mr-2" />
-                          Witness
-                        </Button>
-                      )}
-                      {agreement.status === 'DRAFT' && (
-                        <>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => openEditDialog(agreement)}
-                          >
-                            <PencilIcon className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => openDeleteDialog(agreement)}
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )}
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="py-8">
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     </div>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : agreements.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8">
+                    No agreements found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                agreements.map((agreement) => (
+                  <TableRow key={agreement.id}>
+                    <TableCell className="font-medium">
+                      {agreement.title}
+                    </TableCell>
+                    <TableCell>{agreement.owner.name}</TableCell>
+                    <TableCell>
+                      <span className="px-2 py-1 rounded text-xs bg-secondary">
+                        {agreement.distributionType}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(agreement.status)}
+                        {getStatusBadge(agreement.status)}
+                      </div>
+                    </TableCell>
+                    <TableCell>{agreement._count.assets}</TableCell>
+                    <TableCell>
+                      {agreement._count.beneficiaries} (
+                      {agreement.signedBeneficiaryCount} signed)
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        {agreement.ownerHasSigned ? (
+                          <span className="text-green-600">Owner ✓</span>
+                        ) : (
+                          <span className="text-muted-foreground">Owner</span>
+                        )}
+                        {agreement.witnessedAt && (
+                          <span className="ml-2 text-green-600">Witness ✓</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>{formatDate(agreement.effectiveDate)}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => openViewDialog(agreement)}
+                        >
+                          <EyeIcon className="h-4 w-4" />
+                        </Button>
+                        {agreement.status === 'PENDING_WITNESS' && (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => openWitnessDialog(agreement)}
+                          >
+                            <CheckCircle2Icon className="h-4 w-4 mr-2" />
+                            Witness
+                          </Button>
+                        )}
+                        {agreement.status === 'DRAFT' && (
+                          <>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => openEditDialog(agreement)}
+                            >
+                              <PencilIcon className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => openDeleteDialog(agreement)}
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
 
         {/* Pagination */}
@@ -790,7 +845,8 @@ function RouteComponent() {
           <DialogHeader>
             <DialogTitle>Create New Agreement</DialogTitle>
             <DialogDescription>
-              Create a new agreement for a user. Title, type, owner, assets, and beneficiaries are required.
+              Create a new agreement for a user. Title, type, owner, assets, and
+              beneficiaries are required.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -799,7 +855,9 @@ function RouteComponent() {
               <Input
                 id="create-title"
                 value={createForm.title}
-                onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, title: e.target.value })
+                }
                 placeholder="Enter agreement title"
               />
             </div>
@@ -808,7 +866,9 @@ function RouteComponent() {
               <Textarea
                 id="create-description"
                 value={createForm.description}
-                onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, description: e.target.value })
+                }
                 placeholder="Enter agreement description"
                 rows={3}
               />
@@ -818,7 +878,12 @@ function RouteComponent() {
                 <Label htmlFor="create-type">Distribution Type *</Label>
                 <Select
                   value={createForm.distributionType}
-                  onValueChange={(value) => setCreateForm({ ...createForm, distributionType: value as DistributionType })}
+                  onValueChange={(value) =>
+                    setCreateForm({
+                      ...createForm,
+                      distributionType: value as DistributionType,
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select distribution type" />
@@ -857,7 +922,12 @@ function RouteComponent() {
                   id="create-effective"
                   type="date"
                   value={createForm.effectiveDate}
-                  onChange={(e) => setCreateForm({ ...createForm, effectiveDate: e.target.value })}
+                  onChange={(e) =>
+                    setCreateForm({
+                      ...createForm,
+                      effectiveDate: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -866,7 +936,9 @@ function RouteComponent() {
                   id="create-expiry"
                   type="date"
                   value={createForm.expiryDate}
-                  onChange={(e) => setCreateForm({ ...createForm, expiryDate: e.target.value })}
+                  onChange={(e) =>
+                    setCreateForm({ ...createForm, expiryDate: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -876,13 +948,17 @@ function RouteComponent() {
               <div className="space-y-2">
                 <Label>Assets *</Label>
                 {userAssets.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No assets found for this user</p>
+                  <p className="text-sm text-muted-foreground">
+                    No assets found for this user
+                  </p>
                 ) : (
                   <div className="border rounded-lg p-4 space-y-3">
                     {userAssets.map((asset) => (
                       <div key={asset.id} className="flex items-start gap-3">
                         <Checkbox
-                          checked={createForm.assets.some((a) => a.assetId === asset.id)}
+                          checked={createForm.assets.some(
+                            (a) => a.assetId === asset.id,
+                          )}
                           onCheckedChange={() => toggleAsset(asset, false)}
                         />
                         <div className="flex-1 space-y-2">
@@ -892,25 +968,60 @@ function RouteComponent() {
                               {asset.type} • RM{asset.value.toLocaleString()}
                             </p>
                           </div>
-                          {createForm.assets.some((a) => a.assetId === asset.id) && (
+                          {createForm.assets.some(
+                            (a) => a.assetId === asset.id,
+                          ) && (
                             <div className="grid grid-cols-3 gap-2">
                               <Input
                                 placeholder="Allocated value"
                                 type="number"
-                                value={createForm.assets.find((a) => a.assetId === asset.id)?.allocatedValue || ''}
-                                onChange={(e) => updateAssetAllocation(asset.id, 'allocatedValue', e.target.value, false)}
+                                value={
+                                  createForm.assets.find(
+                                    (a) => a.assetId === asset.id,
+                                  )?.allocatedValue || ''
+                                }
+                                onChange={(e) =>
+                                  updateAssetAllocation(
+                                    asset.id,
+                                    'allocatedValue',
+                                    e.target.value,
+                                    false,
+                                  )
+                                }
                               />
                               <Input
                                 placeholder="Allocated %"
                                 type="number"
                                 max="100"
-                                value={createForm.assets.find((a) => a.assetId === asset.id)?.allocatedPercentage || ''}
-                                onChange={(e) => updateAssetAllocation(asset.id, 'allocatedPercentage', e.target.value, false)}
+                                value={
+                                  createForm.assets.find(
+                                    (a) => a.assetId === asset.id,
+                                  )?.allocatedPercentage || ''
+                                }
+                                onChange={(e) =>
+                                  updateAssetAllocation(
+                                    asset.id,
+                                    'allocatedPercentage',
+                                    e.target.value,
+                                    false,
+                                  )
+                                }
                               />
                               <Input
                                 placeholder="Notes"
-                                value={createForm.assets.find((a) => a.assetId === asset.id)?.notes || ''}
-                                onChange={(e) => updateAssetAllocation(asset.id, 'notes', e.target.value, false)}
+                                value={
+                                  createForm.assets.find(
+                                    (a) => a.assetId === asset.id,
+                                  )?.notes || ''
+                                }
+                                onChange={(e) =>
+                                  updateAssetAllocation(
+                                    asset.id,
+                                    'notes',
+                                    e.target.value,
+                                    false,
+                                  )
+                                }
                               />
                             </div>
                           )}
@@ -930,20 +1041,31 @@ function RouteComponent() {
                   {/* Registered family members */}
                   {userFamilyMembers.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium mb-2">Registered Family Members</p>
+                      <p className="text-sm font-medium mb-2">
+                        Registered Family Members
+                      </p>
                       <div className="border rounded-lg p-4 space-y-2">
                         {userFamilyMembers.map((member) => (
-                          <div key={member.id} className="flex items-center justify-between">
+                          <div
+                            key={member.id}
+                            className="flex items-center justify-between"
+                          >
                             <div>
-                              <p className="font-medium">{member.familyMemberUser?.name}</p>
-                              <p className="text-sm text-muted-foreground">{member.relation}</p>
+                              <p className="font-medium">
+                                {member.familyMemberUser?.name}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {member.relation}
+                              </p>
                             </div>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => addBeneficiary('registered', member.id, false)}
+                              onClick={() =>
+                                addBeneficiary('registered', member.id, false)
+                              }
                               disabled={createForm.beneficiaries.some(
-                                (b) => b.familyMemberId === member.id
+                                (b) => b.familyMemberId === member.id,
                               )}
                             >
                               Add
@@ -957,20 +1079,34 @@ function RouteComponent() {
                   {/* Non-registered family members */}
                   {userNonRegisteredMembers.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium mb-2">Non-Registered Family Members</p>
+                      <p className="text-sm font-medium mb-2">
+                        Non-Registered Family Members
+                      </p>
                       <div className="border rounded-lg p-4 space-y-2">
                         {userNonRegisteredMembers.map((member) => (
-                          <div key={member.id} className="flex items-center justify-between">
+                          <div
+                            key={member.id}
+                            className="flex items-center justify-between"
+                          >
                             <div>
                               <p className="font-medium">{member.name}</p>
-                              <p className="text-sm text-muted-foreground">{member.relation} • {member.icNumber}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {member.relation} • {member.icNumber}
+                              </p>
                             </div>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => addBeneficiary('non-registered', member.id, false)}
+                              onClick={() =>
+                                addBeneficiary(
+                                  'non-registered',
+                                  member.id,
+                                  false,
+                                )
+                              }
                               disabled={createForm.beneficiaries.some(
-                                (b) => b.nonRegisteredFamilyMemberId === member.id
+                                (b) =>
+                                  b.nonRegisteredFamilyMemberId === member.id,
                               )}
                             >
                               Add
@@ -984,31 +1120,47 @@ function RouteComponent() {
                   {/* Selected beneficiaries */}
                   {createForm.beneficiaries.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium mb-2">Selected Beneficiaries</p>
+                      <p className="text-sm font-medium mb-2">
+                        Selected Beneficiaries
+                      </p>
                       <div className="border rounded-lg p-4 space-y-3">
                         {createForm.beneficiaries.map((beneficiary, index) => {
                           const familyMember = beneficiary.familyMemberId
-                            ? userFamilyMembers.find((m) => m.id === beneficiary.familyMemberId)
+                            ? userFamilyMembers.find(
+                                (m) => m.id === beneficiary.familyMemberId,
+                              )
                             : null
-                          const nonRegMember = beneficiary.nonRegisteredFamilyMemberId
-                            ? userNonRegisteredMembers.find((m) => m.id === beneficiary.nonRegisteredFamilyMemberId)
-                            : null
+                          const nonRegMember =
+                            beneficiary.nonRegisteredFamilyMemberId
+                              ? userNonRegisteredMembers.find(
+                                  (m) =>
+                                    m.id ===
+                                    beneficiary.nonRegisteredFamilyMemberId,
+                                )
+                              : null
 
                           return (
-                            <div key={index} className="space-y-2 p-3 border rounded-lg">
+                            <div
+                              key={index}
+                              className="space-y-2 p-3 border rounded-lg"
+                            >
                               <div className="flex items-center justify-between">
                                 <div>
                                   <p className="font-medium">
-                                    {familyMember?.familyMemberUser?.name || nonRegMember?.name}
+                                    {familyMember?.familyMemberUser?.name ||
+                                      nonRegMember?.name}
                                   </p>
                                   <p className="text-sm text-muted-foreground">
-                                    {familyMember?.relation || nonRegMember?.relation}
+                                    {familyMember?.relation ||
+                                      nonRegMember?.relation}
                                   </p>
                                 </div>
                                 <Button
                                   size="sm"
                                   variant="ghost"
-                                  onClick={() => removeBeneficiary(index, false)}
+                                  onClick={() =>
+                                    removeBeneficiary(index, false)
+                                  }
                                 >
                                   Remove
                                 </Button>
@@ -1019,22 +1171,42 @@ function RouteComponent() {
                                   type="number"
                                   max="100"
                                   value={beneficiary.sharePercentage}
-                                  onChange={(e) => updateBeneficiaryShare(index, Number(e.target.value), false)}
+                                  onChange={(e) =>
+                                    updateBeneficiaryShare(
+                                      index,
+                                      Number(e.target.value),
+                                      false,
+                                    )
+                                  }
                                 />
                                 <Input
                                   placeholder="Share description"
                                   value={beneficiary.shareDescription || ''}
-                                  onChange={(e) => updateBeneficiaryDescription(index, e.target.value, false)}
+                                  onChange={(e) =>
+                                    updateBeneficiaryDescription(
+                                      index,
+                                      e.target.value,
+                                      false,
+                                    )
+                                  }
                                 />
                               </div>
                             </div>
                           )
                         })}
                         <p className="text-sm">
-                          Total shares: <span className={getTotalShares(createForm.beneficiaries) === 100 ? 'text-green-600' : 'text-red-600'}>
+                          Total shares:{' '}
+                          <span
+                            className={
+                              getTotalShares(createForm.beneficiaries) === 100
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                            }
+                          >
                             {getTotalShares(createForm.beneficiaries)}%
                           </span>
-                          {getTotalShares(createForm.beneficiaries) !== 100 && ' (must equal 100%)'}
+                          {getTotalShares(createForm.beneficiaries) !== 100 &&
+                            ' (must equal 100%)'}
                         </p>
                       </div>
                     </div>
@@ -1044,7 +1216,10 @@ function RouteComponent() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setCreateDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button
@@ -1076,7 +1251,9 @@ function RouteComponent() {
               <Input
                 id="edit-title"
                 value={editForm.title}
-                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, title: e.target.value })
+                }
                 placeholder="Enter agreement title"
               />
             </div>
@@ -1085,7 +1262,9 @@ function RouteComponent() {
               <Textarea
                 id="edit-description"
                 value={editForm.description}
-                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, description: e.target.value })
+                }
                 placeholder="Enter agreement description"
                 rows={3}
               />
@@ -1095,7 +1274,12 @@ function RouteComponent() {
                 <Label htmlFor="edit-type">Distribution Type *</Label>
                 <Select
                   value={editForm.distributionType}
-                  onValueChange={(value) => setEditForm({ ...editForm, distributionType: value as DistributionType })}
+                  onValueChange={(value) =>
+                    setEditForm({
+                      ...editForm,
+                      distributionType: value as DistributionType,
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select distribution type" />
@@ -1134,7 +1318,9 @@ function RouteComponent() {
                   id="edit-effective"
                   type="date"
                   value={editForm.effectiveDate}
-                  onChange={(e) => setEditForm({ ...editForm, effectiveDate: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, effectiveDate: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -1143,7 +1329,9 @@ function RouteComponent() {
                   id="edit-expiry"
                   type="date"
                   value={editForm.expiryDate}
-                  onChange={(e) => setEditForm({ ...editForm, expiryDate: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, expiryDate: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -1153,13 +1341,17 @@ function RouteComponent() {
               <div className="space-y-2">
                 <Label>Assets *</Label>
                 {userAssets.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No assets found for this user</p>
+                  <p className="text-sm text-muted-foreground">
+                    No assets found for this user
+                  </p>
                 ) : (
                   <div className="border rounded-lg p-4 space-y-3">
                     {userAssets.map((asset) => (
                       <div key={asset.id} className="flex items-start gap-3">
                         <Checkbox
-                          checked={editForm.assets.some((a) => a.assetId === asset.id)}
+                          checked={editForm.assets.some(
+                            (a) => a.assetId === asset.id,
+                          )}
                           onCheckedChange={() => toggleAsset(asset, true)}
                         />
                         <div className="flex-1 space-y-2">
@@ -1169,25 +1361,60 @@ function RouteComponent() {
                               {asset.type} • RM{asset.value.toLocaleString()}
                             </p>
                           </div>
-                          {editForm.assets.some((a) => a.assetId === asset.id) && (
+                          {editForm.assets.some(
+                            (a) => a.assetId === asset.id,
+                          ) && (
                             <div className="grid grid-cols-3 gap-2">
                               <Input
                                 placeholder="Allocated value"
                                 type="number"
-                                value={editForm.assets.find((a) => a.assetId === asset.id)?.allocatedValue || ''}
-                                onChange={(e) => updateAssetAllocation(asset.id, 'allocatedValue', e.target.value, true)}
+                                value={
+                                  editForm.assets.find(
+                                    (a) => a.assetId === asset.id,
+                                  )?.allocatedValue || ''
+                                }
+                                onChange={(e) =>
+                                  updateAssetAllocation(
+                                    asset.id,
+                                    'allocatedValue',
+                                    e.target.value,
+                                    true,
+                                  )
+                                }
                               />
                               <Input
                                 placeholder="Allocated %"
                                 type="number"
                                 max="100"
-                                value={editForm.assets.find((a) => a.assetId === asset.id)?.allocatedPercentage || ''}
-                                onChange={(e) => updateAssetAllocation(asset.id, 'allocatedPercentage', e.target.value, true)}
+                                value={
+                                  editForm.assets.find(
+                                    (a) => a.assetId === asset.id,
+                                  )?.allocatedPercentage || ''
+                                }
+                                onChange={(e) =>
+                                  updateAssetAllocation(
+                                    asset.id,
+                                    'allocatedPercentage',
+                                    e.target.value,
+                                    true,
+                                  )
+                                }
                               />
                               <Input
                                 placeholder="Notes"
-                                value={editForm.assets.find((a) => a.assetId === asset.id)?.notes || ''}
-                                onChange={(e) => updateAssetAllocation(asset.id, 'notes', e.target.value, true)}
+                                value={
+                                  editForm.assets.find(
+                                    (a) => a.assetId === asset.id,
+                                  )?.notes || ''
+                                }
+                                onChange={(e) =>
+                                  updateAssetAllocation(
+                                    asset.id,
+                                    'notes',
+                                    e.target.value,
+                                    true,
+                                  )
+                                }
                               />
                             </div>
                           )}
@@ -1206,20 +1433,31 @@ function RouteComponent() {
                 <div className="space-y-4">
                   {userFamilyMembers.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium mb-2">Registered Family Members</p>
+                      <p className="text-sm font-medium mb-2">
+                        Registered Family Members
+                      </p>
                       <div className="border rounded-lg p-4 space-y-2">
                         {userFamilyMembers.map((member) => (
-                          <div key={member.id} className="flex items-center justify-between">
+                          <div
+                            key={member.id}
+                            className="flex items-center justify-between"
+                          >
                             <div>
-                              <p className="font-medium">{member.familyMemberUser?.name}</p>
-                              <p className="text-sm text-muted-foreground">{member.relation}</p>
+                              <p className="font-medium">
+                                {member.familyMemberUser?.name}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {member.relation}
+                              </p>
                             </div>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => addBeneficiary('registered', member.id, true)}
+                              onClick={() =>
+                                addBeneficiary('registered', member.id, true)
+                              }
                               disabled={editForm.beneficiaries.some(
-                                (b) => b.familyMemberId === member.id
+                                (b) => b.familyMemberId === member.id,
                               )}
                             >
                               Add
@@ -1232,20 +1470,34 @@ function RouteComponent() {
 
                   {userNonRegisteredMembers.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium mb-2">Non-Registered Family Members</p>
+                      <p className="text-sm font-medium mb-2">
+                        Non-Registered Family Members
+                      </p>
                       <div className="border rounded-lg p-4 space-y-2">
                         {userNonRegisteredMembers.map((member) => (
-                          <div key={member.id} className="flex items-center justify-between">
+                          <div
+                            key={member.id}
+                            className="flex items-center justify-between"
+                          >
                             <div>
                               <p className="font-medium">{member.name}</p>
-                              <p className="text-sm text-muted-foreground">{member.relation} • {member.icNumber}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {member.relation} • {member.icNumber}
+                              </p>
                             </div>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => addBeneficiary('non-registered', member.id, true)}
+                              onClick={() =>
+                                addBeneficiary(
+                                  'non-registered',
+                                  member.id,
+                                  true,
+                                )
+                              }
                               disabled={editForm.beneficiaries.some(
-                                (b) => b.nonRegisteredFamilyMemberId === member.id
+                                (b) =>
+                                  b.nonRegisteredFamilyMemberId === member.id,
                               )}
                             >
                               Add
@@ -1258,25 +1510,39 @@ function RouteComponent() {
 
                   {editForm.beneficiaries.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium mb-2">Selected Beneficiaries</p>
+                      <p className="text-sm font-medium mb-2">
+                        Selected Beneficiaries
+                      </p>
                       <div className="border rounded-lg p-4 space-y-3">
                         {editForm.beneficiaries.map((beneficiary, index) => {
                           const familyMember = beneficiary.familyMemberId
-                            ? userFamilyMembers.find((m) => m.id === beneficiary.familyMemberId)
+                            ? userFamilyMembers.find(
+                                (m) => m.id === beneficiary.familyMemberId,
+                              )
                             : null
-                          const nonRegMember = beneficiary.nonRegisteredFamilyMemberId
-                            ? userNonRegisteredMembers.find((m) => m.id === beneficiary.nonRegisteredFamilyMemberId)
-                            : null
+                          const nonRegMember =
+                            beneficiary.nonRegisteredFamilyMemberId
+                              ? userNonRegisteredMembers.find(
+                                  (m) =>
+                                    m.id ===
+                                    beneficiary.nonRegisteredFamilyMemberId,
+                                )
+                              : null
 
                           return (
-                            <div key={index} className="space-y-2 p-3 border rounded-lg">
+                            <div
+                              key={index}
+                              className="space-y-2 p-3 border rounded-lg"
+                            >
                               <div className="flex items-center justify-between">
                                 <div>
                                   <p className="font-medium">
-                                    {familyMember?.familyMemberUser?.name || nonRegMember?.name}
+                                    {familyMember?.familyMemberUser?.name ||
+                                      nonRegMember?.name}
                                   </p>
                                   <p className="text-sm text-muted-foreground">
-                                    {familyMember?.relation || nonRegMember?.relation}
+                                    {familyMember?.relation ||
+                                      nonRegMember?.relation}
                                   </p>
                                 </div>
                                 <Button
@@ -1293,22 +1559,42 @@ function RouteComponent() {
                                   type="number"
                                   max="100"
                                   value={beneficiary.sharePercentage}
-                                  onChange={(e) => updateBeneficiaryShare(index, Number(e.target.value), true)}
+                                  onChange={(e) =>
+                                    updateBeneficiaryShare(
+                                      index,
+                                      Number(e.target.value),
+                                      true,
+                                    )
+                                  }
                                 />
                                 <Input
                                   placeholder="Share description"
                                   value={beneficiary.shareDescription || ''}
-                                  onChange={(e) => updateBeneficiaryDescription(index, e.target.value, true)}
+                                  onChange={(e) =>
+                                    updateBeneficiaryDescription(
+                                      index,
+                                      e.target.value,
+                                      true,
+                                    )
+                                  }
                                 />
                               </div>
                             </div>
                           )
                         })}
                         <p className="text-sm">
-                          Total shares: <span className={getTotalShares(editForm.beneficiaries) === 100 ? 'text-green-600' : 'text-red-600'}>
+                          Total shares:{' '}
+                          <span
+                            className={
+                              getTotalShares(editForm.beneficiaries) === 100
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                            }
+                          >
                             {getTotalShares(editForm.beneficiaries)}%
                           </span>
-                          {getTotalShares(editForm.beneficiaries) !== 100 && ' (must equal 100%)'}
+                          {getTotalShares(editForm.beneficiaries) !== 100 &&
+                            ' (must equal 100%)'}
                         </p>
                       </div>
                     </div>
@@ -1343,7 +1629,8 @@ function RouteComponent() {
           <DialogHeader>
             <DialogTitle>Delete Agreement</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this agreement? This action cannot be undone.
+              Are you sure you want to delete this agreement? This action cannot
+              be undone.
             </DialogDescription>
           </DialogHeader>
           {selectedAgreement && (
@@ -1359,19 +1646,25 @@ function RouteComponent() {
               </p>
               {selectedAgreement.status !== 'DRAFT' && (
                 <p className="text-sm text-red-600 mt-2">
-                  Warning: Only DRAFT agreements can be deleted. This agreement cannot be deleted.
+                  Warning: Only DRAFT agreements can be deleted. This agreement
+                  cannot be deleted.
                 </p>
               )}
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteAgreement}
-              disabled={selectedAgreement ? selectedAgreement.status !== 'DRAFT' : true}
+              disabled={
+                selectedAgreement ? selectedAgreement.status !== 'DRAFT' : true
+              }
             >
               Delete Agreement
             </Button>
@@ -1390,7 +1683,9 @@ function RouteComponent() {
               <div>
                 <h3 className="font-semibold">{selectedAgreement.title}</h3>
                 {selectedAgreement.description && (
-                  <p className="text-sm text-muted-foreground mt-1">{selectedAgreement.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {selectedAgreement.description}
+                  </p>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -1399,7 +1694,9 @@ function RouteComponent() {
                   <p>{selectedAgreement.owner.name}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Distribution Type:</span>
+                  <span className="text-muted-foreground">
+                    Distribution Type:
+                  </span>
                   <p>{selectedAgreement.distributionType}</p>
                 </div>
                 <div>
@@ -1449,9 +1746,7 @@ function RouteComponent() {
             </div>
           )}
           <DialogFooter>
-            <Button onClick={() => setViewDialogOpen(false)}>
-              Close
-            </Button>
+            <Button onClick={() => setViewDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1462,8 +1757,9 @@ function RouteComponent() {
           <DialogHeader>
             <DialogTitle>Witness Agreement</DialogTitle>
             <DialogDescription>
-              You are about to witness this agreement. By confirming, you verify that all parties
-              have signed and the agreement is ready to be activated.
+              You are about to witness this agreement. By confirming, you verify
+              that all parties have signed and the agreement is ready to be
+              activated.
             </DialogDescription>
           </DialogHeader>
           {selectedAgreement && (
@@ -1471,7 +1767,9 @@ function RouteComponent() {
               <div className="space-y-2">
                 <h3 className="font-semibold">{selectedAgreement.title}</h3>
                 {selectedAgreement.description && (
-                  <p className="text-sm text-muted-foreground">{selectedAgreement.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedAgreement.description}
+                  </p>
                 )}
               </div>
 
@@ -1481,7 +1779,9 @@ function RouteComponent() {
                   <p className="font-medium">{selectedAgreement.owner.name}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Distribution Type:</span>
+                  <span className="text-muted-foreground">
+                    Distribution Type:
+                  </span>
                   <p>{selectedAgreement.distributionType}</p>
                 </div>
                 <div>
@@ -1501,13 +1801,19 @@ function RouteComponent() {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2Icon className="h-4 w-4 text-green-600" />
-                  <span>All {selectedAgreement.signedBeneficiaryCount} beneficiaries have signed</span>
+                  <span>
+                    All {selectedAgreement.signedBeneficiaryCount} beneficiaries
+                    have signed
+                  </span>
                 </div>
               </div>
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setWitnessDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setWitnessDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button onClick={handleWitnessAgreement} disabled={witnessing}>

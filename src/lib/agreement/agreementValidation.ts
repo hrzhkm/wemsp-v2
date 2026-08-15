@@ -1,13 +1,14 @@
-import { DistributionType, AgreementStatus } from '@/generated/prisma/enums'
 import { validateFaraidShares } from '../faraid/faraidRules'
+import type { AgreementStatus } from '@/generated/prisma/enums';
+import { DistributionType } from '@/generated/prisma/enums'
 
 /**
  * Validation result type
  */
 export interface ValidationResult {
   valid: boolean
-  errors: string[]
-  warnings: string[]
+  errors: Array<string>
+  warnings: Array<string>
 }
 
 /**
@@ -40,8 +41,8 @@ export function validateAgreementInput(data: {
   effectiveDate?: Date | string | null
   expiryDate?: Date | string | null
 }): ValidationResult {
-  const errors: string[] = []
-  const warnings: string[] = []
+  const errors: Array<string> = []
+  const warnings: Array<string> = []
 
   // Title validation
   if (!data.title || data.title.trim().length === 0) {
@@ -56,8 +57,13 @@ export function validateAgreementInput(data: {
   }
 
   // Distribution type validation
-  if (data.distributionType && !Object.values(DistributionType).includes(data.distributionType)) {
-    errors.push(`Invalid distribution type. Must be one of: ${Object.values(DistributionType).join(', ')}`)
+  if (
+    data.distributionType &&
+    !Object.values(DistributionType).includes(data.distributionType)
+  ) {
+    errors.push(
+      `Invalid distribution type. Must be one of: ${Object.values(DistributionType).join(', ')}`,
+    )
   }
 
   // Date validation
@@ -85,11 +91,11 @@ export function validateAgreementInput(data: {
  * Validate beneficiaries for an agreement
  */
 export function validateBeneficiaries(
-  beneficiaries: BeneficiaryInput[],
-  distributionType: DistributionType
+  beneficiaries: Array<BeneficiaryInput>,
+  distributionType: DistributionType,
 ): ValidationResult {
-  const errors: string[] = []
-  const warnings: string[] = []
+  const errors: Array<string> = []
+  const warnings: Array<string> = []
 
   // Must have at least one beneficiary
   if (beneficiaries.length === 0) {
@@ -100,20 +106,28 @@ export function validateBeneficiaries(
   // Check that each beneficiary has either a registered or non-registered member
   beneficiaries.forEach((b, index) => {
     if (!b.familyMemberId && !b.nonRegisteredFamilyMemberId) {
-      errors.push(`Beneficiary at index ${index}: Must specify either a registered family member or non-registered member`)
+      errors.push(
+        `Beneficiary at index ${index}: Must specify either a registered family member or non-registered member`,
+      )
     }
 
     if (b.familyMemberId && b.nonRegisteredFamilyMemberId) {
-      errors.push(`Beneficiary at index ${index}: Cannot specify both registered and non-registered member`)
+      errors.push(
+        `Beneficiary at index ${index}: Cannot specify both registered and non-registered member`,
+      )
     }
 
     // Share percentage validation
     if (typeof b.sharePercentage !== 'number' || b.sharePercentage <= 0) {
-      errors.push(`Beneficiary at index ${index}: Share percentage must be a positive number`)
+      errors.push(
+        `Beneficiary at index ${index}: Share percentage must be a positive number`,
+      )
     }
 
     if (b.sharePercentage > 100) {
-      errors.push(`Beneficiary at index ${index}: Share percentage cannot exceed 100%`)
+      errors.push(
+        `Beneficiary at index ${index}: Share percentage cannot exceed 100%`,
+      )
     }
 
     if (!b.relation) {
@@ -122,9 +136,14 @@ export function validateBeneficiaries(
   })
 
   // Check that total shares equal 100%
-  const totalShare = beneficiaries.reduce((sum, b) => sum + b.sharePercentage, 0)
+  const totalShare = beneficiaries.reduce(
+    (sum, b) => sum + b.sharePercentage,
+    0,
+  )
   if (Math.abs(totalShare - 100) > 0.1) {
-    errors.push(`Total beneficiary shares must equal 100%. Current total: ${totalShare.toFixed(2)}%`)
+    errors.push(
+      `Total beneficiary shares must equal 100%. Current total: ${totalShare.toFixed(2)}%`,
+    )
   }
 
   // For FARAID type, validate against Islamic inheritance rules
@@ -133,7 +152,7 @@ export function validateBeneficiaries(
       beneficiaries.map((b) => ({
         relation: b.relation as any,
         sharePercentage: b.sharePercentage,
-      }))
+      })),
     )
 
     if (!faraidValidation.valid) {
@@ -151,9 +170,9 @@ export function validateBeneficiaries(
 /**
  * Validate assets for an agreement
  */
-export function validateAssets(assets: AssetInput[]): ValidationResult {
-  const errors: string[] = []
-  const warnings: string[] = []
+export function validateAssets(assets: Array<AssetInput>): ValidationResult {
+  const errors: Array<string> = []
+  const warnings: Array<string> = []
 
   // Must have at least one asset
   if (assets.length === 0) {
@@ -174,7 +193,9 @@ export function validateAssets(assets: AssetInput[]): ValidationResult {
 
     if (asset.allocatedPercentage !== undefined) {
       if (asset.allocatedPercentage < 0 || asset.allocatedPercentage > 100) {
-        errors.push(`Asset at index ${index}: Allocated percentage must be between 0 and 100`)
+        errors.push(
+          `Asset at index ${index}: Allocated percentage must be between 0 and 100`,
+        )
       }
     }
   })
@@ -199,12 +220,12 @@ export function validateStatusTransition(
     ownerHasSigned?: boolean
     allBeneficiariesSigned?: boolean
     witnessed?: boolean
-  }
+  },
 ): ValidationResult {
-  const errors: string[] = []
-  const warnings: string[] = []
+  const errors: Array<string> = []
+  const warnings: Array<string> = []
 
-  const validTransitions: Record<AgreementStatus, AgreementStatus[]> = {
+  const validTransitions: Record<AgreementStatus, Array<AgreementStatus>> = {
     DRAFT: ['PENDING_SIGNATURES', 'CANCELLED'],
     PENDING_SIGNATURES: ['DRAFT', 'PENDING_WITNESS', 'CANCELLED'],
     PENDING_WITNESS: ['PENDING_SIGNATURES', 'ACTIVE', 'CANCELLED'],
@@ -218,7 +239,7 @@ export function validateStatusTransition(
   const allowedNextStates = validTransitions[currentStatus] || []
   if (!allowedNextStates.includes(newStatus)) {
     errors.push(
-      `Cannot transition from ${currentStatus} to ${newStatus}. Allowed transitions: ${allowedNextStates.join(', ') || 'none'}`
+      `Cannot transition from ${currentStatus} to ${newStatus}. Allowed transitions: ${allowedNextStates.join(', ') || 'none'}`,
     )
   }
 
@@ -226,19 +247,25 @@ export function validateStatusTransition(
   switch (newStatus) {
     case 'PENDING_SIGNATURES':
       if (!context.ownerHasSigned) {
-        errors.push('Owner must sign before submitting for beneficiary signatures')
+        errors.push(
+          'Owner must sign before submitting for beneficiary signatures',
+        )
       }
       break
 
     case 'PENDING_WITNESS':
       if (!context.allBeneficiariesSigned) {
-        errors.push('All beneficiaries must sign before submitting for witnessing')
+        errors.push(
+          'All beneficiaries must sign before submitting for witnessing',
+        )
       }
       break
 
     case 'ACTIVE':
       if (!context.witnessed) {
-        errors.push('Agreement must be witnessed by an admin before becoming active')
+        errors.push(
+          'Agreement must be witnessed by an admin before becoming active',
+        )
       }
       break
   }
@@ -258,10 +285,10 @@ export function validateSignature(
     isAdmin?: boolean
     beneficiaryId?: number
     allBeneficiariesSigned?: boolean
-  }
+  },
 ): ValidationResult {
-  const errors: string[] = []
-  const warnings: string[] = []
+  const errors: Array<string> = []
+  const warnings: Array<string> = []
 
   // Check authorization
   switch (signerType) {
@@ -269,8 +296,13 @@ export function validateSignature(
       if (!context.isOwner) {
         errors.push('Only the agreement owner can sign as owner')
       }
-      if (agreementStatus !== 'DRAFT' && agreementStatus !== 'PENDING_SIGNATURES') {
-        errors.push(`Owner can only sign agreements in DRAFT or PENDING_SIGNATURES status. Current status: ${agreementStatus}`)
+      if (
+        agreementStatus !== 'DRAFT' &&
+        agreementStatus !== 'PENDING_SIGNATURES'
+      ) {
+        errors.push(
+          `Owner can only sign agreements in DRAFT or PENDING_SIGNATURES status. Current status: ${agreementStatus}`,
+        )
       }
       break
 
@@ -279,7 +311,9 @@ export function validateSignature(
         errors.push('Only designated beneficiaries can sign as beneficiary')
       }
       if (agreementStatus !== 'PENDING_SIGNATURES') {
-        errors.push(`Beneficiaries can only sign agreements in PENDING_SIGNATURES status. Current status: ${agreementStatus}`)
+        errors.push(
+          `Beneficiaries can only sign agreements in PENDING_SIGNATURES status. Current status: ${agreementStatus}`,
+        )
       }
       break
 
@@ -288,7 +322,9 @@ export function validateSignature(
         errors.push('Only admins can witness agreements')
       }
       if (agreementStatus !== 'PENDING_WITNESS') {
-        errors.push(`Agreements can only be witnessed in PENDING_WITNESS status. Current status: ${agreementStatus}`)
+        errors.push(
+          `Agreements can only be witnessed in PENDING_WITNESS status. Current status: ${agreementStatus}`,
+        )
       }
       break
   }
@@ -299,7 +335,11 @@ export function validateSignature(
 /**
  * Check if an agreement can be edited
  */
-export function canEditAgreement(status: AgreementStatus, userId: string, ownerId: string): boolean {
+export function canEditAgreement(
+  status: AgreementStatus,
+  userId: string,
+  ownerId: string,
+): boolean {
   return status === 'DRAFT' && userId === ownerId
 }
 

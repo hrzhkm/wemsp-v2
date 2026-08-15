@@ -1,7 +1,7 @@
 import { defineConfig } from 'prisma/config'
 import { config } from 'dotenv'
 
-config();
+config()
 
 export default defineConfig({
   schema: './prisma/schema.prisma',

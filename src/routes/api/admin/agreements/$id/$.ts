@@ -15,14 +15,20 @@ export const Route = createFileRoute('/api/admin/agreements/$id/$')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           const url = new URL(request.url)
           const id = url.pathname.split('/').slice(-1)[0]
 
           if (!id) {
-            return Response.json({ error: 'Missing agreement id' }, { status: 400, headers: corsHeaders })
+            return Response.json(
+              { error: 'Missing agreement id' },
+              { status: 400, headers: corsHeaders },
+            )
           }
 
           // Fetch agreement with full details
@@ -77,12 +83,18 @@ export const Route = createFileRoute('/api/admin/agreements/$id/$')({
           })
 
           if (!agreement) {
-            return Response.json({ error: 'Agreement not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'Agreement not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
-          return Response.json({
-            agreement,
-          }, { headers: corsHeaders })
+          return Response.json(
+            {
+              agreement,
+            },
+            { headers: corsHeaders },
+          )
         } catch (error) {
           console.error('Error fetching agreement:', error)
           return Response.json(

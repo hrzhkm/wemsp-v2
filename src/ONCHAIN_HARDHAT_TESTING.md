@@ -1,6 +1,7 @@
 # On-Chain Testing Guide (WEMSP + Hardhat)
 
 This guide explains how to run local on-chain testing for:
+
 - `wemsp-contract` (smart contract repo)
 - `wemsp-v2` (backend integration using `src/lib/contract.ts`)
 
@@ -54,9 +55,11 @@ ETHERSCAN_API_KEY=dummy pnpm exec hardhat node
 ```
 
 RPC endpoint:
+
 - `http://127.0.0.1:8545`
 
 Default funded account used in local tests:
+
 - Address: `0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266`
 - Private key: `0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`
 
@@ -71,6 +74,7 @@ ETHERSCAN_API_KEY=dummy pnpm exec hardhat run scripts/deploy.ts --network localh
 ```
 
 Capture deployed contract address from output, e.g.:
+
 - `0x5FbDB2315678afecb367f032d93F642f64180aa3`
 
 ---
@@ -87,6 +91,7 @@ pnpm exec tsx src/test/onchain-smoke.ts
 ```
 
 Expected behavior:
+
 - Mint agreement NFT
 - Owner signs
 - Beneficiaries sign
@@ -105,6 +110,7 @@ pnpm test
 ```
 
 Current suite includes:
+
 - admin login/session route tests
 - agreement auth/lifecycle tests
 - on-chain sign route tests (owner/beneficiary/witness) with contract-layer mocks
@@ -119,6 +125,7 @@ Current suite includes:
 If sending multiple transactions quickly from one signer, nonce issues can happen.
 
 Fix already applied in app integration:
+
 - `src/lib/contract.ts` now uses `ethers.NonceManager` for the signer.
 
 ### Hardhat verify config error (`HHE15`)

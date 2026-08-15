@@ -1,12 +1,18 @@
-import { createFileRoute, Outlet, useNavigate, useLocation } from '@tanstack/react-router'
+import {
+  Outlet,
+  createFileRoute,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router'
 import { useEffect } from 'react'
 
 export const Route = createFileRoute('/app/profile/')({
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>) => ({
-    onboarding: typeof search.onboarding === 'boolean'
-      ? search.onboarding
-      : search.onboarding === 'true',
+    onboarding:
+      typeof search.onboarding === 'boolean'
+        ? search.onboarding
+        : search.onboarding === 'true',
     redirect: typeof search.redirect === 'string' ? search.redirect : undefined,
   }),
 })

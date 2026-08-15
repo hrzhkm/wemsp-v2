@@ -57,7 +57,9 @@ describe('validateAssets', () => {
     ])
 
     expect(result.valid).toBe(false)
-    expect(result.errors).toContain('Duplicate assets detected. Each asset can only be added once')
+    expect(result.errors).toContain(
+      'Duplicate assets detected. Each asset can only be added once',
+    )
   })
 
   it('accepts valid unique assets', () => {

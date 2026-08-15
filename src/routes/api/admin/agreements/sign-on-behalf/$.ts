@@ -173,7 +173,10 @@ export const adminSignOnBehalfHandlers = {
       try {
         reconciliation = await reconcileAgreement(agreement.id)
       } catch (reconcileError) {
-        console.error(`Error reconciling agreement ${agreement.id}:`, reconcileError)
+        console.error(
+          `Error reconciling agreement ${agreement.id}:`,
+          reconcileError,
+        )
       }
 
       return Response.json(

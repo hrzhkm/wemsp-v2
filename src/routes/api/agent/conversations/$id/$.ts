@@ -6,7 +6,13 @@ import { getPendingActionSummaries } from '@/lib/agent/pendingActions'
 export const Route = createFileRoute('/api/agent/conversations/$id/$')({
   server: {
     handlers: {
-      GET: async ({ request, params }: { request: Request; params: { id: string } }) => {
+      GET: async ({
+        request,
+        params,
+      }: {
+        request: Request
+        params: { id: string }
+      }) => {
         const session = await auth.api.getSession({ headers: request.headers })
         if (!session) return new Response('Unauthorized', { status: 401 })
 
@@ -21,7 +27,10 @@ export const Route = createFileRoute('/api/agent/conversations/$id/$')({
         })
 
         if (!conversation) {
-          return Response.json({ error: 'Conversation not found' }, { status: 404 })
+          return Response.json(
+            { error: 'Conversation not found' },
+            { status: 404 },
+          )
         }
 
         const pendingActions = getPendingActionSummaries(
@@ -30,7 +39,7 @@ export const Route = createFileRoute('/api/agent/conversations/$id/$')({
             role: message.role,
             content: message.content,
             createdAt: message.createdAt,
-          }))
+          })),
         )
 
         return Response.json({

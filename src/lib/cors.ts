@@ -1,5 +1,4 @@
-const ADMIN_ORIGIN =
-  process.env.ADMIN_ORIGIN || 'http://localhost:3001'
+const ADMIN_ORIGIN = process.env.ADMIN_ORIGIN || 'http://localhost:3001'
 
 export const corsHeaders = {
   'Access-Control-Allow-Origin': ADMIN_ORIGIN,

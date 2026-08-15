@@ -1,12 +1,12 @@
-import { useLanguage } from '@/lib/i18n/context';
-import { Languages } from 'lucide-react';
+import { Languages } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n/context'
 
 export const LanguageSwitcher = () => {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage()
 
   const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'ms' : 'en');
-  };
+    setLanguage(language === 'en' ? 'ms' : 'en')
+  }
 
   return (
     <button
@@ -17,5 +17,5 @@ export const LanguageSwitcher = () => {
       <Languages className="w-4 h-4" />
       <span className="uppercase">{language}</span>
     </button>
-  );
-};
+  )
+}

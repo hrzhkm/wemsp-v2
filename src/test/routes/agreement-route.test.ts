@@ -284,7 +284,9 @@ describe('agreementHandlers auth + lifecycle', () => {
             status: 'DRAFT',
           }),
         },
-        agreementAsset: { createMany: vi.fn().mockResolvedValueOnce({ count: 1 }) },
+        agreementAsset: {
+          createMany: vi.fn().mockResolvedValueOnce({ count: 1 }),
+        },
         agreementBeneficiary: {
           create: vi.fn().mockResolvedValueOnce({ id: 'ben_1' }),
         },
@@ -315,6 +317,8 @@ describe('agreementHandlers auth + lifecycle', () => {
 
     expect(response.status).toBe(503)
     expect(body.error).toContain('On-chain minting is temporarily unavailable')
-    expect(mocks.agreementDelete).toHaveBeenCalledWith({ where: { id: 'agr_new' } })
+    expect(mocks.agreementDelete).toHaveBeenCalledWith({
+      where: { id: 'agr_new' },
+    })
   })
 })

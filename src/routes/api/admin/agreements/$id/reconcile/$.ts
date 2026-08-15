@@ -10,11 +10,20 @@ export const Route = createFileRoute('/api/admin/agreements/$id/reconcile/$')({
         return new Response(null, { headers: corsHeaders })
       },
 
-      POST: async ({ request, params }: { request: Request; params: { id: string } }) => {
+      POST: async ({
+        request,
+        params,
+      }: {
+        request: Request
+        params: { id: string }
+      }) => {
         try {
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           const result = await reconcileAgreement(params.id)

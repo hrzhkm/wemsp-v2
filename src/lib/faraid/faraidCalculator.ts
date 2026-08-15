@@ -1,5 +1,5 @@
-import type { FamilyRelation } from '@/generated/prisma/enums'
 import { calculateFaraidDistribution, formatShare } from './faraidRules'
+import type { FamilyRelation } from '@/generated/prisma/enums'
 
 /**
  * Family member with their relation information
@@ -30,11 +30,11 @@ export interface BeneficiaryWithShare {
  * Result of Faraid auto-calculation
  */
 export interface FaraidCalculationResult {
-  beneficiaries: BeneficiaryWithShare[]
+  beneficiaries: Array<BeneficiaryWithShare>
   totalPercentage: number
   description: string // Overall explanation
   hasResiduary: boolean // Whether there are residuary heirs
-  warnings: string[] // Any warnings about the calculation
+  warnings: Array<string> // Any warnings about the calculation
 }
 
 /**
@@ -60,8 +60,12 @@ const ELIGIBLE_FARAIT_HEIRS: Set<FamilyRelation> = new Set([
  * @param familyMembers - All family members
  * @returns Filtered list of only eligible heirs
  */
-export function filterEligibleHeirs(familyMembers: FamilyMember[]): FamilyMember[] {
-  return familyMembers.filter(member => ELIGIBLE_FARAIT_HEIRS.has(member.relation))
+export function filterEligibleHeirs(
+  familyMembers: Array<FamilyMember>,
+): Array<FamilyMember> {
+  return familyMembers.filter((member) =>
+    ELIGIBLE_FARAIT_HEIRS.has(member.relation),
+  )
 }
 
 /**
@@ -72,9 +76,9 @@ export function filterEligibleHeirs(familyMembers: FamilyMember[]): FamilyMember
  * @returns Map of member ID to their share
  */
 function calculateResiduaryShares(
-  _residuaryRelations: FamilyRelation[],
-  residuaryHeirs: FamilyMember[],
-  remainingShare: number
+  _residuaryRelations: Array<FamilyRelation>,
+  residuaryHeirs: Array<FamilyMember>,
+  remainingShare: number,
 ): Map<number, number> {
   const shares = new Map<number, number>()
 
@@ -83,8 +87,8 @@ function calculateResiduaryShares(
   }
 
   // Count heirs by relation for proper distribution
-  const relationCounts = new Map<FamilyRelation, FamilyMember[]>()
-  residuaryHeirs.forEach(heir => {
+  const relationCounts = new Map<FamilyRelation, Array<FamilyMember>>()
+  residuaryHeirs.forEach((heir) => {
     if (!relationCounts.has(heir.relation)) {
       relationCounts.set(heir.relation, [])
     }
@@ -127,31 +131,31 @@ function calculateResiduaryShares(
   // Distribute remaining share
   const sharePerUnit = remainingShare / totalShares
 
-  sons.forEach(son => {
+  sons.forEach((son) => {
     shares.set(son.id, sharePerUnit * 2)
   })
 
-  daughters.forEach(daughter => {
+  daughters.forEach((daughter) => {
     shares.set(daughter.id, sharePerUnit * 1)
   })
 
   if (sons.length === 0) {
-    grandsons.forEach(grandson => {
+    grandsons.forEach((grandson) => {
       shares.set(grandson.id, sharePerUnit * 2)
     })
   }
 
   if (daughters.length === 0) {
-    granddaughters.forEach(granddaughter => {
+    granddaughters.forEach((granddaughter) => {
       shares.set(granddaughter.id, sharePerUnit * 1)
     })
   }
 
-  siblings.forEach(sibling => {
+  siblings.forEach((sibling) => {
     shares.set(sibling.id, sharePerUnit)
   })
 
-  grandfathers.forEach(grandfather => {
+  grandfathers.forEach((grandfather) => {
     shares.set(grandfather.id, sharePerUnit)
   })
 
@@ -163,8 +167,10 @@ function calculateResiduaryShares(
  * @param familyMembers - All family members (will be filtered to eligible heirs)
  * @returns Faraid calculation result with shares for each beneficiary
  */
-export function calculateAutoFaraidDistribution(familyMembers: FamilyMember[]): FaraidCalculationResult {
-  const warnings: string[] = []
+export function calculateAutoFaraidDistribution(
+  familyMembers: Array<FamilyMember>,
+): FaraidCalculationResult {
+  const warnings: Array<string> = []
 
   // Filter to only eligible heirs
   const eligibleHeirs = filterEligibleHeirs(familyMembers)
@@ -181,9 +187,9 @@ export function calculateAutoFaraidDistribution(familyMembers: FamilyMember[]): 
 
   // Group heirs by relation for Faraid calculation
   const relationsMap = new Map<FamilyRelation, number>()
-  const heirsByRelation = new Map<FamilyRelation, FamilyMember[]>()
+  const heirsByRelation = new Map<FamilyRelation, Array<FamilyMember>>()
 
-  eligibleHeirs.forEach(heir => {
+  eligibleHeirs.forEach((heir) => {
     relationsMap.set(heir.relation, (relationsMap.get(heir.relation) || 0) + 1)
     if (!heirsByRelation.has(heir.relation)) {
       heirsByRelation.set(heir.relation, [])
@@ -192,24 +198,26 @@ export function calculateAutoFaraidDistribution(familyMembers: FamilyMember[]): 
   })
 
   // Build beneficiary input for Faraid calculation
-  const beneficiaryInput = Array.from(relationsMap.entries()).map(([relation, count]) => ({
-    relation,
-    count,
-  }))
+  const beneficiaryInput = Array.from(relationsMap.entries()).map(
+    ([relation, count]) => ({
+      relation,
+      count,
+    }),
+  )
 
   // Calculate Faraid distribution
   const distribution = calculateFaraidDistribution(beneficiaryInput)
 
   // Build beneficiaries with calculated shares
-  const beneficiaries: BeneficiaryWithShare[] = []
-  const residuaryHeirs: FamilyMember[] = []
+  const beneficiaries: Array<BeneficiaryWithShare> = []
+  const residuaryHeirs: Array<FamilyMember> = []
 
   // First, assign fixed shares
   distribution.shares.forEach((share, relation) => {
     const heirs = heirsByRelation.get(relation) || []
     const sharePerHeir = share / heirs.length
 
-    heirs.forEach(heir => {
+    heirs.forEach((heir) => {
       beneficiaries.push({
         memberId: heir.id,
         type: heir.type,
@@ -217,13 +225,15 @@ export function calculateAutoFaraidDistribution(familyMembers: FamilyMember[]): 
         relation: heir.relation,
         sharePercentage: sharePerHeir * 100,
         shareFormatted: formatShare(sharePerHeir),
-        description: FIXED_SHARE_DESCRIPTIONS[relation] || `Share according to Faraid rules for ${relation}`,
+        description:
+          FIXED_SHARE_DESCRIPTIONS[relation] ||
+          `Share according to Faraid rules for ${relation}`,
       })
     })
   })
 
   // Collect residuary heirs
-  distribution.residuary.forEach(relation => {
+  distribution.residuary.forEach((relation) => {
     const heirs = heirsByRelation.get(relation) || []
     residuaryHeirs.push(...heirs)
   })
@@ -233,12 +243,12 @@ export function calculateAutoFaraidDistribution(familyMembers: FamilyMember[]): 
   const residuaryShares = calculateResiduaryShares(
     distribution.residuary,
     residuaryHeirs,
-    remainingShare
+    remainingShare,
   )
 
   // Add residuary beneficiaries
   residuaryShares.forEach((share, memberId) => {
-    const heir = residuaryHeirs.find(h => h.id === memberId)
+    const heir = residuaryHeirs.find((h) => h.id === memberId)
     if (heir) {
       beneficiaries.push({
         memberId: heir.id,
@@ -253,13 +263,16 @@ export function calculateAutoFaraidDistribution(familyMembers: FamilyMember[]): 
   })
 
   // Calculate total percentage
-  const totalPercentage = beneficiaries.reduce((sum, b) => sum + b.sharePercentage, 0)
+  const totalPercentage = beneficiaries.reduce(
+    (sum, b) => sum + b.sharePercentage,
+    0,
+  )
 
   // Check if total is close to 100%
   if (Math.abs(totalPercentage - 100) > 1) {
     warnings.push(
       `Total shares (${totalPercentage.toFixed(1)}%) may not equal 100% due to rounding. ` +
-      `This is normal in Faraid calculations and the difference will be adjusted.`
+        `This is normal in Faraid calculations and the difference will be adjusted.`,
     )
   }
 
@@ -285,7 +298,8 @@ const FIXED_SHARE_DESCRIPTIONS: Record<FamilyRelation, string> = {
   SON: 'Residuary - receives remaining portion',
   GRANDSON: 'Residuary - in absence of sons',
   SIBLING: 'Residuary - in absence of descendants, parents, and grandparents',
-  GRANDFATHER: 'May receive fixed share or residuary depending on circumstances',
+  GRANDFATHER:
+    'May receive fixed share or residuary depending on circumstances',
   GRANDMOTHER: '1/6 in absence of mother',
   UNCLE: 'Residuary - distant relative',
   AUNT: 'No fixed share in most schools of thought',

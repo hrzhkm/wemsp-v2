@@ -1,4 +1,11 @@
-import { Link, Outlet, createFileRoute, redirect, useLocation, useNavigate } from '@tanstack/react-router'
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  redirect,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router'
 import React, { useEffect, useMemo } from 'react'
 import {
   SidebarInset,
@@ -64,7 +71,7 @@ export const Route = createFileRoute('/app')({
 const formatSegment = (segment: string) => {
   return segment
     .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
 }
 
@@ -83,7 +90,8 @@ function RouteComponent() {
     const pathSegments = location.pathname.split('/').filter(Boolean)
 
     // Remove 'app' from the beginning
-    const segments = pathSegments[0] === 'app' ? pathSegments.slice(1) : pathSegments
+    const segments =
+      pathSegments[0] === 'app' ? pathSegments.slice(1) : pathSegments
 
     // Map segments to breadcrumb items
     return segments.map((segment, index) => {
@@ -143,25 +151,25 @@ function RouteComponent() {
           <div className="flex h-14 items-center gap-3 rounded-2xl border border-border/60 bg-background/85 px-3 shadow-sm supports-[backdrop-filter]:backdrop-blur-sm">
             <SidebarTrigger className="rounded-lg border border-border/60 bg-background shadow-sm hover:bg-muted" />
             <Separator orientation="vertical" className="h-5" />
-          <Breadcrumb className="pl-1">
-            <BreadcrumbList>
-              {breadcrumbs.map((crumb, index) => (
-                <React.Fragment key={crumb.href}>
-                  {index > 0 && <BreadcrumbSeparator />}
-                  <BreadcrumbItem>
-                    {crumb.isLast ? (
-                      <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink asChild>
-                        <Link to={crumb.href}>{crumb.label}</Link>
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                </React.Fragment>
-              ))}
-            </BreadcrumbList>
-          </Breadcrumb>
-          <div className="flex-1" />
+            <Breadcrumb className="pl-1">
+              <BreadcrumbList>
+                {breadcrumbs.map((crumb, index) => (
+                  <React.Fragment key={crumb.href}>
+                    {index > 0 && <BreadcrumbSeparator />}
+                    <BreadcrumbItem>
+                      {crumb.isLast ? (
+                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink asChild>
+                          <Link to={crumb.href}>{crumb.label}</Link>
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </React.Fragment>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
+            <div className="flex-1" />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-4">

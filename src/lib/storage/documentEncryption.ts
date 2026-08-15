@@ -2,14 +2,13 @@ import {
   ALGORITHM,
   KEY_BYTES,
   KEY_VERSION,
-  
   generateFek,
   unwrapFek,
   unwrapFekWithKey,
   wrapFek,
-  wrapFekWithKey
+  wrapFekWithKey,
 } from './encryption'
-import type {WrappedKey} from './encryption';
+import type { WrappedKey } from './encryption'
 import { prisma } from '@/db'
 
 export const DOCUMENT_QUESTION_IDS = [

@@ -45,7 +45,10 @@ export const agreementHistoryHandlers = {
 
       const events =
         agreement.tokenId != null
-          ? await getAgreementOnChainEvents(agreement.tokenId, agreement.mintTxHash)
+          ? await getAgreementOnChainEvents(
+              agreement.tokenId,
+              agreement.mintTxHash,
+            )
           : []
 
       return Response.json({

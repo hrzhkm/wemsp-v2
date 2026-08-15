@@ -40,7 +40,9 @@ export const Route = createFileRoute('/api/agent/conversations/$')({
         const session = await auth.api.getSession({ headers: request.headers })
         if (!session) return new Response('Unauthorized', { status: 401 })
 
-        const body = await request.json().catch(() => ({})) as { title?: string }
+        const body = (await request.json().catch(() => ({}))) as {
+          title?: string
+        }
 
         const conversation = await prisma.agentConversation.create({
           data: {
@@ -55,13 +57,16 @@ export const Route = createFileRoute('/api/agent/conversations/$')({
           },
         })
 
-        return Response.json({
-          conversation: {
-            ...conversation,
-            createdAt: conversation.createdAt.toISOString(),
-            updatedAt: conversation.updatedAt.toISOString(),
+        return Response.json(
+          {
+            conversation: {
+              ...conversation,
+              createdAt: conversation.createdAt.toISOString(),
+              updatedAt: conversation.updatedAt.toISOString(),
+            },
           },
-        }, { status: 201 })
+          { status: 201 },
+        )
       },
     },
   },

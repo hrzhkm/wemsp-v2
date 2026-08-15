@@ -58,7 +58,8 @@ function SignByICPage() {
   const [searching, setSearching] = useState(false)
   const [agreements, setAgreements] = useState<Array<AgreementForSigning>>([])
   const [hasSearched, setHasSearched] = useState(false)
-  const [selectedAgreement, setSelectedAgreement] = useState<AgreementForSigning | null>(null)
+  const [selectedAgreement, setSelectedAgreement] =
+    useState<AgreementForSigning | null>(null)
   const [notesDialogOpen, setNotesDialogOpen] = useState(false)
   const [signNotes, setSignNotes] = useState('')
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
@@ -79,7 +80,9 @@ function SignByICPage() {
 
       if (!response.ok) {
         if (response.status === 404) {
-          toast.error(data.error || 'No pending agreements found for this IC number')
+          toast.error(
+            data.error || 'No pending agreements found for this IC number',
+          )
           setAgreements([])
         } else {
           toast.error(data.error || 'Failed to search for agreements')
@@ -139,7 +142,9 @@ function SignByICPage() {
 
       const txHash = data?.onChain?.beneficiarySignatureTxHash
       if (txHash) {
-        toast.success(`Signed on-chain (${txHash.slice(0, 10)}...${txHash.slice(-6)})`)
+        toast.success(
+          `Signed on-chain (${txHash.slice(0, 10)}...${txHash.slice(-6)})`,
+        )
       } else {
         toast.success(data.message || 'Signed successfully')
       }
@@ -184,7 +189,9 @@ function SignByICPage() {
                 id="ic-number"
                 placeholder="Enter 12-digit IC number"
                 value={icNumber}
-                onChange={(e) => setIcNumber(e.target.value.replace(/\D/g, '').slice(0, 12))}
+                onChange={(e) =>
+                  setIcNumber(e.target.value.replace(/\D/g, '').slice(0, 12))
+                }
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 maxLength={12}
               />
@@ -214,51 +221,57 @@ function SignByICPage() {
               <Table>
                 <TableHeader className="bg-muted/35">
                   <TableRow>
-                  <TableHead>Agreement Title</TableHead>
-                  <TableHead>Owner</TableHead>
-                  <TableHead>Member Name</TableHead>
-                  <TableHead>Share</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {agreements.map((agreement) => (
-                  <TableRow key={agreement.beneficiaryId}>
-                    <TableCell className="font-medium">{agreement.title}</TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{agreement.owner.name}</div>
-                        <div className="text-sm text-muted-foreground">{agreement.owner.email}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{agreement.memberName}</TableCell>
-                    <TableCell>
-                      {agreement.sharePercentage}%
-                      {agreement.shareDescription && (
-                        <div className="text-xs text-muted-foreground">
-                          {agreement.shareDescription}
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        {agreement.status}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        onClick={() => openSignDialog(agreement)}
-                      >
-                        <PenIcon className="h-4 w-4 mr-2" />
-                        Sign
-                      </Button>
-                    </TableCell>
+                    <TableHead>Agreement Title</TableHead>
+                    <TableHead>Owner</TableHead>
+                    <TableHead>Member Name</TableHead>
+                    <TableHead>Share</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {agreements.map((agreement) => (
+                    <TableRow key={agreement.beneficiaryId}>
+                      <TableCell className="font-medium">
+                        {agreement.title}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">
+                            {agreement.owner.name}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {agreement.owner.email}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>{agreement.memberName}</TableCell>
+                      <TableCell>
+                        {agreement.sharePercentage}%
+                        {agreement.shareDescription && (
+                          <div className="text-xs text-muted-foreground">
+                            {agreement.shareDescription}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          {agreement.status}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          size="sm"
+                          onClick={() => openSignDialog(agreement)}
+                        >
+                          <PenIcon className="h-4 w-4 mr-2" />
+                          Sign
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           )}
         </Card>
@@ -302,13 +315,16 @@ function SignByICPage() {
           {selectedAgreement && (
             <div className="py-4 space-y-2">
               <div className="text-sm">
-                <span className="font-medium">Agreement:</span> {selectedAgreement.title}
+                <span className="font-medium">Agreement:</span>{' '}
+                {selectedAgreement.title}
               </div>
               <div className="text-sm">
-                <span className="font-medium">Owner:</span> {selectedAgreement.owner.name}
+                <span className="font-medium">Owner:</span>{' '}
+                {selectedAgreement.owner.name}
               </div>
               <div className="text-sm">
-                <span className="font-medium">Share:</span> {selectedAgreement.sharePercentage}%
+                <span className="font-medium">Share:</span>{' '}
+                {selectedAgreement.sharePercentage}%
               </div>
               {signNotes && (
                 <div className="text-sm">
@@ -318,7 +334,10 @@ function SignByICPage() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button onClick={handleConfirmSign} disabled={signing}>

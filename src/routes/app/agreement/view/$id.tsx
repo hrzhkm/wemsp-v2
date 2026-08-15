@@ -32,7 +32,10 @@ import { Button } from '@/components/ui/button'
 import { FieldGroup } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { authClient } from '@/lib/auth/authClient'
-import { getStatusColor, getStatusDescription } from '@/lib/agreement/agreementWorkflow'
+import {
+  getStatusColor,
+  getStatusDescription,
+} from '@/lib/agreement/agreementWorkflow'
 import { AgreementTimeline } from '@/components/agreement/agreementTimeline'
 
 export const Route = createFileRoute('/app/agreement/view/$id')({
@@ -613,18 +616,6 @@ function RouteComponent() {
             </div>
           </div>
 
-          {/* On-chain Transaction History */}
-          <AgreementTimeline
-            events={historyData?.events ?? []}
-            beneficiaries={agreement.beneficiaries.map((b: any) => ({
-              id: b.id,
-              name:
-                b.familyMember?.user?.name ||
-                b.nonRegisteredFamilyMember?.name ||
-                'Unknown',
-            }))}
-          />
-
           {/* Assets Section */}
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -761,6 +752,18 @@ function RouteComponent() {
               </table>
             </div>
           </div>
+
+          {/* On-chain Transaction History */}
+          <AgreementTimeline
+            events={historyData?.events ?? []}
+            beneficiaries={agreement.beneficiaries.map((b: any) => ({
+              id: b.id,
+              name:
+                b.familyMember?.user?.name ||
+                b.nonRegisteredFamilyMember?.name ||
+                'Unknown',
+            }))}
+          />
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t">

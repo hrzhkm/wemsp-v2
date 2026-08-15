@@ -48,9 +48,12 @@ const explainFeature = tool(
     name: 'explain_feature',
     description: 'Explain how a WEMSP feature works for end users.',
     schema: z.object({
-      topic: z.string().min(1).describe('Feature topic such as agreement, family, or asset.'),
+      topic: z
+        .string()
+        .min(1)
+        .describe('Feature topic such as agreement, family, or asset.'),
     }),
-  }
+  },
 )
 
 export function buildAgentTools(runtime: AgentRuntime) {
@@ -78,7 +81,7 @@ export function buildAgentTools(runtime: AgentRuntime) {
       name: 'list_my_agreements',
       description: 'List agreements owned by the current user.',
       schema: z.object({}).describe('No input required.'),
-    }
+    },
   )
 
   const listFamilyMembers = tool(
@@ -122,9 +125,10 @@ export function buildAgentTools(runtime: AgentRuntime) {
     },
     {
       name: 'list_my_family_members',
-      description: 'List registered and non-registered family members of current user.',
+      description:
+        'List registered and non-registered family members of current user.',
       schema: z.object({}).describe('No input required.'),
-    }
+    },
   )
 
   const listAssets = tool(
@@ -151,7 +155,7 @@ export function buildAgentTools(runtime: AgentRuntime) {
       name: 'list_my_assets',
       description: 'List user assets with type and value.',
       schema: z.object({}).describe('No input required.'),
-    }
+    },
   )
 
   const stageAssetCreation = tool(
@@ -208,15 +212,26 @@ export function buildAgentTools(runtime: AgentRuntime) {
           .enum(['PROPERTY', 'VEHICLE', 'INVESTMENT', 'OTHER'])
           .describe('Asset type based on schema enum'),
         value: z.number().positive().describe('Asset value as positive number'),
-        description: z.string().optional().describe('Optional asset description'),
+        description: z
+          .string()
+          .optional()
+          .describe('Optional asset description'),
         documentUrl: z
           .string()
-          .regex(/^\/api\/file\/tmp\/asset-documents\/[^/]+\/[0-9a-f-]{36}\.enc$/i)
+          .regex(
+            /^\/api\/file\/tmp\/asset-documents\/[^/]+\/[0-9a-f-]{36}\.enc$/i,
+          )
           .optional()
           .describe('Optional uploaded document URL'),
       }),
-    }
+    },
   )
 
-  return [explainFeature, listAgreements, listFamilyMembers, listAssets, stageAssetCreation]
+  return [
+    explainFeature,
+    listAgreements,
+    listFamilyMembers,
+    listAssets,
+    stageAssetCreation,
+  ]
 }

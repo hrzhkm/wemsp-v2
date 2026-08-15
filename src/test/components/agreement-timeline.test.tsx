@@ -56,6 +56,8 @@ describe('AgreementTimeline', () => {
         beneficiaries={[{ id: 'ben_1', name: 'Fatimah Zahra' }]}
       />,
     )
-    expect(screen.getByText('Beneficiary signed on-chain — Fatimah Zahra')).toBeTruthy()
+    expect(
+      screen.getByText('Beneficiary signed on-chain — Fatimah Zahra'),
+    ).toBeTruthy()
   })
 })

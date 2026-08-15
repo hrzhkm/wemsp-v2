@@ -29,11 +29,17 @@ export const Route = createFileRoute('/api/agent/chat')({
           const body = (await request.json()) as ChatRequestBody
 
           if (!body.message || body.message.trim().length === 0) {
-            return Response.json({ error: 'Message is required' }, { status: 400 })
+            return Response.json(
+              { error: 'Message is required' },
+              { status: 400 },
+            )
           }
 
           if (!body.conversationId) {
-            return Response.json({ error: 'conversationId is required' }, { status: 400 })
+            return Response.json(
+              { error: 'conversationId is required' },
+              { status: 400 },
+            )
           }
 
           const conversation = await prisma.agentConversation.findFirst({
@@ -51,7 +57,10 @@ export const Route = createFileRoute('/api/agent/chat')({
           })
 
           if (!conversation) {
-            return Response.json({ error: 'Conversation not found' }, { status: 404 })
+            return Response.json(
+              { error: 'Conversation not found' },
+              { status: 404 },
+            )
           }
 
           const userMessage = body.message.trim()
@@ -99,7 +108,10 @@ export const Route = createFileRoute('/api/agent/chat')({
           await prisma.agentConversation.update({
             where: { id: conversation.id },
             data: {
-              title: conversation.title === 'New chat' ? userMessage.slice(0, 80) : conversation.title,
+              title:
+                conversation.title === 'New chat'
+                  ? userMessage.slice(0, 80)
+                  : conversation.title,
               updatedAt: new Date(),
             },
           })
@@ -111,7 +123,10 @@ export const Route = createFileRoute('/api/agent/chat')({
           })
         } catch (error) {
           console.error('Agent chat error:', error)
-          return Response.json({ error: 'Internal Server Error' }, { status: 500 })
+          return Response.json(
+            { error: 'Internal Server Error' },
+            { status: 500 },
+          )
         }
       },
     },

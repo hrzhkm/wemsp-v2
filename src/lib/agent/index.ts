@@ -1,4 +1,9 @@
-import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from '@langchain/core/messages'
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+  ToolMessage,
+} from '@langchain/core/messages'
 import { ChatOpenAI } from '@langchain/openai'
 import { buildAgentSystemPrompt } from './systemPrompt'
 import { buildAgentTools } from './tools'
@@ -20,19 +25,25 @@ type RunAgentTurnInput = {
 
 function contentToText(content: unknown): string {
   if (typeof content === 'string') return content
-  if (Array.isArray(content)) return content.map((c) => JSON.stringify(c)).join('\n')
+  if (Array.isArray(content))
+    return content.map((c) => JSON.stringify(c)).join('\n')
   return JSON.stringify(content)
 }
 
-function extractPendingActionSummary(value: unknown): AgentPendingActionSummary | null {
-  if (!value || typeof value !== 'object' || !('pendingAction' in value)) return null
+function extractPendingActionSummary(
+  value: unknown,
+): AgentPendingActionSummary | null {
+  if (!value || typeof value !== 'object' || !('pendingAction' in value))
+    return null
 
   const pendingAction = (value as { pendingAction?: unknown }).pendingAction
   if (!pendingAction || typeof pendingAction !== 'object') return null
 
   const typedPending = pendingAction as Partial<AgentPendingActionSummary>
-  if (typedPending.kind !== 'ASSET_CREATE' || typedPending.status !== 'PENDING') return null
-  if (!typedPending.pendingId || !typedPending.createdAt || !typedPending.asset) return null
+  if (typedPending.kind !== 'ASSET_CREATE' || typedPending.status !== 'PENDING')
+    return null
+  if (!typedPending.pendingId || !typedPending.createdAt || !typedPending.asset)
+    return null
 
   return typedPending as AgentPendingActionSummary
 }
@@ -45,7 +56,9 @@ function getOpenRouterConfig() {
   }
 
   if (!apiKey.startsWith('sk-or-v1-') || apiKey.length < 40) {
-    throw new Error('OPENROUTER_API_KEY appears invalid. Set a full OpenRouter API key (starts with sk-or-v1-).')
+    throw new Error(
+      'OPENROUTER_API_KEY appears invalid. Set a full OpenRouter API key (starts with sk-or-v1-).',
+    )
   }
 
   return {
@@ -65,13 +78,20 @@ export async function runAgentTurn(input: RunAgentTurnInput) {
     configuration: {
       baseURL: openRouter.baseURL,
       defaultHeaders: {
-        ...(process.env.OPENROUTER_SITE_URL ? { 'HTTP-Referer': process.env.OPENROUTER_SITE_URL } : {}),
-        ...(process.env.OPENROUTER_APP_NAME ? { 'X-Title': process.env.OPENROUTER_APP_NAME } : {}),
+        ...(process.env.OPENROUTER_SITE_URL
+          ? { 'HTTP-Referer': process.env.OPENROUTER_SITE_URL }
+          : {}),
+        ...(process.env.OPENROUTER_APP_NAME
+          ? { 'X-Title': process.env.OPENROUTER_APP_NAME }
+          : {}),
       },
     },
   })
 
-  const tools = buildAgentTools({ userId: input.userId, conversationId: input.conversationId })
+  const tools = buildAgentTools({
+    userId: input.userId,
+    conversationId: input.conversationId,
+  })
   const toolMap = new Map(tools.map((t) => [t.name, t]))
 
   const historyMessages = (input.history || []).slice(-10).map((m) => {
@@ -98,7 +118,7 @@ export async function runAgentTurn(input: RunAgentTurnInput) {
         new ToolMessage({
           content: `Tool not found: ${call.name}`,
           tool_call_id: call.id ?? call.name,
-        })
+        }),
       )
       continue
     }
@@ -112,21 +132,23 @@ export async function runAgentTurn(input: RunAgentTurnInput) {
         new ToolMessage({
           content: contentToText(result),
           tool_call_id: call.id ?? matchedTool.name,
-        })
+        }),
       )
     } catch (error) {
       toolMessages.push(
         new ToolMessage({
           content: `Tool error (${matchedTool.name}): ${error instanceof Error ? error.message : 'Unknown error'}`,
           tool_call_id: call.id ?? matchedTool.name,
-        })
+        }),
       )
     }
   }
 
   const finalResponse =
     toolMessages.length > 0
-      ? await model.bindTools(tools).invoke([...baseMessages, first, ...toolMessages])
+      ? await model
+          .bindTools(tools)
+          .invoke([...baseMessages, first, ...toolMessages])
       : first
 
   return {

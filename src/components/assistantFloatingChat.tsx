@@ -1,5 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Bot, Check, Loader2, MessageCircle, Paperclip, Plus, SendHorizontal, Sparkles, User2, X } from 'lucide-react'
+import {
+  Bot,
+  Check,
+  Loader2,
+  MessageCircle,
+  Paperclip,
+  Plus,
+  SendHorizontal,
+  Sparkles,
+  User2,
+  X,
+} from 'lucide-react'
 import type { ChangeEvent, FormEvent, ReactNode } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -132,7 +143,10 @@ function AssistantMessageContent({ content }: { content: string }) {
           return (
             <ul key={`ul-${blockIndex}`} className="ml-5 list-disc space-y-1.5">
               {block.items.map((item, itemIndex) => (
-                <li key={`ul-item-${blockIndex}-${itemIndex}`} className="pl-0.5">
+                <li
+                  key={`ul-item-${blockIndex}-${itemIndex}`}
+                  className="pl-0.5"
+                >
                   {renderInlineMarkdown(item)}
                 </li>
               ))}
@@ -142,9 +156,15 @@ function AssistantMessageContent({ content }: { content: string }) {
 
         if (block.type === 'ordered-list') {
           return (
-            <ol key={`ol-${blockIndex}`} className="ml-5 list-decimal space-y-1.5">
+            <ol
+              key={`ol-${blockIndex}`}
+              className="ml-5 list-decimal space-y-1.5"
+            >
               {block.items.map((item, itemIndex) => (
-                <li key={`ol-item-${blockIndex}-${itemIndex}`} className="pl-0.5">
+                <li
+                  key={`ol-item-${blockIndex}-${itemIndex}`}
+                  className="pl-0.5"
+                >
                   {renderInlineMarkdown(item)}
                 </li>
               ))}
@@ -153,7 +173,10 @@ function AssistantMessageContent({ content }: { content: string }) {
         }
 
         return (
-          <p key={`p-${blockIndex}`} className="whitespace-pre-wrap break-words">
+          <p
+            key={`p-${blockIndex}`}
+            className="whitespace-pre-wrap break-words"
+          >
             {renderInlineMarkdown(block.text)}
           </p>
         )
@@ -167,7 +190,9 @@ const readPersistedState = (key: string) => {
 
   try {
     const raw = window.localStorage.getItem(key)
-    return raw ? (JSON.parse(raw) as { open?: boolean; conversationId?: string }) : null
+    return raw
+      ? (JSON.parse(raw) as { open?: boolean; conversationId?: string })
+      : null
   } catch {
     return null
   }
@@ -180,14 +205,20 @@ export function AssistantFloatingChat() {
 
   const [open, setOpen] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
-  const [conversations, setConversations] = useState<Array<ConversationSummary>>([])
+  const [conversations, setConversations] = useState<
+    Array<ConversationSummary>
+  >([])
   const [messages, setMessages] = useState<Array<ChatMessage>>([])
-  const [pendingActions, setPendingActions] = useState<Array<PendingAssetAction>>([])
+  const [pendingActions, setPendingActions] = useState<
+    Array<PendingAssetAction>
+  >([])
   const [input, setInput] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [isCreatingConversation, setIsCreatingConversation] = useState(false)
   const [isUploadingDocument, setIsUploadingDocument] = useState(false)
-  const [confirmingPendingId, setConfirmingPendingId] = useState<string | null>(null)
+  const [confirmingPendingId, setConfirmingPendingId] = useState<string | null>(
+    null,
+  )
   const [isBootstrapping, setIsBootstrapping] = useState(true)
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -201,14 +232,16 @@ export function AssistantFloatingChat() {
       const next = { ...current, ...patch }
       window.localStorage.setItem(key, JSON.stringify(next))
     },
-    [userId]
+    [userId],
   )
 
   const fetchConversations = useCallback(async () => {
     const response = await fetch('/api/agent/conversations')
     if (!response.ok) throw new Error('Unable to load conversations')
 
-    const data = (await response.json()) as { conversations?: Array<ConversationSummary> }
+    const data = (await response.json()) as {
+      conversations?: Array<ConversationSummary>
+    }
     const list = data.conversations || []
     setConversations(list)
     return list
@@ -222,9 +255,15 @@ export function AssistantFloatingChat() {
       messages?: Array<ChatMessage>
       pendingActions?: Array<PendingAssetAction>
     }
-    const parsed = (historyData.messages || []).filter((m: ChatMessage) => m.role !== 'SYSTEM')
+    const parsed = (historyData.messages || []).filter(
+      (m: ChatMessage) => m.role !== 'SYSTEM',
+    )
     setMessages(parsed)
-    setPendingActions((historyData.pendingActions || []).filter((item) => item.status === 'PENDING'))
+    setPendingActions(
+      (historyData.pendingActions || []).filter(
+        (item) => item.status === 'PENDING',
+      ),
+    )
   }, [])
 
   const createNewConversation = useCallback(async () => {
@@ -269,7 +308,8 @@ export function AssistantFloatingChat() {
 
         const savedConversationId = saved?.conversationId
         const targetId =
-          savedConversationId && list.some((item) => item.id === savedConversationId)
+          savedConversationId &&
+          list.some((item) => item.id === savedConversationId)
             ? savedConversationId
             : list[0]?.id
 
@@ -288,11 +328,18 @@ export function AssistantFloatingChat() {
     }
 
     init()
-  }, [createNewConversation, fetchConversations, loadConversationMessages, persistState, userId])
+  }, [
+    createNewConversation,
+    fetchConversations,
+    loadConversationMessages,
+    persistState,
+    userId,
+  ])
 
   useEffect(() => {
     if (!open || !messagesContainerRef.current) return
-    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    messagesContainerRef.current.scrollTop =
+      messagesContainerRef.current.scrollHeight
   }, [messages, open, isBootstrapping, conversationId])
 
   const onSelectConversation = async (id: string) => {
@@ -334,10 +381,16 @@ export function AssistantFloatingChat() {
     }
   }
 
-  const greeting = useMemo(() => messages.length === 0 && !isBootstrapping, [messages.length, isBootstrapping])
+  const greeting = useMemo(
+    () => messages.length === 0 && !isBootstrapping,
+    [messages.length, isBootstrapping],
+  )
   const selectedConversation = useMemo(
-    () => conversations.find((conversation) => conversation.id === conversationId) || null,
-    [conversationId, conversations]
+    () =>
+      conversations.find(
+        (conversation) => conversation.id === conversationId,
+      ) || null,
+    [conversationId, conversations],
   )
   const quickPrompts = [
     t('assistantChat.quickPrompts.agreementStatus'),
@@ -346,16 +399,21 @@ export function AssistantFloatingChat() {
   ]
   const getConversationLabel = useCallback(
     (title: string | null | undefined) => {
-      if (!title || title === 'New chat') return t('assistantChat.newChatFallback')
+      if (!title || title === 'New chat')
+        return t('assistantChat.newChatFallback')
       return title
     },
-    [t]
+    [t],
   )
   const conversationWord =
     conversations.length === 1
       ? t('assistantChat.conversationSingular')
       : t('assistantChat.conversationPlural')
-  const isInputDisabled = isSending || isBootstrapping || isCreatingConversation || isUploadingDocument
+  const isInputDisabled =
+    isSending ||
+    isBootstrapping ||
+    isCreatingConversation ||
+    isUploadingDocument
   const formatAssetValue = useCallback(
     (value: number) =>
       new Intl.NumberFormat(language === 'ms' ? 'ms-MY' : 'en-MY', {
@@ -364,7 +422,7 @@ export function AssistantFloatingChat() {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }).format(value),
-    [language]
+    [language],
   )
 
   const onConfirmPendingAsset = async (pendingId: string) => {
@@ -379,12 +437,18 @@ export function AssistantFloatingChat() {
         body: JSON.stringify({ conversationId, pendingId }),
       })
       const data = await response.json()
-      if (!response.ok) throw new Error(data?.error || t('assistantChat.errors.confirmAsset'))
+      if (!response.ok)
+        throw new Error(data?.error || t('assistantChat.errors.confirmAsset'))
 
-      setPendingActions((prev) => prev.filter((action) => action.pendingId !== pendingId))
+      setPendingActions((prev) =>
+        prev.filter((action) => action.pendingId !== pendingId),
+      )
       setMessages((prev) => [
         ...prev,
-        { role: 'ASSISTANT', content: data?.message || t('assistantChat.assetCreatedSuccess') },
+        {
+          role: 'ASSISTANT',
+          content: data?.message || t('assistantChat.assetCreatedSuccess'),
+        },
       ])
       await fetchConversations()
       await loadConversationMessages(conversationId)
@@ -393,7 +457,10 @@ export function AssistantFloatingChat() {
         ...prev,
         {
           role: 'ASSISTANT',
-          content: error instanceof Error ? error.message : t('assistantChat.errors.confirmAsset'),
+          content:
+            error instanceof Error
+              ? error.message
+              : t('assistantChat.errors.confirmAsset'),
         },
       ])
     } finally {
@@ -425,7 +492,10 @@ export function AssistantFloatingChat() {
         throw new Error(errorText || t('assistantChat.errors.uploadDocument'))
       }
 
-      const data = (await response.json()) as { fileName?: string; url?: string }
+      const data = (await response.json()) as {
+        fileName?: string
+        url?: string
+      }
       if (!data.url) throw new Error(t('assistantChat.errors.uploadDocument'))
 
       const nextInput = `${t('assistantChat.documentAttachedPrefix')} ${data.fileName || file.name}\n${t('assistantChat.documentUrlLabel')}: ${data.url}`
@@ -435,7 +505,10 @@ export function AssistantFloatingChat() {
         ...prev,
         {
           role: 'ASSISTANT',
-          content: error instanceof Error ? error.message : t('assistantChat.errors.uploadDocument'),
+          content:
+            error instanceof Error
+              ? error.message
+              : t('assistantChat.errors.uploadDocument'),
         },
       ])
     } finally {
@@ -464,10 +537,18 @@ export function AssistantFloatingChat() {
       const data = await response.json()
       if (!response.ok) throw new Error(data?.error || 'Failed to send message')
 
-      setMessages((prev) => [...prev, { role: 'ASSISTANT', content: data.reply || 'No reply generated.' }])
-      if (Array.isArray(data.pendingActions) && data.pendingActions.length > 0) {
+      setMessages((prev) => [
+        ...prev,
+        { role: 'ASSISTANT', content: data.reply || 'No reply generated.' },
+      ])
+      if (
+        Array.isArray(data.pendingActions) &&
+        data.pendingActions.length > 0
+      ) {
         setPendingActions((prev) => {
-          const merged = new Map(prev.map((action) => [action.pendingId, action]))
+          const merged = new Map(
+            prev.map((action) => [action.pendingId, action]),
+          )
           for (const action of data.pendingActions as Array<PendingAssetAction>) {
             if (action.status !== 'PENDING') continue
             merged.set(action.pendingId, action)
@@ -480,7 +561,11 @@ export function AssistantFloatingChat() {
     } catch (error) {
       setMessages((prev) => [
         ...prev,
-        { role: 'ASSISTANT', content: error instanceof Error ? error.message : 'Something went wrong.' },
+        {
+          role: 'ASSISTANT',
+          content:
+            error instanceof Error ? error.message : 'Something went wrong.',
+        },
       ])
     } finally {
       setIsSending(false)
@@ -500,13 +585,20 @@ export function AssistantFloatingChat() {
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <div className="space-y-0.5">
-                  <CardTitle className="text-base font-semibold leading-none">{t('assistantChat.title')}</CardTitle>
+                  <CardTitle className="text-base font-semibold leading-none">
+                    {t('assistantChat.title')}
+                  </CardTitle>
                   <p className="text-xs text-muted-foreground">
-                    {getConversationLabel(selectedConversation?.title)} • {conversations.length} {conversationWord}
+                    {getConversationLabel(selectedConversation?.title)} •{' '}
+                    {conversations.length} {conversationWord}
                   </p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => onToggleOpen(false)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onToggleOpen(false)}
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -519,7 +611,8 @@ export function AssistantFloatingChat() {
               >
                 {conversations.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {getConversationLabel(c.title).slice(0, 40)} ({c.messageCount})
+                    {getConversationLabel(c.title).slice(0, 40)} (
+                    {c.messageCount})
                   </option>
                 ))}
               </select>
@@ -528,9 +621,15 @@ export function AssistantFloatingChat() {
                 variant="outline"
                 className="h-9 rounded-xl px-3"
                 onClick={onCreateConversation}
-                disabled={isBootstrapping || isSending || isCreatingConversation}
+                disabled={
+                  isBootstrapping || isSending || isCreatingConversation
+                }
               >
-                {isCreatingConversation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                {isCreatingConversation ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </CardHeader>
@@ -552,24 +651,36 @@ export function AssistantFloatingChat() {
                       key={action.pendingId}
                       className="rounded-xl border border-primary/25 bg-primary/5 p-3 text-sm"
                     >
-                      <p className="font-semibold text-foreground">{t('assistantChat.confirmAssetTitle')}</p>
+                      <p className="font-semibold text-foreground">
+                        {t('assistantChat.confirmAssetTitle')}
+                      </p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {t('assistantChat.confirmAssetDescription')}
                       </p>
                       <div className="mt-2 space-y-1 text-sm">
                         <p>
-                          <span className="font-medium">{t('assistantChat.assetFields.name')}:</span> {action.asset.name}
+                          <span className="font-medium">
+                            {t('assistantChat.assetFields.name')}:
+                          </span>{' '}
+                          {action.asset.name}
                         </p>
                         <p>
-                          <span className="font-medium">{t('assistantChat.assetFields.type')}:</span> {action.asset.type}
+                          <span className="font-medium">
+                            {t('assistantChat.assetFields.type')}:
+                          </span>{' '}
+                          {action.asset.type}
                         </p>
                         <p>
-                          <span className="font-medium">{t('assistantChat.assetFields.value')}:</span>{' '}
+                          <span className="font-medium">
+                            {t('assistantChat.assetFields.value')}:
+                          </span>{' '}
                           {formatAssetValue(action.asset.value)}
                         </p>
                         {action.asset.documentUrl ? (
                           <p>
-                            <span className="font-medium">{t('assistantChat.assetFields.document')}:</span>{' '}
+                            <span className="font-medium">
+                              {t('assistantChat.assetFields.document')}:
+                            </span>{' '}
                             {t('assistantChat.documentAttachedPrefix')}
                           </p>
                         ) : null}
@@ -578,7 +689,9 @@ export function AssistantFloatingChat() {
                         <Button
                           type="button"
                           size="sm"
-                          onClick={() => onConfirmPendingAsset(action.pendingId)}
+                          onClick={() =>
+                            onConfirmPendingAsset(action.pendingId)
+                          }
                           disabled={confirmingPendingId === action.pendingId}
                         >
                           {confirmingPendingId === action.pendingId ? (
@@ -598,8 +711,12 @@ export function AssistantFloatingChat() {
                   ))}
                   {greeting && (
                     <div className="rounded-2xl border border-dashed border-primary/30 bg-background/90 p-3 text-sm shadow-sm">
-                      <p className="font-medium text-foreground">{t('assistantChat.greetingTitle')}</p>
-                      <p className="mt-1 text-muted-foreground">{t('assistantChat.greetingDescription')}</p>
+                      <p className="font-medium text-foreground">
+                        {t('assistantChat.greetingTitle')}
+                      </p>
+                      <p className="mt-1 text-muted-foreground">
+                        {t('assistantChat.greetingDescription')}
+                      </p>
                       <div className="mt-3 flex flex-wrap gap-2">
                         {quickPrompts.map((prompt) => (
                           <button
@@ -626,7 +743,9 @@ export function AssistantFloatingChat() {
                       >
                         <div
                           className={`mt-0.5 flex h-6 w-6 items-center justify-center rounded-full ${
-                            message.role === 'USER' ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'
+                            message.role === 'USER'
+                              ? 'bg-primary/15 text-primary'
+                              : 'bg-muted text-muted-foreground'
                           }`}
                         >
                           {message.role === 'USER' ? (
@@ -647,7 +766,9 @@ export function AssistantFloatingChat() {
                               {message.content}
                             </p>
                           ) : (
-                            <AssistantMessageContent content={message.content} />
+                            <AssistantMessageContent
+                              content={message.content}
+                            />
                           )}
                         </div>
                       </div>
@@ -672,7 +793,10 @@ export function AssistantFloatingChat() {
               )}
             </div>
 
-            <form className="space-y-2 border-t border-border/70 bg-background p-3" onSubmit={onSubmit}>
+            <form
+              className="space-y-2 border-t border-border/70 bg-background p-3"
+              onSubmit={onSubmit}
+            >
               <input
                 ref={fileInputRef}
                 type="file"
@@ -689,7 +813,11 @@ export function AssistantFloatingChat() {
                   onClick={onPickDocument}
                   disabled={isInputDisabled}
                 >
-                  {isUploadingDocument ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
+                  {isUploadingDocument ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Paperclip className="h-4 w-4" />
+                  )}
                 </Button>
                 <Input
                   disabled={isInputDisabled}
@@ -704,7 +832,11 @@ export function AssistantFloatingChat() {
                   className="h-10 w-10 rounded-xl"
                   disabled={isInputDisabled || !input.trim()}
                 >
-                  {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <SendHorizontal className="h-4 w-4" />}
+                  {isSending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <SendHorizontal className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">

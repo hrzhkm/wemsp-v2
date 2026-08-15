@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type {WrappedKey} from '@/lib/storage/encryption';
+import type { WrappedKey } from '@/lib/storage/encryption'
 import {
   configureDocumentEncryption,
   getDocumentRecoveryKey,
@@ -10,10 +10,9 @@ import {
   validateQuestionId,
 } from '@/lib/storage/documentEncryption'
 import {
-  
   decryptDocument,
   encryptDocument,
-  unwrapFek
+  unwrapFek,
 } from '@/lib/storage/encryption'
 
 const mocks = vi.hoisted(() => ({

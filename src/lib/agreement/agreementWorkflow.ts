@@ -1,5 +1,5 @@
-import { AgreementStatus } from '@/generated/prisma/enums'
 import { validateStatusTransition } from './agreementValidation'
+import type { AgreementStatus } from '@/generated/prisma/enums'
 
 /**
  * Workflow context for status transitions
@@ -15,9 +15,9 @@ export interface WorkflowContext {
  */
 export function getNextValidStatuses(
   currentStatus: AgreementStatus,
-  context: WorkflowContext
-): AgreementStatus[] {
-  const transitions: Record<AgreementStatus, AgreementStatus[]> = {
+  context: WorkflowContext,
+): Array<AgreementStatus> {
+  const transitions: Record<AgreementStatus, Array<AgreementStatus>> = {
     DRAFT: ['PENDING_SIGNATURES', 'CANCELLED'],
     PENDING_SIGNATURES: ['DRAFT', 'PENDING_WITNESS', 'CANCELLED'],
     PENDING_WITNESS: ['PENDING_SIGNATURES', 'ACTIVE', 'CANCELLED'],
@@ -39,9 +39,10 @@ export function getNextValidStatuses(
 /**
  * Determine if agreement is ready to move to next status
  */
-export function getWorkflowStatus(
-  context: WorkflowContext
-): { status: AgreementStatus; reason: string } {
+export function getWorkflowStatus(context: WorkflowContext): {
+  status: AgreementStatus
+  reason: string
+} {
   // If owner hasn't signed, still in DRAFT
   if (!context.ownerHasSigned) {
     return {
@@ -80,7 +81,7 @@ export function getSignatureProgress(
   totalBeneficiaries: number,
   signedBeneficiaries: number,
   ownerHasSigned: boolean,
-  witnessed: boolean
+  witnessed: boolean,
 ): {
   total: number
   completed: number
@@ -96,7 +97,10 @@ export function getSignatureProgress(
 
   const steps = [
     { label: 'Owner Signature', completed: ownerHasSigned },
-    { label: 'Beneficiary Signatures', completed: signedBeneficiaries === totalBeneficiaries },
+    {
+      label: 'Beneficiary Signatures',
+      completed: signedBeneficiaries === totalBeneficiaries,
+    },
     { label: 'Admin Witness', completed: witnessed },
   ]
 
@@ -114,7 +118,8 @@ export function getSignatureProgress(
 export function getStatusDescription(status: AgreementStatus): string {
   const descriptions: Record<AgreementStatus, string> = {
     DRAFT: 'Agreement is being created and can be edited',
-    PENDING_SIGNATURES: 'Owner has signed. Waiting for all beneficiaries to sign',
+    PENDING_SIGNATURES:
+      'Owner has signed. Waiting for all beneficiaries to sign',
     PENDING_WITNESS: 'All parties have signed. Waiting for admin witness',
     ACTIVE: 'Agreement is fully executed and active',
     COMPLETED: 'Asset distribution has been completed',
@@ -133,14 +138,45 @@ export function getStatusColor(status: AgreementStatus): {
   text: string
   border: string
 } {
-  const colors: Record<AgreementStatus, { bg: string; text: string; border: string }> = {
-    DRAFT: { bg: 'bg-gray-100', text: 'text-gray-800', border: 'border-gray-300' },
-    PENDING_SIGNATURES: { bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-300' },
-    PENDING_WITNESS: { bg: 'bg-blue-100', text: 'text-blue-800', border: 'border-blue-300' },
-    ACTIVE: { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-300' },
-    COMPLETED: { bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-300' },
-    CANCELLED: { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-300' },
-    EXPIRED: { bg: 'bg-gray-100', text: 'text-gray-600', border: 'border-gray-400' },
+  const colors: Record<
+    AgreementStatus,
+    { bg: string; text: string; border: string }
+  > = {
+    DRAFT: {
+      bg: 'bg-gray-100',
+      text: 'text-gray-800',
+      border: 'border-gray-300',
+    },
+    PENDING_SIGNATURES: {
+      bg: 'bg-yellow-100',
+      text: 'text-yellow-800',
+      border: 'border-yellow-300',
+    },
+    PENDING_WITNESS: {
+      bg: 'bg-blue-100',
+      text: 'text-blue-800',
+      border: 'border-blue-300',
+    },
+    ACTIVE: {
+      bg: 'bg-green-100',
+      text: 'text-green-800',
+      border: 'border-green-300',
+    },
+    COMPLETED: {
+      bg: 'bg-purple-100',
+      text: 'text-purple-800',
+      border: 'border-purple-300',
+    },
+    CANCELLED: {
+      bg: 'bg-red-100',
+      text: 'text-red-800',
+      border: 'border-red-300',
+    },
+    EXPIRED: {
+      bg: 'bg-gray-100',
+      text: 'text-gray-600',
+      border: 'border-gray-400',
+    },
   }
 
   return colors[status] || colors.DRAFT
@@ -161,7 +197,7 @@ export function canUserSign(
   agreementOwnerId: string,
   agreementStatus: AgreementStatus,
   isBeneficiary: boolean,
-  isAdmin: boolean
+  isAdmin: boolean,
 ): {
   canSignAsOwner: boolean
   canSignAsBeneficiary: boolean
@@ -171,7 +207,8 @@ export function canUserSign(
     canSignAsOwner:
       userId === agreementOwnerId &&
       (agreementStatus === 'DRAFT' || agreementStatus === 'PENDING_SIGNATURES'),
-    canSignAsBeneficiary: isBeneficiary && agreementStatus === 'PENDING_SIGNATURES',
+    canSignAsBeneficiary:
+      isBeneficiary && agreementStatus === 'PENDING_SIGNATURES',
     canWitness: isAdmin && agreementStatus === 'PENDING_WITNESS',
   }
 }

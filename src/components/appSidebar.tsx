@@ -1,5 +1,5 @@
-import { Link, useLocation, useRouter } from "@tanstack/react-router"
-import { ChevronUp, User } from "lucide-react"
+import { Link, useLocation, useRouter } from '@tanstack/react-router'
+import { ChevronUp, User } from 'lucide-react'
 
 import {
   Sidebar,
@@ -13,17 +13,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { authClient } from "@/lib/auth/authClient"
-import { useLanguage } from "@/lib/i18n/context"
-import { getVisibleNavItems } from "@/components/appNavItems"
-import { getRoleFromSession } from "@/lib/auth/rbac"
+} from '@/components/ui/dropdown-menu'
+import { authClient } from '@/lib/auth/authClient'
+import { useLanguage } from '@/lib/i18n/context'
+import { getVisibleNavItems } from '@/components/appNavItems'
+import { getRoleFromSession } from '@/lib/auth/rbac'
 
 export function AppSidebar() {
   const router = useRouter()
@@ -36,9 +36,13 @@ export function AppSidebar() {
 
   const role = getRoleFromSession(session)
   const visibleItems = getVisibleNavItems(role)
-  const navigationItems = visibleItems.filter((i) => i.section === "application")
-  const accountItems = visibleItems.filter((i) => i.section === "account")
-  const administrationItems = visibleItems.filter((i) => i.section === "administration")
+  const navigationItems = visibleItems.filter(
+    (i) => i.section === 'application',
+  )
+  const accountItems = visibleItems.filter((i) => i.section === 'account')
+  const administrationItems = visibleItems.filter(
+    (i) => i.section === 'administration',
+  )
 
   const activeMatchPath = visibleItems
     .filter(
@@ -46,16 +50,15 @@ export function AppSidebar() {
         location.pathname === item.matchPath ||
         location.pathname.startsWith(`${item.matchPath}/`),
     )
-    .reduce<string | null>(
-      (best, item) => (!best || item.matchPath.length > best.length ? item.matchPath : best),
-      null,
-    )
+    .reduce<
+      string | null
+    >((best, item) => (!best || item.matchPath.length > best.length ? item.matchPath : best), null)
 
   const isActivePath = (matchPath: string) => matchPath === activeMatchPath
 
   const handleLogout = async () => {
     await authClient.signOut()
-    router.navigate({ to: "/" })
+    router.navigate({ to: '/' })
   }
 
   return (
@@ -67,8 +70,12 @@ export function AppSidebar() {
               <img src="/assets/logo2.png" alt="WEMSP" className="h-6 w-auto" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[13px] font-semibold tracking-tight">WEMSP</p>
-              <p className="truncate text-[11px] text-sidebar-foreground/70">{t('navigation.estateManagement')}</p>
+              <p className="truncate text-[13px] font-semibold tracking-tight">
+                WEMSP
+              </p>
+              <p className="truncate text-[11px] text-sidebar-foreground/70">
+                {t('navigation.estateManagement')}
+              </p>
             </div>
           </Link>
         </div>
@@ -89,8 +96,13 @@ export function AppSidebar() {
                   >
                     <Link
                       to={item.to}
-                      {...(item.to === "/app/profile"
-                        ? { search: { onboarding: false, redirect: location.pathname } }
+                      {...(item.to === '/app/profile'
+                        ? {
+                            search: {
+                              onboarding: false,
+                              redirect: location.pathname,
+                            },
+                          }
                         : {})}
                     >
                       <item.icon className="size-4 shrink-0" />
@@ -109,8 +121,13 @@ export function AppSidebar() {
                   >
                     <Link
                       to={item.to}
-                      {...(item.to === "/app/profile"
-                        ? { search: { onboarding: false, redirect: location.pathname } }
+                      {...(item.to === '/app/profile'
+                        ? {
+                            search: {
+                              onboarding: false,
+                              redirect: location.pathname,
+                            },
+                          }
                         : {})}
                     >
                       <item.icon className="size-4 shrink-0" />
@@ -164,7 +181,14 @@ export function AppSidebar() {
                 side="top"
                 className="w-[--radix-popper-anchor-width]"
               >
-                <DropdownMenuItem onClick={() => router.navigate({ to: "/app/profile", search: { onboarding: false, redirect: undefined } })}>
+                <DropdownMenuItem
+                  onClick={() =>
+                    router.navigate({
+                      to: '/app/profile',
+                      search: { onboarding: false, redirect: undefined },
+                    })
+                  }
+                >
                   <span>{t('navigation.profile')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout}>

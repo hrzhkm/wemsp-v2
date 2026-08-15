@@ -1,5 +1,4 @@
-import { createMiddleware } from '@tanstack/react-start'
-import { createServerFn } from '@tanstack/react-start'
+import { createMiddleware, createServerFn  } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
@@ -32,28 +31,30 @@ async function isProfileComplete(userId: string): Promise<boolean> {
  *   })
  * ```
  */
-export const authMiddleware = createMiddleware().server(async ({ next, request }) => {
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  })
+export const authMiddleware = createMiddleware().server(
+  async ({ next, request }) => {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    })
 
-  if (!session) {
-    // Return a redirect response to the home/login page
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: '/',
+    if (!session) {
+      // Return a redirect response to the home/login page
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: '/',
+        },
+      })
+    }
+
+    // Pass the session to the next handler via context
+    return next({
+      context: {
+        session,
       },
     })
-  }
-
-  // Pass the session to the next handler via context
-  return next({
-    context: {
-      session,
-    },
-  })
-})
+  },
+)
 
 /**
  * Profile completion middleware.
@@ -84,71 +85,73 @@ export const authMiddleware = createMiddleware().server(async ({ next, request }
  * })
  * ```
  */
-export const profileCompletionMiddleware = createMiddleware().server(async ({ next, request }) => {
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  })
+export const profileCompletionMiddleware = createMiddleware().server(
+  async ({ next, request }) => {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    })
 
-  if (!session) {
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: '/',
+    if (!session) {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: '/',
+        },
+      })
+    }
+
+    const profileComplete = await isProfileComplete(session.user.id)
+
+    if (!profileComplete) {
+      // Redirect to profile edit with onboarding prompt
+      const url = new URL(request.url)
+      const currentPath = url.pathname + url.search
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: `/app/profile/view?onboarding=true&redirect=${encodeURIComponent(currentPath)}`,
+        },
+      })
+    }
+
+    return next({
+      context: {
+        session,
+        profileComplete: true,
       },
     })
-  }
-
-  const profileComplete = await isProfileComplete(session.user.id)
-
-  if (!profileComplete) {
-    // Redirect to profile edit with onboarding prompt
-    const url = new URL(request.url)
-    const currentPath = url.pathname + url.search
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: `/app/profile/view?onboarding=true&redirect=${encodeURIComponent(currentPath)}`,
-      },
-    })
-  }
-
-  return next({
-    context: {
-      session,
-      profileComplete: true,
-    },
-  })
-})
+  },
+)
 
 /**
  * Server function to check and enforce profile completion.
  * Use this in route loaders or beforeLoad hooks.
  * Redirects to profile edit page if profile is incomplete.
  */
-export const requireCompletedProfile = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const request = getRequest()
-    if (!request) {
-      return null
-    }
-
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    })
-
-    if (!session) {
-      return { requiresAuth: true }
-    }
-
-    const profileComplete = await isProfileComplete(session.user.id)
-
-    return {
-      requiresAuth: false,
-      profileComplete,
-      user: session.user,
-    }
+export const requireCompletedProfile = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  const request = getRequest()
+  if (!request) {
+    return null
   }
-)
+
+  const session = await auth.api.getSession({
+    headers: request.headers,
+  })
+
+  if (!session) {
+    return { requiresAuth: true }
+  }
+
+  const profileComplete = await isProfileComplete(session.user.id)
+
+  return {
+    requiresAuth: false,
+    profileComplete,
+    user: session.user,
+  }
+})
 
 /**
  * Server function to get the current session.
@@ -165,7 +168,7 @@ export const getServerSession = createServerFn({ method: 'GET' }).handler(
       headers: request.headers,
     })
     return session
-  }
+  },
 )
 
 /**
@@ -182,25 +185,27 @@ export const getServerSession = createServerFn({ method: 'GET' }).handler(
  *   })
  * ```
  */
-export const adminAuthMiddleware = createMiddleware().server(async ({ next, request }) => {
-  const admin = await requireAdminFromHeaders(request.headers)
+export const adminAuthMiddleware = createMiddleware().server(
+  async ({ next, request }) => {
+    const admin = await requireAdminFromHeaders(request.headers)
 
-  if (!admin) {
-    // Not authenticated or not an admin: send to the shared app dashboard.
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: '/app/dashboard',
+    if (!admin) {
+      // Not authenticated or not an admin: send to the shared app dashboard.
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: '/app/dashboard',
+        },
+      })
+    }
+
+    return next({
+      context: {
+        admin,
       },
     })
-  }
-
-  return next({
-    context: {
-      admin,
-    },
-  })
-})
+  },
+)
 
 /**
  * Server function returning the current admin user (role === ADMIN) or null.
@@ -213,5 +218,5 @@ export const getAdminSession = createServerFn({ method: 'GET' }).handler(
       return null
     }
     return await requireAdminFromHeaders(request.headers)
-  }
+  },
 )

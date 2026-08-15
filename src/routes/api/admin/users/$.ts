@@ -15,7 +15,10 @@ export const Route = createFileRoute('/api/admin/users/$')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           // Get query parameters for pagination and filtering
@@ -33,7 +36,12 @@ export const Route = createFileRoute('/api/admin/users/$')({
                 OR: [
                   { name: { contains: search, mode: 'insensitive' as const } },
                   { email: { contains: search, mode: 'insensitive' as const } },
-                  { icNumber: { contains: search, mode: 'insensitive' as const } },
+                  {
+                    icNumber: {
+                      contains: search,
+                      mode: 'insensitive' as const,
+                    },
+                  },
                 ],
               }
             : {}
@@ -72,18 +80,24 @@ export const Route = createFileRoute('/api/admin/users/$')({
             orderBy: { createdAt: 'desc' },
           })
 
-          return Response.json({
-            users,
-            pagination: {
-              page,
-              limit,
-              total,
-              totalPages: Math.ceil(total / limit),
+          return Response.json(
+            {
+              users,
+              pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+              },
             },
-          }, { headers: corsHeaders })
+            { headers: corsHeaders },
+          )
         } catch (error) {
           console.error('Error fetching users:', error)
-          return Response.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders })
+          return Response.json(
+            { error: 'Internal server error' },
+            { status: 500, headers: corsHeaders },
+          )
         }
       },
 
@@ -92,17 +106,21 @@ export const Route = createFileRoute('/api/admin/users/$')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           const body = await request.json()
-          const { name, email, icNumber, phoneNumber, address, emailVerified } = body
+          const { name, email, icNumber, phoneNumber, address, emailVerified } =
+            body
 
           // Validate required fields
           if (!name || !email) {
             return Response.json(
               { error: 'Name and email are required' },
-              { status: 400, headers: corsHeaders }
+              { status: 400, headers: corsHeaders },
             )
           }
 
@@ -114,7 +132,7 @@ export const Route = createFileRoute('/api/admin/users/$')({
           if (existingUser) {
             return Response.json(
               { error: 'Email already exists' },
-              { status: 400, headers: corsHeaders }
+              { status: 400, headers: corsHeaders },
             )
           }
 
@@ -127,7 +145,7 @@ export const Route = createFileRoute('/api/admin/users/$')({
             if (existingIc) {
               return Response.json(
                 { error: 'IC number already exists' },
-                { status: 400, headers: corsHeaders }
+                { status: 400, headers: corsHeaders },
               )
             }
           }
@@ -173,10 +191,16 @@ export const Route = createFileRoute('/api/admin/users/$')({
             },
           })
 
-          return Response.json({ user: newUser }, { status: 201, headers: corsHeaders })
+          return Response.json(
+            { user: newUser },
+            { status: 201, headers: corsHeaders },
+          )
         } catch (error) {
           console.error('Error creating user:', error)
-          return Response.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders })
+          return Response.json(
+            { error: 'Internal server error' },
+            { status: 500, headers: corsHeaders },
+          )
         }
       },
     },

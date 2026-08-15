@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
+import type { AgreementStatus} from '@/generated/prisma/enums';
 import { prisma } from '@/db'
 import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
 import { corsHeaders } from '@/lib/cors'
-import { AgreementStatus, DistributionType } from '@/generated/prisma/enums'
+import { DistributionType } from '@/generated/prisma/enums'
 
 export const Route = createFileRoute('/api/admin/agreements/$')({
   server: {
@@ -16,7 +17,10 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           // Get query parameters for pagination and filtering
@@ -25,7 +29,8 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
           const limit = parseInt(url.searchParams.get('limit') || '10')
           const search = url.searchParams.get('search') || ''
           const status = url.searchParams.get('status') || ''
-          const distributionType = url.searchParams.get('distributionType') || ''
+          const distributionType =
+            url.searchParams.get('distributionType') || ''
 
           const skip = (page - 1) * limit
 
@@ -35,7 +40,9 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
           if (search) {
             where.OR = [
               { title: { contains: search, mode: 'insensitive' as const } },
-              { description: { contains: search, mode: 'insensitive' as const } },
+              {
+                description: { contains: search, mode: 'insensitive' as const },
+              },
               {
                 owner: {
                   name: { contains: search, mode: 'insensitive' as const },
@@ -92,19 +99,24 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
           // Add signedBeneficiaryCount to each agreement
           const agreementsWithSignedCount = agreements.map((agreement) => ({
             ...agreement,
-            signedBeneficiaryCount: agreement.beneficiaries.filter((b) => b.hasSigned).length,
+            signedBeneficiaryCount: agreement.beneficiaries.filter(
+              (b) => b.hasSigned,
+            ).length,
             beneficiaries: undefined, // Remove the beneficiaries array from response
           }))
 
-          return Response.json({
-            agreements: agreementsWithSignedCount,
-            pagination: {
-              page,
-              limit,
-              total,
-              totalPages: Math.ceil(total / limit),
+          return Response.json(
+            {
+              agreements: agreementsWithSignedCount,
+              pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+              },
             },
-          }, { headers: corsHeaders })
+            { headers: corsHeaders },
+          )
         } catch (error) {
           console.error('Error fetching agreements:', error)
           return Response.json(
@@ -118,11 +130,21 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
         try {
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           const body = await request.json()
-          const { title, description, distributionType, effectiveDate, expiryDate, ownerId } = body
+          const {
+            title,
+            description,
+            distributionType,
+            effectiveDate,
+            expiryDate,
+            ownerId,
+          } = body
 
           if (!title || !distributionType || !ownerId) {
             return Response.json(
@@ -131,7 +153,11 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
             )
           }
 
-          if (!Object.values(DistributionType).includes(distributionType as DistributionType)) {
+          if (
+            !Object.values(DistributionType).includes(
+              distributionType as DistributionType,
+            )
+          ) {
             return Response.json(
               { error: 'Invalid distribution type' },
               { status: 400, headers: corsHeaders },
@@ -140,21 +166,39 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
 
           const owner = await prisma.user.findUnique({ where: { id: ownerId } })
           if (!owner) {
-            return Response.json({ error: 'Owner not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'Owner not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
-          const parsedEffectiveDate = effectiveDate ? new Date(effectiveDate) : null
+          const parsedEffectiveDate = effectiveDate
+            ? new Date(effectiveDate)
+            : null
           const parsedExpiryDate = expiryDate ? new Date(expiryDate) : null
 
-          if (parsedEffectiveDate && Number.isNaN(parsedEffectiveDate.getTime())) {
-            return Response.json({ error: 'Invalid effective date' }, { status: 400, headers: corsHeaders })
+          if (
+            parsedEffectiveDate &&
+            Number.isNaN(parsedEffectiveDate.getTime())
+          ) {
+            return Response.json(
+              { error: 'Invalid effective date' },
+              { status: 400, headers: corsHeaders },
+            )
           }
 
           if (parsedExpiryDate && Number.isNaN(parsedExpiryDate.getTime())) {
-            return Response.json({ error: 'Invalid expiry date' }, { status: 400, headers: corsHeaders })
+            return Response.json(
+              { error: 'Invalid expiry date' },
+              { status: 400, headers: corsHeaders },
+            )
           }
 
-          if (parsedEffectiveDate && parsedExpiryDate && parsedExpiryDate < parsedEffectiveDate) {
+          if (
+            parsedEffectiveDate &&
+            parsedExpiryDate &&
+            parsedExpiryDate < parsedEffectiveDate
+          ) {
             return Response.json(
               { error: 'Expiry date cannot be earlier than effective date' },
               { status: 400, headers: corsHeaders },
@@ -193,7 +237,10 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
             },
           })
 
-          return Response.json({ success: true, agreement }, { status: 201, headers: corsHeaders })
+          return Response.json(
+            { success: true, agreement },
+            { status: 201, headers: corsHeaders },
+          )
         } catch (error) {
           console.error('Error creating agreement:', error)
           return Response.json(
@@ -208,14 +255,20 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           const url = new URL(request.url)
           const id = url.pathname.split('/').pop()
 
           if (!id) {
-            return Response.json({ error: 'Missing agreement id' }, { status: 400, headers: corsHeaders })
+            return Response.json(
+              { error: 'Missing agreement id' },
+              { status: 400, headers: corsHeaders },
+            )
           }
 
           // Check if agreement exists
@@ -224,7 +277,10 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
           })
 
           if (!agreement) {
-            return Response.json({ error: 'Agreement not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'Agreement not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
           // Delete agreement (cascade will handle related records)
@@ -232,10 +288,13 @@ export const Route = createFileRoute('/api/admin/agreements/$')({
             where: { id },
           })
 
-          return Response.json({
-            success: true,
-            message: 'Agreement deleted successfully',
-          }, { headers: corsHeaders })
+          return Response.json(
+            {
+              success: true,
+              message: 'Agreement deleted successfully',
+            },
+            { headers: corsHeaders },
+          )
         } catch (error) {
           console.error('Error deleting agreement:', error)
           return Response.json(

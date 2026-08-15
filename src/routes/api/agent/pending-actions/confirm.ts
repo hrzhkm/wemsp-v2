@@ -157,7 +157,10 @@ export const Route = createFileRoute('/api/agent/pending-actions/confirm')({
             )
           }
           console.error('Assistant asset confirmation failed')
-          return Response.json({ error: 'Unable to confirm asset' }, { status: 500 })
+          return Response.json(
+            { error: 'Unable to confirm asset' },
+            { status: 500 },
+          )
         }
 
         if (temporaryDocumentUrl) {

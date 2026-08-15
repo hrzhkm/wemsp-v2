@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from '@tanstack/react-router'
+import { useLocation, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
 import {
@@ -15,7 +15,9 @@ interface ProfileCompletionDialogProps {
   open: boolean
 }
 
-export function ProfileCompletionDialog({ open }: ProfileCompletionDialogProps) {
+export function ProfileCompletionDialog({
+  open,
+}: ProfileCompletionDialogProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [isOpen, setIsOpen] = useState(open)
@@ -48,7 +50,8 @@ export function ProfileCompletionDialog({ open }: ProfileCompletionDialogProps) 
             </div>
           </div>
           <DialogDescription className="pt-2">
-            Before you can access this feature, please complete your profile by providing your IC number, phone number, and address.
+            Before you can access this feature, please complete your profile by
+            providing your IC number, phone number, and address.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-start gap-2">
