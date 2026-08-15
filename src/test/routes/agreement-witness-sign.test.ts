@@ -20,6 +20,7 @@ const mocks = vi.hoisted(() => ({
   getOnChainTimestampDate: vi.fn(),
   getOnChainErrorMessage: vi.fn(),
   sendFinalizedAgreementDocument: vi.fn(),
+  reconcileAgreement: vi.fn(),
 }))
 
 vi.mock('@/lib/auth/auth', () => ({
@@ -52,6 +53,9 @@ vi.mock('@/lib/agreement/agreementMetadata', () => ({
 }))
 vi.mock('@/lib/agreement/agreementDelivery', () => ({
   sendFinalizedAgreementDocument: mocks.sendFinalizedAgreementDocument,
+}))
+vi.mock('@/lib/agreement/agreementReconciliation', () => ({
+  reconcileAgreement: mocks.reconcileAgreement,
 }))
 
 describe('witnessSignHandlers.POST', () => {
@@ -166,6 +170,7 @@ describe('witnessSignHandlers.POST', () => {
       recipients: ['owner@example.com'],
       deliveredTo: ['owner@example.com'],
     })
+    mocks.reconcileAgreement.mockResolvedValueOnce({ updatedFields: [] })
 
     const res = await witnessSignHandlers.POST({
       request: new Request('http://x', { method: 'POST' }),
@@ -182,6 +187,7 @@ describe('witnessSignHandlers.POST', () => {
     ])
     expect(mocks.sendFinalizedAgreementDocument).toHaveBeenCalledWith('a1')
     expect(body.documentDelivery.deliveredTo).toEqual(['owner@example.com'])
+    expect(mocks.reconcileAgreement).toHaveBeenCalledWith('a1')
   })
 
   it('still witnesses when document delivery fails', async () => {

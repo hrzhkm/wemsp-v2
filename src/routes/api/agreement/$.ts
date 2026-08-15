@@ -442,8 +442,10 @@ export const agreementHandlers = {
             return newAgreement
           })
 
-          // Mint the agreement NFT at creation (best-effort; lazy mint at first
-          // signature remains as a fallback when the contract is not configured)
+          // Mint the agreement NFT at creation. When the contract is
+          // configured, minting must succeed (with internal retries); on
+          // persistent failure the agreement is rolled back so no record is
+          // left without an on-chain NFT.
           let onChain: {
             tokenId: number
             mintTxHash: string | null
@@ -465,6 +467,16 @@ export const agreementHandlers = {
               }
             } catch (mintError) {
               console.error('Error minting agreement NFT at creation:', mintError)
+              await prisma.agreement.delete({
+                where: { id: agreement.id },
+              })
+              return Response.json(
+                {
+                  error:
+                    'On-chain minting is temporarily unavailable. The agreement was not created; please retry.',
+                },
+                { status: 503 },
+              )
             }
           }
 

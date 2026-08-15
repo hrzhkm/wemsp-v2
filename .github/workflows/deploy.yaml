@@ -53,6 +53,7 @@ jobs:
           IPFS_ENCRYPTION_KEY=${{ secrets.IPFS_ENCRYPTION_KEY }}
           PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}
           RPC_URL=${{ secrets.RPC_URL }}
+          RPC_URL_FALLBACK=${{ secrets.RPC_URL_FALLBACK }}
           CONTRACT_ADDRESS=${{ secrets.CONTRACT_ADDRESS }}
           OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL=${{ secrets.OPENROUTER_MODEL }}

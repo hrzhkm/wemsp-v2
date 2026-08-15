@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
 import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
 import { sendFinalizedAgreementDocument } from '@/lib/agreement/agreementDelivery'
+import { reconcileAgreement } from '@/lib/agreement/agreementReconciliation'
 import { ensureAgreementMintedWithMetadata } from '@/lib/agreement/agreementMetadata'
 import {
   finalizeAgreement,
@@ -151,6 +152,17 @@ export const witnessSignHandlers = {
         )
       }
 
+      // Auto-check: confirm DB and on-chain state agree before responding
+      let reconciliation: { updatedFields: Array<string> } | null = null
+      try {
+        reconciliation = await reconcileAgreement(agreementId)
+      } catch (reconcileError) {
+        console.error(
+          `Error reconciling agreement ${agreementId}:`,
+          reconcileError,
+        )
+      }
+
       return Response.json({
         success: true,
         message: 'Agreement witnessed successfully',
@@ -161,6 +173,7 @@ export const witnessSignHandlers = {
           witnessedAt: updatedAgreement.witnessedAt?.toISOString(),
         },
         documentDelivery,
+        reconciliation,
         onChain: {
           tokenId,
           witnessSignatureTxHash: witnessTxHash,

@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   getExplorerUrl: vi.fn(),
   getOnChainTimestampDate: vi.fn(),
   getOnChainErrorMessage: vi.fn(),
+  reconcileAgreement: vi.fn(),
 }))
 
 vi.mock('@/lib/auth/adminGuard', () => ({
@@ -36,6 +37,9 @@ vi.mock('@/db', () => ({
 }))
 vi.mock('@/lib/agreement/agreementMetadata', () => ({
   ensureAgreementMintedWithMetadata: mocks.ensureAgreementMintedWithMetadata,
+}))
+vi.mock('@/lib/agreement/agreementReconciliation', () => ({
+  reconcileAgreement: mocks.reconcileAgreement,
 }))
 vi.mock('@/lib/blockchain/contract', () => ({
   getAgreementData: mocks.getAgreementData,

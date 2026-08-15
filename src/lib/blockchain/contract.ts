@@ -1,8 +1,23 @@
-import { Contract, JsonRpcProvider, NonceManager, Wallet } from 'ethers'
+import {
+	Contract,
+	FallbackProvider,
+	JsonRpcProvider,
+	Network,
+	NonceManager,
+	Wallet,
+} from 'ethers'
 import AgreementContractArtifact from '../../contract/AgreementContract.json'
-import type { Log, LogDescription } from 'ethers'
+import type {
+	ContractTransactionReceipt,
+	ContractTransactionResponse,
+	Log,
+	LogDescription,
+} from 'ethers'
 
 const RPC_URL = process.env.RPC_URL
+const RPC_URL_FALLBACK = process.env.RPC_URL_FALLBACK
+const CHAIN_ID = Number(process.env.CHAIN_ID || 84532)
+const CHAIN_NAME = process.env.CHAIN_NAME || 'base-sepolia'
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS
 const METADATA_BASE_URI = process.env.AGREEMENT_METADATA_BASE_URI || 'wemsp://agreement'
@@ -10,7 +25,29 @@ const EXPLORER_TX_BASE = process.env.BLOCK_EXPLORER_TX_BASE || 'https://sepolia.
 const EXPLORER_ADDRESS_BASE =
 	process.env.BLOCK_EXPLORER_ADDRESS_BASE || 'https://sepolia.basescan.org/address'
 
-let _provider: JsonRpcProvider | null = null
+const RETRY_LIMIT = Number(process.env.ONCHAIN_RETRY_LIMIT || 4)
+const RETRY_BASE_DELAY_MS = Number(process.env.ONCHAIN_RETRY_BASE_DELAY_MS || 500)
+
+// Errors that can succeed on retry: RPC timeouts, DNS/connection failures,
+// transient server errors and rate limits. Contract reverts are NOT included.
+const RETRYABLE_ERROR_CODES = new Set(['TIMEOUT', 'NETWORK_ERROR', 'SERVER_ERROR', 'BAD_DATA'])
+const RETRYABLE_ERROR_PATTERNS = [
+	/EAI_AGAIN/i,
+	/ENOTFOUND/i,
+	/ECONNRESET/i,
+	/ECONNREFUSED/i,
+	/ETIMEDOUT/i,
+	/ESOCKETTIMEDOUT/i,
+	/socket hang up/i,
+	/fetch failed/i,
+	/request timeout/i,
+	/rate limit/i,
+	/too many requests/i,
+	/\b429\b/,
+	/\b5\d\d\b/,
+]
+
+let _provider: FallbackProvider | null = null
 let _wallet: Wallet | null = null
 let _signer: NonceManager | null = null
 let _contract: Contract | null = null
@@ -50,12 +87,28 @@ export interface BeneficiarySignatureStatus {
 	signedAt: number
 }
 
-function getProvider(): JsonRpcProvider {
+/**
+ * Build a resilient provider over the primary RPC (and an optional fallback).
+ * The FallbackProvider broadcasts transactions to every backend and uses the
+ * first successful response, and reads race providers with quorum 1, so a
+ * slow or failing RPC does not block an operation.
+ */
+function getProvider(): FallbackProvider {
 	if (!RPC_URL) {
 		throw new Error('RPC_URL environment variable is not set')
 	}
 	if (!_provider) {
-		_provider = new JsonRpcProvider(RPC_URL)
+		const staticNetwork = new Network(CHAIN_NAME, CHAIN_ID)
+		const providers: Array<{ provider: JsonRpcProvider; weight: number }> = [
+			{ provider: new JsonRpcProvider(RPC_URL, staticNetwork, { pollingInterval: 4000 }), weight: 2 },
+		]
+		if (RPC_URL_FALLBACK) {
+			providers.push({
+				provider: new JsonRpcProvider(RPC_URL_FALLBACK, staticNetwork, { pollingInterval: 4000 }),
+				weight: 1,
+			})
+		}
+		_provider = new FallbackProvider(providers, staticNetwork, { quorum: 1 })
 	}
 	return _provider
 }
@@ -85,6 +138,118 @@ function getContract(): Contract {
 		_contract = new Contract(CONTRACT_ADDRESS, AgreementContractArtifact.abi, getSigner())
 	}
 	return _contract
+}
+
+export function isTransientError(error: unknown): boolean {
+	if (!error) return false
+	const candidate = error as { code?: unknown; message?: string; shortMessage?: string }
+	if (typeof candidate.code === 'string' && RETRYABLE_ERROR_CODES.has(candidate.code)) {
+		return true
+	}
+	const message = `${candidate.message || ''} ${candidate.shortMessage || ''}`
+	return RETRYABLE_ERROR_PATTERNS.some((pattern) => pattern.test(message))
+}
+
+async function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export async function withRetry<T>(
+	operation: () => Promise<T>,
+	options: { onRetry?: () => void } = {},
+): Promise<T> {
+	let attempt = 0
+	for (;;) {
+		try {
+			return await operation()
+		} catch (error) {
+			if (attempt >= RETRY_LIMIT || !isTransientError(error)) {
+				throw error
+			}
+			attempt++
+			const delay = RETRY_BASE_DELAY_MS * 2 ** (attempt - 1) + Math.floor(Math.random() * 200)
+			console.warn(
+				`[onchain] transient RPC error, retrying (${attempt}/${RETRY_LIMIT}): ${getErrorMessage(error)}`,
+			)
+			options.onRetry?.()
+			await sleep(delay)
+		}
+	}
+}
+
+/**
+ * Submit a write transaction and confirm it. The tx hash is captured as soon
+ * as the broadcast returns; if the broadcast itself times out, the signer
+ * nonce is reloaded from the chain and the send is retried (safe: contract
+ * calls are idempotent and duplicates revert). If only the confirmation
+ * times out, the receipt is polled directly.
+ */
+async function sendAndConfirmReceipt(
+	operation: () => Promise<ContractTransactionResponse>,
+): Promise<{ receipt: ContractTransactionReceipt; txHash: string }> {
+	let tx: ContractTransactionResponse
+	try {
+		tx = await withRetry(() => operation(), {
+			onRetry: () => {
+				try {
+					getSigner().reset()
+				} catch {
+					// ignore nonce reset failures
+				}
+			},
+		})
+	} catch (error) {
+		try {
+			getSigner().reset()
+		} catch {
+			// ignore nonce reset failures
+		}
+		throw error
+	}
+	const receipt = await waitForReceipt(tx)
+	return { receipt, txHash: receipt.hash }
+}
+
+async function waitForReceipt(
+	tx: ContractTransactionResponse,
+): Promise<ContractTransactionReceipt> {
+	try {
+		return await tx.wait()
+	} catch (error) {
+		if (!isTransientError(error)) {
+			throw error
+		}
+		return pollForReceipt(tx.hash)
+	}
+}
+
+async function pollForReceipt(txHash: string): Promise<ContractTransactionReceipt> {
+	const provider = getProvider()
+	let attempt = 0
+	const maxAttempts = 12
+	for (;;) {
+		const receipt = await withRetry(() => provider.getTransactionReceipt(txHash))
+		if (receipt) {
+			return receipt
+		}
+		const pending = await provider.getTransaction(txHash).catch(() => null)
+		if (attempt >= maxAttempts || !pending) {
+			throw new Error(`Transaction ${txHash} not confirmed within retry window`)
+		}
+		attempt++
+		await sleep(RETRY_BASE_DELAY_MS * 2 * attempt)
+	}
+}
+
+async function signatureResultFromReceipt(
+	receipt: ContractTransactionReceipt,
+): Promise<SignatureResult> {
+	const block = await withRetry(() => getProvider().getBlock(receipt.blockNumber))
+	return {
+		txHash: receipt.hash,
+		blockNumber: receipt.blockNumber,
+		timestamp: block?.timestamp ?? Math.floor(Date.now() / 1000),
+	}
 }
 
 function getErrorMessage(error: unknown): string {
@@ -129,8 +294,9 @@ export async function mintAgreementNFT(
 	beneficiaryIds: Array<string>
 ): Promise<MintResult> {
 	const contract = getContract()
-	const tx = await contract.mintAgreement(agreementId, metadataUri, beneficiaryIds)
-	const receipt = await tx.wait()
+	const { receipt } = await sendAndConfirmReceipt(() =>
+		contract.mintAgreement(agreementId, metadataUri, beneficiaryIds),
+	)
 
 	const mintEvent = receipt.logs
 		.map((log: Log) => {
@@ -194,15 +360,8 @@ export async function ensureAgreementMinted(
 
 export async function recordOwnerSignature(tokenId: number): Promise<SignatureResult> {
 	const contract = getContract()
-	const tx = await contract.recordOwnerSignature(tokenId)
-	const receipt = await tx.wait()
-	const block = await getProvider().getBlock(receipt.blockNumber)
-
-	return {
-		txHash: receipt.hash,
-		blockNumber: receipt.blockNumber,
-		timestamp: block?.timestamp ?? Math.floor(Date.now() / 1000),
-	}
+	const { receipt } = await sendAndConfirmReceipt(() => contract.recordOwnerSignature(tokenId))
+	return signatureResultFromReceipt(receipt)
 }
 
 export async function recordBeneficiarySignature(
@@ -210,41 +369,22 @@ export async function recordBeneficiarySignature(
 	beneficiaryId: string
 ): Promise<SignatureResult> {
 	const contract = getContract()
-	const tx = await contract.recordBeneficiarySignature(tokenId, beneficiaryId)
-	const receipt = await tx.wait()
-	const block = await getProvider().getBlock(receipt.blockNumber)
-
-	return {
-		txHash: receipt.hash,
-		blockNumber: receipt.blockNumber,
-		timestamp: block?.timestamp ?? Math.floor(Date.now() / 1000),
-	}
+	const { receipt } = await sendAndConfirmReceipt(() =>
+		contract.recordBeneficiarySignature(tokenId, beneficiaryId),
+	)
+	return signatureResultFromReceipt(receipt)
 }
 
 export async function recordWitnessSignature(tokenId: number): Promise<SignatureResult> {
 	const contract = getContract()
-	const tx = await contract.recordWitnessSignature(tokenId)
-	const receipt = await tx.wait()
-	const block = await getProvider().getBlock(receipt.blockNumber)
-
-	return {
-		txHash: receipt.hash,
-		blockNumber: receipt.blockNumber,
-		timestamp: block?.timestamp ?? Math.floor(Date.now() / 1000),
-	}
+	const { receipt } = await sendAndConfirmReceipt(() => contract.recordWitnessSignature(tokenId))
+	return signatureResultFromReceipt(receipt)
 }
 
 export async function finalizeAgreement(tokenId: number): Promise<SignatureResult> {
 	const contract = getContract()
-	const tx = await contract.finalizeAgreement(tokenId)
-	const receipt = await tx.wait()
-	const block = await getProvider().getBlock(receipt.blockNumber)
-
-	return {
-		txHash: receipt.hash,
-		blockNumber: receipt.blockNumber,
-		timestamp: block?.timestamp ?? Math.floor(Date.now() / 1000),
-	}
+	const { receipt } = await sendAndConfirmReceipt(() => contract.finalizeAgreement(tokenId))
+	return signatureResultFromReceipt(receipt)
 }
 
 export async function updateAgreementMetadata(
@@ -252,20 +392,15 @@ export async function updateAgreementMetadata(
 	metadataUri: string
 ): Promise<SignatureResult> {
 	const contract = getContract()
-	const tx = await contract.updateAgreement(tokenId, metadataUri)
-	const receipt = await tx.wait()
-	const block = await getProvider().getBlock(receipt.blockNumber)
-
-	return {
-		txHash: receipt.hash,
-		blockNumber: receipt.blockNumber,
-		timestamp: block?.timestamp ?? Math.floor(Date.now() / 1000),
-	}
+	const { receipt } = await sendAndConfirmReceipt(() =>
+		contract.updateAgreement(tokenId, metadataUri),
+	)
+	return signatureResultFromReceipt(receipt)
 }
 
 export async function getAgreementData(tokenId: number): Promise<AgreementData> {
 	const contract = getContract()
-	const data = await contract.getAgreement(tokenId)
+	const data = await withRetry(() => contract.getAgreement(tokenId))
 
 	return {
 		agreementId: data.agreementId,
@@ -285,7 +420,9 @@ export async function getBeneficiarySignatureStatus(
 	beneficiaryId: string
 ): Promise<BeneficiarySignatureStatus> {
 	const contract = getContract()
-	const [hasSigned, signedAt] = await contract.getBeneficiarySignature(tokenId, beneficiaryId)
+	const [hasSigned, signedAt] = await withRetry(() =>
+		contract.getBeneficiarySignature(tokenId, beneficiaryId),
+	)
 
 	return {
 		hasSigned,
@@ -295,12 +432,12 @@ export async function getBeneficiarySignatureStatus(
 
 export async function isAgreementFullySigned(tokenId: number): Promise<boolean> {
 	const contract = getContract()
-	return contract.isFullySigned(tokenId)
+	return withRetry(() => contract.isFullySigned(tokenId))
 }
 
 export async function getTokenIdByAgreementId(agreementId: string): Promise<number> {
 	const contract = getContract()
-	const tokenId = await contract.getTokenIdByAgreementId(agreementId)
+	const tokenId = await withRetry(() => contract.getTokenIdByAgreementId(agreementId))
 	return Number(tokenId)
 }
 
@@ -310,12 +447,12 @@ export async function getTokenIdByVisibleId(visibleId: string): Promise<number> 
 
 export async function getTokenURI(tokenId: number): Promise<string> {
 	const contract = getContract()
-	return contract.tokenURI(tokenId)
+	return withRetry(() => contract.tokenURI(tokenId))
 }
 
 export async function getTotalSupply(): Promise<number> {
 	const contract = getContract()
-	const supply = await contract.totalSupply()
+	const supply = await withRetry(() => contract.totalSupply())
 	return Number(supply)
 }
 

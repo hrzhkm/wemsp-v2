@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
 import { ensureAgreementMintedWithMetadata } from '@/lib/agreement/agreementMetadata'
+import { reconcileAgreement } from '@/lib/agreement/agreementReconciliation'
 import {
   getAgreementData,
   getExplorerUrl,
@@ -129,6 +130,14 @@ export const ownerSignHandlers = {
         },
       })
 
+      // Auto-check: confirm DB and on-chain state agree before responding
+      let reconciliation: { updatedFields: Array<string> } | null = null
+      try {
+        reconciliation = await reconcileAgreement(agreementId)
+      } catch (reconcileError) {
+        console.error(`Error reconciling agreement ${agreementId}:`, reconcileError)
+      }
+
       return Response.json({
         success: true,
         message: submit
@@ -140,6 +149,7 @@ export const ownerSignHandlers = {
           ownerHasSigned: updatedAgreement.ownerHasSigned,
           ownerSignedAt: updatedAgreement.ownerSignedAt?.toISOString(),
         },
+        reconciliation,
         onChain: {
           tokenId: ensureMintResult.tokenId,
           ownerSignatureTxHash,

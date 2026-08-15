@@ -68,6 +68,7 @@ import { Route as ApiAgreementIdSignWitnessSplatRouteImport } from './routes/api
 import { Route as ApiAgreementIdSignOwnerSplatRouteImport } from './routes/api/agreement/$id/sign/owner/$'
 import { Route as ApiAgreementIdSignBeneficiarySplatRouteImport } from './routes/api/agreement/$id/sign/beneficiary/$'
 import { Route as ApiAdminAgreementsByIcIcNumberSplatRouteImport } from './routes/api/admin/agreements/by-ic/$icNumber/$'
+import { Route as ApiAdminAgreementsIdReconcileSplatRouteImport } from './routes/api/admin/agreements/$id/reconcile/$'
 
 const AppRoute = AppRouteImport.update({
   id: '/app',
@@ -382,6 +383,12 @@ const ApiAdminAgreementsByIcIcNumberSplatRoute =
     path: '/api/admin/agreements/by-ic/$icNumber/$',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminAgreementsIdReconcileSplatRoute =
+  ApiAdminAgreementsIdReconcileSplatRouteImport.update({
+    id: '/api/admin/agreements/$id/reconcile/$',
+    path: '/api/admin/agreements/$id/reconcile/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -439,6 +446,7 @@ export interface FileRoutesByFullPath {
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic': typeof AppAdminAgreementsSignByIcIndexRoute
+  '/api/admin/agreements/$id/reconcile/$': typeof ApiAdminAgreementsIdReconcileSplatRoute
   '/api/admin/agreements/by-ic/$icNumber/$': typeof ApiAdminAgreementsByIcIcNumberSplatRoute
   '/api/agreement/$id/sign/beneficiary/$': typeof ApiAgreementIdSignBeneficiarySplatRoute
   '/api/agreement/$id/sign/owner/$': typeof ApiAgreementIdSignOwnerSplatRoute
@@ -500,6 +508,7 @@ export interface FileRoutesByTo {
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic': typeof AppAdminAgreementsSignByIcIndexRoute
+  '/api/admin/agreements/$id/reconcile/$': typeof ApiAdminAgreementsIdReconcileSplatRoute
   '/api/admin/agreements/by-ic/$icNumber/$': typeof ApiAdminAgreementsByIcIcNumberSplatRoute
   '/api/agreement/$id/sign/beneficiary/$': typeof ApiAgreementIdSignBeneficiarySplatRoute
   '/api/agreement/$id/sign/owner/$': typeof ApiAgreementIdSignOwnerSplatRoute
@@ -562,6 +571,7 @@ export interface FileRoutesById {
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness/': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic/': typeof AppAdminAgreementsSignByIcIndexRoute
+  '/api/admin/agreements/$id/reconcile/$': typeof ApiAdminAgreementsIdReconcileSplatRoute
   '/api/admin/agreements/by-ic/$icNumber/$': typeof ApiAdminAgreementsByIcIcNumberSplatRoute
   '/api/agreement/$id/sign/beneficiary/$': typeof ApiAgreementIdSignBeneficiarySplatRoute
   '/api/agreement/$id/sign/owner/$': typeof ApiAgreementIdSignOwnerSplatRoute
@@ -625,6 +635,7 @@ export interface FileRouteTypes {
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness'
     | '/app/admin/agreements/sign-by-ic'
+    | '/api/admin/agreements/$id/reconcile/$'
     | '/api/admin/agreements/by-ic/$icNumber/$'
     | '/api/agreement/$id/sign/beneficiary/$'
     | '/api/agreement/$id/sign/owner/$'
@@ -686,6 +697,7 @@ export interface FileRouteTypes {
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness'
     | '/app/admin/agreements/sign-by-ic'
+    | '/api/admin/agreements/$id/reconcile/$'
     | '/api/admin/agreements/by-ic/$icNumber/$'
     | '/api/agreement/$id/sign/beneficiary/$'
     | '/api/agreement/$id/sign/owner/$'
@@ -747,6 +759,7 @@ export interface FileRouteTypes {
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness/'
     | '/app/admin/agreements/sign-by-ic/'
+    | '/api/admin/agreements/$id/reconcile/$'
     | '/api/admin/agreements/by-ic/$icNumber/$'
     | '/api/agreement/$id/sign/beneficiary/$'
     | '/api/agreement/$id/sign/owner/$'
@@ -782,6 +795,7 @@ export interface RootRouteChildren {
   ApiAgreementIdBeneficiariesSplatRoute: typeof ApiAgreementIdBeneficiariesSplatRoute
   ApiAgreementIdDocumentSplatRoute: typeof ApiAgreementIdDocumentSplatRoute
   ApiAgreementIdStatusSplatRoute: typeof ApiAgreementIdStatusSplatRoute
+  ApiAdminAgreementsIdReconcileSplatRoute: typeof ApiAdminAgreementsIdReconcileSplatRoute
   ApiAdminAgreementsByIcIcNumberSplatRoute: typeof ApiAdminAgreementsByIcIcNumberSplatRoute
   ApiAgreementIdSignBeneficiarySplatRoute: typeof ApiAgreementIdSignBeneficiarySplatRoute
   ApiAgreementIdSignOwnerSplatRoute: typeof ApiAgreementIdSignOwnerSplatRoute
@@ -1203,6 +1217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAgreementsByIcIcNumberSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/agreements/$id/reconcile/$': {
+      id: '/api/admin/agreements/$id/reconcile/$'
+      path: '/api/admin/agreements/$id/reconcile/$'
+      fullPath: '/api/admin/agreements/$id/reconcile/$'
+      preLoaderRoute: typeof ApiAdminAgreementsIdReconcileSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1301,6 +1322,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAgreementIdBeneficiariesSplatRoute: ApiAgreementIdBeneficiariesSplatRoute,
   ApiAgreementIdDocumentSplatRoute: ApiAgreementIdDocumentSplatRoute,
   ApiAgreementIdStatusSplatRoute: ApiAgreementIdStatusSplatRoute,
+  ApiAdminAgreementsIdReconcileSplatRoute:
+    ApiAdminAgreementsIdReconcileSplatRoute,
   ApiAdminAgreementsByIcIcNumberSplatRoute:
     ApiAdminAgreementsByIcIcNumberSplatRoute,
   ApiAgreementIdSignBeneficiarySplatRoute:
