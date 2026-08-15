@@ -2,7 +2,15 @@ import { createFileRoute } from '@tanstack/react-router'
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
 import { DistributionType } from '@/generated/prisma/enums'
-import { getExplorerUrl } from '@/lib/blockchain/contract'
+import {
+  ensureAgreementMintedWithMetadata,
+  refreshAgreementMetadataUri,
+} from '@/lib/agreement/agreementMetadata'
+import {
+  getExplorerUrl,
+  isContractConfigured,
+  updateAgreementMetadata,
+} from '@/lib/blockchain/contract'
 import {
   canEditAgreement,
   validateAgreementInput,
@@ -387,6 +395,7 @@ export const agreementHandlers = {
           }
 
           // Create agreement in transaction
+          const beneficiaryIds: Array<string> = []
           const agreement = await prisma.$transaction(async (tx) => {
             // Create agreement
             const newAgreement = await tx.agreement.create({
@@ -416,7 +425,7 @@ export const agreementHandlers = {
             // Add beneficiaries
             if (beneficiaries && beneficiaries.length > 0) {
               for (const beneficiary of beneficiaries) {
-                await tx.agreementBeneficiary.create({
+                const created = await tx.agreementBeneficiary.create({
                   data: {
                     agreementId: newAgreement.id,
                     familyMemberId: beneficiary.familyMemberId,
@@ -424,12 +433,40 @@ export const agreementHandlers = {
                     sharePercentage: beneficiary.sharePercentage,
                     shareDescription: beneficiary.shareDescription,
                   },
+                  select: { id: true },
                 })
+                beneficiaryIds.push(created.id)
               }
             }
 
             return newAgreement
           })
+
+          // Mint the agreement NFT at creation (best-effort; lazy mint at first
+          // signature remains as a fallback when the contract is not configured)
+          let onChain: {
+            tokenId: number
+            mintTxHash: string | null
+            mintExplorerUrl: string | null
+          } | null = null
+
+          if (isContractConfigured() && beneficiaryIds.length > 0) {
+            try {
+              const mintResult = await ensureAgreementMintedWithMetadata(
+                agreement.id,
+                beneficiaryIds,
+              )
+              onChain = {
+                tokenId: mintResult.tokenId,
+                mintTxHash: mintResult.mintResult?.txHash || null,
+                mintExplorerUrl: mintResult.mintResult?.txHash
+                  ? getExplorerUrl(mintResult.mintResult.txHash)
+                  : null,
+              }
+            } catch (mintError) {
+              console.error('Error minting agreement NFT at creation:', mintError)
+            }
+          }
 
           return Response.json({
             success: true,
@@ -438,6 +475,7 @@ export const agreementHandlers = {
               title: agreement.title,
               status: agreement.status,
             },
+            onChain,
           }, { status: 201 })
         } catch (error) {
           console.error('Error creating agreement:', error)
@@ -530,6 +568,22 @@ export const agreementHandlers = {
             },
           })
 
+          // Keep on-chain metadata fresh when a minted DRAFT agreement is edited
+          // (contract resets signatures, which is harmless while still in DRAFT)
+          let onChainUpdateTxHash: string | null = null
+          if (existingAgreement.tokenId != null && isContractConfigured()) {
+            try {
+              const { metadataUri } = await refreshAgreementMetadataUri(idParam)
+              const result = await updateAgreementMetadata(
+                existingAgreement.tokenId,
+                metadataUri,
+              )
+              onChainUpdateTxHash = result.txHash
+            } catch (metadataError) {
+              console.error('Error refreshing on-chain agreement metadata:', metadataError)
+            }
+          }
+
           return Response.json({
             success: true,
             agreement: {
@@ -541,6 +595,12 @@ export const agreementHandlers = {
               effectiveDate: agreement.effectiveDate?.toISOString(),
               expiryDate: agreement.expiryDate?.toISOString(),
             },
+            onChain: onChainUpdateTxHash
+              ? {
+                  metadataUpdateTxHash: onChainUpdateTxHash,
+                  metadataUpdateExplorerUrl: getExplorerUrl(onChainUpdateTxHash),
+                }
+              : null,
           })
         } catch (error) {
           console.error('Error updating agreement:', error)

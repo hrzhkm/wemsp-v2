@@ -1822,6 +1822,7 @@ export const AgreementScalarFieldEnum = {
   contractAddress: 'contractAddress',
   metadataUri: 'metadataUri',
   mintTxHash: 'mintTxHash',
+  documentSentAt: 'documentSentAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

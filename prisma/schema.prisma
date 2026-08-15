@@ -319,6 +319,9 @@ model Agreement {
   metadataUri     String? // S3 URI for agreement JSON metadata
   mintTxHash      String? // Transaction hash for minting the NFT
 
+  // Final document delivery
+  documentSentAt DateTime? // When the finalized agreement document was emailed to parties
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
