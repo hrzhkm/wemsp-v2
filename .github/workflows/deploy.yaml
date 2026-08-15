@@ -29,9 +29,9 @@ jobs:
           VITE_APP_BASE_URL=${{ secrets.VITE_APP_BASE_URL }}
           EOF
 
-      - name: Write app/.env.local
+      - name: Write .env.local
         run: |
-          cat > app/.env.local << EOF
+          cat > .env.local << EOF
           DATABASE_URL=${{ secrets.DATABASE_URL }}
           BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
@@ -40,6 +40,10 @@ jobs:
           GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_APP_PASSWORD=${{ secrets.GOOGLE_APP_PASSWORD }}
           EMAIL_ADMIN=${{ secrets.EMAIL_ADMIN }}
+          EMAIL_FROM=${{ secrets.EMAIL_FROM }}
+          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_NAME=${{ secrets.ADMIN_NAME }}
           AWS_REGION=${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -60,21 +64,15 @@ jobs:
     needs: setup
 
     steps:
-      - name: Stop existing containers
-        run: |
-          cd .container
-          docker compose down || true
-        continue-on-error: true
-
-      - name: Clean up unused Docker resources
-        run: |
-          docker system prune -f --volumes || true
-        continue-on-error: true
-
       - name: Build Docker images
         run: |
           cd .container
-          docker compose build --no-cache
+          for attempt in 1 2 3; do
+            docker compose build --no-cache && exit 0
+            echo "Docker build attempt $attempt failed; retrying in 15 seconds..."
+            sleep 15
+          done
+          exit 1
 
   docker-start:
     name: Start Services
@@ -144,6 +142,9 @@ jobs:
           docker exec -e DATABASE_URL=${{ secrets.DATABASE_URL }} wemsp-app pnpm prisma migrate deploy
         continue-on-error: false
 
+      - name: Seed admin account
+        run: docker exec wemsp-app pnpm prisma db seed
+
       - name: Verify deployment
         run: |
           echo "==================================="
@@ -195,9 +196,3 @@ jobs:
           echo "==================================="
           docker network ls
           docker network inspect .container_wemsp-network || true
-
-      - name: Cleanup on failure
-        run: |
-          cd .container
-          docker compose down
-        continue-on-error: true
