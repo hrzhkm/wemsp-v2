@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import type { FamilyRelationType } from '@/lib/family/familyTypes'
 
+import type { CountryCode } from '@/lib/family/phoneNumber'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -23,9 +24,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { FamilyRelation } from '@/lib/family/familyTypes'
-import { formatMalaysianIc } from '@/lib/family/malaysianIc'
-
-const MALAYSIAN_IC_REGEX = /^\d{12}$/
+import { formatMalaysianIc, isValidMalaysianIc } from '@/lib/family/malaysianIc'
+import { parsePhoneInput } from '@/lib/family/phoneNumber'
+import { PhoneNumberInput } from '@/components/family/phoneNumberInput'
+import { getApiError } from '@/lib/apiError'
 
 interface UserSearchResult {
   email: string
@@ -35,19 +37,12 @@ interface UserSearchResult {
   name: string
 }
 
-interface NonRegisteredSearchResult {
-  address?: string | null
-  icNumber: string
-  id: number
-  name: string
-  phoneNumber?: string | null
-}
-
 type SearchResult =
   | { data: UserSearchResult; type: 'exists' }
-  | { data: NonRegisteredSearchResult; type: 'non-registered' }
+  | { type: 'existing-record' }
   | { data: UserSearchResult; type: 'registered' }
   | { data: UserSearchResult; type: 'self' }
+  | { type: 'unavailable' }
   | { type: 'not-found' }
 
 const formatRelationLabel = (relation: string) =>
@@ -56,8 +51,6 @@ const formatRelationLabel = (relation: string) =>
     .split('_')
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ')
-
-const validateMalaysianIC = (ic: string): boolean => MALAYSIAN_IC_REGEX.test(ic)
 
 export const Route = createFileRoute('/app/family/add')({
   component: RouteComponent,
@@ -73,7 +66,9 @@ function RouteComponent() {
 
   const searchMutation = useMutation({
     mutationFn: async (ic: string): Promise<SearchResult> => {
-      const response = await fetch(`/api/family/search?icNumber=${encodeURIComponent(ic)}`)
+      const response = await fetch(
+        `/api/family/search?icNumber=${encodeURIComponent(ic)}`,
+      )
       if (!response.ok) {
         throw new Error('Search failed')
       }
@@ -90,23 +85,20 @@ function RouteComponent() {
   })
 
   const createMutation = useMutation({
-    mutationFn: async (data: {
-      memberData: any
-      type: string
-    }) => {
+    mutationFn: async (data: { memberData: any; type: string }) => {
       const response = await fetch('/api/family', {
         body: JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
       })
       if (!response.ok) {
-        const error = await response.text()
-        throw new Error(error || 'Failed to add family member')
+        throw new Error(
+          await getApiError(response, 'Failed to add family member'),
+        )
       }
       return response.json()
     },
     onError: (error: Error) => {
-      console.error('Error adding family member:', error)
       toast.error(error.message || 'Failed to add family member')
     },
     onSuccess: () => {
@@ -116,7 +108,9 @@ function RouteComponent() {
   })
 
   const showEditableFields = searchResult?.type === 'not-found'
-  const showFormSection = hasSearched && searchResult?.type !== 'exists' && searchResult?.type !== 'self'
+  const showFormSection =
+    hasSearched &&
+    ['registered', 'not-found'].includes(searchResult?.type || '')
   const canSubmit = relation !== '' && !createMutation.isPending
 
   const handleIcChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,8 +122,8 @@ function RouteComponent() {
       return
     }
 
-    if (value.length === 12 && !validateMalaysianIC(value)) {
-      setIcError('Invalid IC format.')
+    if (value.length === 12 && !isValidMalaysianIc(value)) {
+      setIcError('Invalid Malaysian IC date.')
       return
     }
 
@@ -142,8 +136,8 @@ function RouteComponent() {
       return
     }
 
-    if (!validateMalaysianIC(icNumber)) {
-      setIcError('Invalid Malaysian IC format. Must be exactly 12 digits.')
+    if (!isValidMalaysianIc(icNumber)) {
+      setIcError('Enter a valid Malaysian IC number with a real birth date.')
       toast.error('Please enter a valid Malaysian IC number')
       return
     }
@@ -170,32 +164,31 @@ function RouteComponent() {
       return
     }
 
-    if (searchResult?.type === 'non-registered') {
-      await createMutation.mutateAsync({
-        memberData: {
-          address: searchResult.data.address,
-          icNumber: searchResult.data.icNumber,
-          name: searchResult.data.name,
-          phoneNumber: searchResult.data.phoneNumber,
-          relation,
-        },
-        type: 'non-registered',
-      })
-      return
-    }
-
     const formData = new FormData(event.currentTarget)
-    const address = formData.get('address') as string
-    const name = formData.get('name') as string
-    const phoneNumber = formData.get('phoneNumber') as string
+    const address = String(formData.get('address') || '').trim()
+    const name = String(formData.get('name') || '').trim()
+    const phoneNumber = parsePhoneInput(
+      String(formData.get('phoneNumber') || ''),
+      String(formData.get('phoneCountry') || 'MY') as CountryCode,
+    )
 
     if (!name) {
       toast.error('Please fill in the name field')
       return
     }
+    if (!phoneNumber.valid) {
+      toast.error('Please enter a valid phone number')
+      return
+    }
 
     await createMutation.mutateAsync({
-      memberData: { address, icNumber, name, phoneNumber, relation },
+      memberData: {
+        address,
+        icNumber,
+        name,
+        phoneNumber: phoneNumber.value,
+        relation,
+      },
       type: 'non-registered',
     })
   }
@@ -220,9 +213,15 @@ function RouteComponent() {
             )}
             <div className="min-w-0">
               <p className="truncate font-medium">{searchResult.data.name}</p>
-              <p className="truncate text-sm text-muted-foreground">{searchResult.data.email}</p>
+              <p className="truncate text-sm text-muted-foreground">
+                {searchResult.data.email}
+              </p>
               <p className="mt-1 text-xs text-amber-700">
-                Already added as {searchResult.data.existingRelation ? formatRelationLabel(searchResult.data.existingRelation) : 'a family member'}.
+                Already added as{' '}
+                {searchResult.data.existingRelation
+                  ? formatRelationLabel(searchResult.data.existingRelation)
+                  : 'a family member'}
+                .
               </p>
             </div>
           </div>
@@ -255,8 +254,12 @@ function RouteComponent() {
             )}
             <div className="min-w-0">
               <p className="truncate font-medium">{searchResult.data.name}</p>
-              <p className="truncate text-sm text-muted-foreground">{searchResult.data.email}</p>
-              <p className="mt-1 text-xs text-red-700">You cannot add yourself as a family member.</p>
+              <p className="truncate text-sm text-muted-foreground">
+                {searchResult.data.email}
+              </p>
+              <p className="mt-1 text-xs text-red-700">
+                You cannot add yourself as a family member.
+              </p>
             </div>
           </div>
           <Button
@@ -288,15 +291,22 @@ function RouteComponent() {
             )}
             <div className="min-w-0">
               <p className="truncate font-medium">{searchResult.data.name}</p>
-              <p className="truncate text-sm text-muted-foreground">{searchResult.data.email}</p>
-              <p className="mt-1 text-xs text-emerald-700">Registered user found.</p>
+              <p className="truncate text-sm text-muted-foreground">
+                {searchResult.data.email}
+              </p>
+              <p className="mt-1 text-xs text-emerald-700">
+                Registered user found.
+              </p>
             </div>
           </div>
         </div>
       )
     }
 
-    if (searchResult.type === 'non-registered') {
+    if (
+      searchResult.type === 'existing-record' ||
+      searchResult.type === 'unavailable'
+    ) {
       return (
         <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4">
           <div className="flex items-center gap-3">
@@ -304,9 +314,12 @@ function RouteComponent() {
               <UserPlus className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="truncate font-medium">{searchResult.data.name}</p>
-              <p className="truncate text-sm text-muted-foreground">IC: {searchResult.data.icNumber}</p>
-              <p className="mt-1 text-xs text-sky-700">Matched an existing non-registered record.</p>
+              <p className="truncate font-medium">IC number unavailable</p>
+              <p className="mt-1 text-xs text-sky-700">
+                {searchResult.type === 'existing-record'
+                  ? 'This family member is already in your list.'
+                  : 'This IC number is already registered in the system.'}
+              </p>
             </div>
           </div>
         </div>
@@ -321,7 +334,10 @@ function RouteComponent() {
           </div>
           <div className="min-w-0">
             <p className="font-medium">No existing record found</p>
-            <p className="text-sm text-muted-foreground">Fill the details below to create a new non-registered family member.</p>
+            <p className="text-sm text-muted-foreground">
+              Fill the details below to create a new non-registered family
+              member.
+            </p>
           </div>
         </div>
       </div>
@@ -334,7 +350,9 @@ function RouteComponent() {
         <Card className="border-border/70">
           <CardHeader>
             <CardTitle className="text-base">1. Search By IC Number</CardTitle>
-            <CardDescription>Enter their Malaysian IC number to find an existing record.</CardDescription>
+            <CardDescription>
+              Enter their Malaysian IC number to find an existing record.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col gap-2">
@@ -359,7 +377,11 @@ function RouteComponent() {
                   size="sm"
                   variant="secondary"
                   onClick={handleSearch}
-                  disabled={searchMutation.isPending || icNumber.length !== 12 || icError !== ''}
+                  disabled={
+                    searchMutation.isPending ||
+                    icNumber.length !== 12 ||
+                    icError !== ''
+                  }
                   className="absolute right-1.5 top-1.5 h-7"
                 >
                   {searchMutation.isPending ? (
@@ -372,7 +394,9 @@ function RouteComponent() {
                   )}
                 </Button>
               </div>
-              {icError ? <p className="text-xs text-destructive">{icError}</p> : null}
+              {icError ? (
+                <p className="text-xs text-destructive">{icError}</p>
+              ) : null}
             </div>
 
             {renderSearchResult()}
@@ -383,7 +407,9 @@ function RouteComponent() {
           <Card className="border-border/70">
             <CardHeader>
               <CardTitle className="text-base">2. Confirm Details</CardTitle>
-              <CardDescription>Review or complete member information before adding.</CardDescription>
+              <CardDescription>
+                Review or complete member information before adding.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -403,7 +429,11 @@ function RouteComponent() {
                     <Label htmlFor="member-name">Name</Label>
                     <Input
                       id="member-name"
-                      value={searchResult?.data.name}
+                      value={
+                        searchResult?.type === 'registered'
+                          ? searchResult.data.name
+                          : ''
+                      }
                       disabled
                       className="bg-muted/60"
                     />
@@ -412,13 +442,10 @@ function RouteComponent() {
 
                 <div className="space-y-2">
                   <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    defaultValue={searchResult?.type === 'non-registered' ? searchResult.data.phoneNumber || '' : ''}
-                    placeholder="e.g., 0123456789"
-                    disabled={!showEditableFields && searchResult?.type === 'registered'}
-                    className={!showEditableFields && searchResult?.type === 'registered' ? 'bg-muted/60' : ''}
+                  <PhoneNumberInput
+                    disabled={
+                      !showEditableFields && searchResult?.type === 'registered'
+                    }
                   />
                 </div>
 
@@ -427,10 +454,16 @@ function RouteComponent() {
                   <Input
                     id="address"
                     name="address"
-                    defaultValue={searchResult?.type === 'non-registered' ? searchResult.data.address || '' : ''}
+                    defaultValue=""
                     placeholder="Enter full address"
-                    disabled={!showEditableFields && searchResult?.type === 'registered'}
-                    className={!showEditableFields && searchResult?.type === 'registered' ? 'bg-muted/60' : ''}
+                    disabled={
+                      !showEditableFields && searchResult?.type === 'registered'
+                    }
+                    className={
+                      !showEditableFields && searchResult?.type === 'registered'
+                        ? 'bg-muted/60'
+                        : ''
+                    }
                   />
                 </div>
 
@@ -439,7 +472,9 @@ function RouteComponent() {
                   <Select
                     name="relation"
                     value={relation}
-                    onValueChange={(value) => setRelation(value as FamilyRelationType)}
+                    onValueChange={(value) =>
+                      setRelation(value as FamilyRelationType)
+                    }
                     required
                   >
                     <SelectTrigger id="relation">

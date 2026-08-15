@@ -1,12 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { Filter, Loader2, Plus, RefreshCcw, Search, UserCheck, UserX, Users } from 'lucide-react'
+import {
+  Filter,
+  Loader2,
+  Plus,
+  RefreshCcw,
+  Search,
+  UserCheck,
+  UserX,
+  Users,
+} from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import type { FamilyRelationType } from '@/lib/family/familyTypes'
 import type { FamilyMember } from '@/types/family'
 
 import { FamilyMembersTable } from '@/components/family/familyMembersTable'
+import { ConfirmationDialog } from '@/components/confirmationDialog'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -48,9 +58,17 @@ function RouteComponent() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { t } = useLanguage()
-  const [memberTypeFilter, setMemberTypeFilter] = useState<'all' | 'non-registered' | 'registered'>('all')
+  const [memberTypeFilter, setMemberTypeFilter] = useState<
+    'all' | 'non-registered' | 'registered'
+  >('all')
   const [query, setQuery] = useState('')
-  const [relationFilter, setRelationFilter] = useState<'all' | FamilyRelationType>('all')
+  const [relationFilter, setRelationFilter] = useState<
+    'all' | FamilyRelationType
+  >('all')
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string | number
+    type: string
+  } | null>(null)
 
   const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ['session'],
@@ -77,7 +95,9 @@ function RouteComponent() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ id, type }: { id: string | number; type: string }) => {
-      const response = await fetch(`/api/family?type=${type}&id=${id}`, { method: 'DELETE' })
+      const response = await fetch(`/api/family?type=${type}&id=${id}`, {
+        method: 'DELETE',
+      })
       if (!response.ok) {
         throw new Error(t('familyPage.errors.deleteFailed'))
       }
@@ -138,9 +158,13 @@ function RouteComponent() {
   }, [familyMembers, memberTypeFilter, query, relationFilter])
 
   const stats = useMemo(() => {
-    const registeredCount = familyMembers.filter((member) => member.type === 'registered').length
+    const registeredCount = familyMembers.filter(
+      (member) => member.type === 'registered',
+    ).length
     const nonRegisteredCount = familyMembers.length - registeredCount
-    const uniqueRelations = new Set(familyMembers.map((member) => member.relation)).size
+    const uniqueRelations = new Set(
+      familyMembers.map((member) => member.relation),
+    ).size
     return {
       nonRegisteredCount,
       registeredCount,
@@ -149,13 +173,13 @@ function RouteComponent() {
     }
   }, [familyMembers])
 
-  const hasActiveFilters = query.trim().length > 0 || memberTypeFilter !== 'all' || relationFilter !== 'all'
+  const hasActiveFilters =
+    query.trim().length > 0 ||
+    memberTypeFilter !== 'all' ||
+    relationFilter !== 'all'
 
-  const handleDelete = async (type: string, id: string | number) => {
-    if (!confirm(t('familyPage.confirmDelete'))) {
-      return
-    }
-    await deleteMutation.mutateAsync({ id, type })
+  const handleDelete = (type: string, id: string | number) => {
+    setPendingDelete({ id, type })
   }
 
   const handleRefresh = () => {
@@ -172,6 +196,22 @@ function RouteComponent() {
 
   return (
     <div className="space-y-4">
+      <ConfirmationDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title={t('familyPage.deleteDialogTitle')}
+        description={t('familyPage.confirmDelete')}
+        confirmLabel={t('familyPage.deleteAction')}
+        cancelLabel={t('familyPage.cancelAction')}
+        isPending={deleteMutation.isPending}
+        onConfirm={async () => {
+          if (!pendingDelete) return
+          try {
+            await deleteMutation.mutateAsync(pendingDelete)
+            setPendingDelete(null)
+          } catch {}
+        }}
+      />
       <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
         <CardHeader className="gap-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -182,11 +222,18 @@ function RouteComponent() {
               </CardDescription>
             </div>
             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-              <Button className="w-full sm:w-auto" variant="outline" onClick={handleRefresh}>
+              <Button
+                className="w-full sm:w-auto"
+                variant="outline"
+                onClick={handleRefresh}
+              >
                 <RefreshCcw className="h-4 w-4" />
                 {t('familyPage.refresh')}
               </Button>
-              <Button className="w-full sm:w-auto" onClick={() => router.navigate({ to: '/app/family/add' })}>
+              <Button
+                className="w-full sm:w-auto"
+                onClick={() => router.navigate({ to: '/app/family/add' })}
+              >
                 <Plus className="h-4 w-4" />
                 {t('familyPage.addMember')}
               </Button>
@@ -198,28 +245,38 @@ function RouteComponent() {
                 <Users className="h-4 w-4" />
               </div>
               <p className="text-2xl font-semibold">{stats.total}</p>
-              <p className="text-xs text-muted-foreground">{t('familyPage.stats.totalMembers')}</p>
+              <p className="text-xs text-muted-foreground">
+                {t('familyPage.stats.totalMembers')}
+              </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/70 p-3 shadow-sm">
               <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-700">
                 <UserCheck className="h-4 w-4" />
               </div>
               <p className="text-2xl font-semibold">{stats.registeredCount}</p>
-              <p className="text-xs text-muted-foreground">{t('familyPage.stats.registeredUsers')}</p>
+              <p className="text-xs text-muted-foreground">
+                {t('familyPage.stats.registeredUsers')}
+              </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/70 p-3 shadow-sm">
               <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-slate-500/15 text-slate-700">
                 <UserX className="h-4 w-4" />
               </div>
-              <p className="text-2xl font-semibold">{stats.nonRegisteredCount}</p>
-              <p className="text-xs text-muted-foreground">{t('familyPage.stats.nonRegisteredUsers')}</p>
+              <p className="text-2xl font-semibold">
+                {stats.nonRegisteredCount}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t('familyPage.stats.nonRegisteredUsers')}
+              </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/70 p-3 shadow-sm">
               <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-700">
                 <Filter className="h-4 w-4" />
               </div>
               <p className="text-2xl font-semibold">{stats.uniqueRelations}</p>
-              <p className="text-xs text-muted-foreground">{t('familyPage.stats.relationTypes')}</p>
+              <p className="text-xs text-muted-foreground">
+                {t('familyPage.stats.relationTypes')}
+              </p>
             </div>
           </div>
         </CardHeader>
@@ -229,8 +286,12 @@ function RouteComponent() {
         <CardHeader className="space-y-4">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="text-base">{t('familyPage.directoryTitle')}</CardTitle>
-              <CardDescription>{t('familyPage.directoryDescription')}</CardDescription>
+              <CardTitle className="text-base">
+                {t('familyPage.directoryTitle')}
+              </CardTitle>
+              <CardDescription>
+                {t('familyPage.directoryDescription')}
+              </CardDescription>
             </div>
             {hasActiveFilters ? (
               <Button
@@ -259,26 +320,36 @@ function RouteComponent() {
             </div>
             <Select
               value={memberTypeFilter}
-              onValueChange={(value: 'all' | 'non-registered' | 'registered') => setMemberTypeFilter(value)}
+              onValueChange={(value: 'all' | 'non-registered' | 'registered') =>
+                setMemberTypeFilter(value)
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder={t('familyPage.memberType')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('familyPage.allTypes')}</SelectItem>
-                <SelectItem value="registered">{t('familyPage.registered')}</SelectItem>
-                <SelectItem value="non-registered">{t('familyPage.nonRegistered')}</SelectItem>
+                <SelectItem value="registered">
+                  {t('familyPage.registered')}
+                </SelectItem>
+                <SelectItem value="non-registered">
+                  {t('familyPage.nonRegistered')}
+                </SelectItem>
               </SelectContent>
             </Select>
             <Select
               value={relationFilter}
-              onValueChange={(value: 'all' | FamilyRelationType) => setRelationFilter(value)}
+              onValueChange={(value: 'all' | FamilyRelationType) =>
+                setRelationFilter(value)
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder={t('familyPage.relation')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('familyPage.allRelations')}</SelectItem>
+                <SelectItem value="all">
+                  {t('familyPage.allRelations')}
+                </SelectItem>
                 {relationOptions.map((relation) => (
                   <SelectItem key={relation} value={relation}>
                     {formatRelationLabel(relation)}
@@ -299,7 +370,9 @@ function RouteComponent() {
                 : t('familyPage.emptyDescription')
             }
             emptyTitle={
-              hasActiveFilters ? t('familyPage.emptyFilteredTitle') : t('familyPage.emptyTitle')
+              hasActiveFilters
+                ? t('familyPage.emptyFilteredTitle')
+                : t('familyPage.emptyTitle')
             }
           />
         </CardContent>

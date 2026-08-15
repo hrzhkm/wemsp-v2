@@ -7,7 +7,12 @@ import {
 import type { FamilyRelationType } from './familyTypes'
 
 // Re-export types for server-side usage
-export { FamilyRelation, type FamilyRelationType, INVERSE_RELATIONS, getInverseRelation }
+export {
+  FamilyRelation,
+  type FamilyRelationType,
+  INVERSE_RELATIONS,
+  getInverseRelation,
+}
 
 /**
  * Creates a bidirectional family relationship between two users.
@@ -21,7 +26,7 @@ export { FamilyRelation, type FamilyRelationType, INVERSE_RELATIONS, getInverseR
 export async function createBidirectionalFamilyRelation(
   userId: string,
   familyMemberUserId: string,
-  relation: FamilyRelationType
+  relation: FamilyRelationType,
 ) {
   const inverseRelation = getInverseRelation(relation)
 
@@ -57,7 +62,7 @@ export async function createBidirectionalFamilyRelation(
  */
 export async function deleteBidirectionalFamilyRelation(
   userId: string,
-  familyMemberUserId: string
+  familyMemberUserId: string,
 ) {
   await prisma.$transaction([
     // Delete A -> B
@@ -113,7 +118,7 @@ export async function getFamilyMembers(userId: string) {
  */
 export async function convertNonRegisteredToFamilyMembers(
   newUserId: string,
-  icNumber: string
+  icNumber: string,
 ) {
   // Find all non-registered family member records with this IC number
   const nonRegisteredMembers = await prisma.nonRegisteredFamilyMember.findMany({
@@ -137,15 +142,17 @@ export async function convertNonRegisteredToFamilyMembers(
   }
 
   const convertedRelationships: Array<{
-    fromUserId: string;
-    fromUserName: string;
-    relation: FamilyRelationType;
+    fromUserId: string
+    fromUserName: string
+    relation: FamilyRelationType
   }> = []
 
   // Use a transaction to ensure all operations succeed or fail together
   await prisma.$transaction(async (tx) => {
     for (const nonRegistered of nonRegisteredMembers) {
-      const inverseRelation = getInverseRelation(nonRegistered.relation as FamilyRelationType)
+      const inverseRelation = getInverseRelation(
+        nonRegistered.relation as FamilyRelationType,
+      )
 
       // Create bidirectional family relationship
       // 1. The user who added the non-registered member gets them as family
@@ -232,7 +239,7 @@ export async function getNonRegisteredFamilyMembers(userId: string) {
 export async function updateBidirectionalFamilyRelation(
   userId: string,
   familyMemberUserId: string,
-  newRelation: FamilyRelationType
+  newRelation: FamilyRelationType,
 ) {
   const inverseRelation = getInverseRelation(newRelation)
 
@@ -268,6 +275,7 @@ export async function updateBidirectionalFamilyRelation(
  * @param data - The fields to update
  */
 export async function updateNonRegisteredFamilyMember(
+  userId: string,
   id: number,
   data: {
     relation?: FamilyRelationType
@@ -275,17 +283,17 @@ export async function updateNonRegisteredFamilyMember(
     icNumber?: string
     address?: string | null
     phoneNumber?: string | null
-  }
+  },
 ) {
+  const current = await prisma.nonRegisteredFamilyMember.findFirst({
+    where: { id, userId },
+    select: { icNumber: true },
+  })
+  if (!current) return null
+
   // If IC number is being updated, we need to handle the registry
   if (data.icNumber) {
-    // Get the current IC number
-    const current = await prisma.nonRegisteredFamilyMember.findUnique({
-      where: { id },
-      select: { icNumber: true },
-    })
-
-    if (current && current.icNumber !== data.icNumber) {
+    if (current.icNumber !== data.icNumber) {
       // Check if new IC already exists in registry
       const existingIc = await prisma.icRegistry.findUnique({
         where: { icNumber: data.icNumber },
@@ -298,11 +306,13 @@ export async function updateNonRegisteredFamilyMember(
       // Use transaction to update IC registry and member
       return prisma.$transaction(async (tx) => {
         // Delete old IC from registry
-        await tx.icRegistry.delete({
-          where: { icNumber: current.icNumber },
-        }).catch(() => {
-          // Ignore if it doesn't exist (for legacy data)
-        })
+        await tx.icRegistry
+          .delete({
+            where: { icNumber: current.icNumber },
+          })
+          .catch(() => {
+            // Ignore if it doesn't exist (for legacy data)
+          })
 
         // Create new IC registry entry
         await tx.icRegistry.create({
@@ -323,7 +333,7 @@ export async function updateNonRegisteredFamilyMember(
 
   // No IC change, just update normally
   return prisma.nonRegisteredFamilyMember.update({
-    where: { id },
+    where: { id, userId },
     data: {
       ...data,
       relation: data.relation as any, // Type assertion for Prisma enum compatibility
@@ -337,29 +347,35 @@ export async function updateNonRegisteredFamilyMember(
  *
  * @param id - The ID of the non-registered family member to delete
  */
-export async function deleteNonRegisteredFamilyMember(id: number) {
+export async function deleteNonRegisteredFamilyMember(
+  userId: string,
+  id: number,
+) {
   // Get the IC number first
-  const member = await prisma.nonRegisteredFamilyMember.findUnique({
-    where: { id },
+  const member = await prisma.nonRegisteredFamilyMember.findFirst({
+    where: { id, userId },
     select: { icNumber: true },
   })
 
   if (!member) {
-    throw new Error('Non-registered family member not found')
+    return null
   }
 
   // Delete both the member and the IC registry entry in a transaction
   return prisma.$transaction(async (tx) => {
     // Delete the member first (due to foreign key constraint)
     await tx.nonRegisteredFamilyMember.delete({
-      where: { id },
+      where: { id, userId },
     })
 
     // Then delete the IC from registry
-    await tx.icRegistry.delete({
-      where: { icNumber: member.icNumber },
-    }).catch(() => {
-      // Ignore if it doesn't exist (for legacy data)
-    })
+    await tx.icRegistry
+      .delete({
+        where: { icNumber: member.icNumber },
+      })
+      .catch(() => {
+        // Ignore if it doesn't exist (for legacy data)
+      })
+    return true
   })
 }

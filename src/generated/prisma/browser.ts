@@ -38,6 +38,11 @@ export type User = Prisma.UserModel
  */
 export type UserSetting = Prisma.UserSettingModel
 /**
+ * Model UserDocumentEncryptionKey
+ * 
+ */
+export type UserDocumentEncryptionKey = Prisma.UserDocumentEncryptionKeyModel
+/**
  * Model FamilyMember
  * 
  */

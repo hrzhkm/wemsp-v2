@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestUploadRouteImport } from './routes/test-upload'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppDashboardRouteImport } from './routes/app/dashboard'
@@ -42,13 +41,13 @@ import { Route as AppAgreementViewIndexRouteImport } from './routes/app/agreemen
 import { Route as AppAdminUsersIndexRouteImport } from './routes/app/admin/users/index'
 import { Route as AppAdminAssetsIndexRouteImport } from './routes/app/admin/assets/index'
 import { Route as AppAdminAgreementsIndexRouteImport } from './routes/app/admin/agreements/index'
-import { Route as ApiUploadJsonIndexRouteImport } from './routes/api/upload/json/index'
 import { Route as AppAssetsViewIdRouteImport } from './routes/app/assets/view/$id'
 import { Route as AppAssetsEditIdRouteImport } from './routes/app/assets/edit/$id'
 import { Route as AppAgreementViewIdRouteImport } from './routes/app/agreement/view/$id'
 import { Route as AppAdminUsersIdRouteImport } from './routes/app/admin/users/$id'
 import { Route as ApiUserProfileSplatRouteImport } from './routes/api/user/profile/$'
 import { Route as ApiUserNotificationPreferencesSplatRouteImport } from './routes/api/user/notification-preferences/$'
+import { Route as ApiUserDocumentEncryptionSplatRouteImport } from './routes/api/user/document-encryption/$'
 import { Route as ApiAgentPendingActionsConfirmRouteImport } from './routes/api/agent/pending-actions/confirm'
 import { Route as ApiAgentConversationsSplatRouteImport } from './routes/api/agent/conversations/$'
 import { Route as ApiAdminUsersIdRouteImport } from './routes/api/admin/users/$id'
@@ -58,6 +57,7 @@ import { Route as ApiAdminAgreementsSplatRouteImport } from './routes/api/admin/
 import { Route as AppAdminAgreementsSignByIcIndexRouteImport } from './routes/app/admin/agreements/sign-by-ic/index'
 import { Route as AppAdminAgreementsPendingWitnessIndexRouteImport } from './routes/app/admin/agreements/pending-witness/index'
 import { Route as ApiAgreementIdStatusSplatRouteImport } from './routes/api/agreement/$id/status/$'
+import { Route as ApiAgreementIdDocumentSplatRouteImport } from './routes/api/agreement/$id/document/$'
 import { Route as ApiAgreementIdBeneficiariesSplatRouteImport } from './routes/api/agreement/$id/beneficiaries/$'
 import { Route as ApiAgreementIdAssetsSplatRouteImport } from './routes/api/agreement/$id/assets/$'
 import { Route as ApiAgentConversationsIdSplatRouteImport } from './routes/api/agent/conversations/$id/$'
@@ -69,11 +69,6 @@ import { Route as ApiAgreementIdSignOwnerSplatRouteImport } from './routes/api/a
 import { Route as ApiAgreementIdSignBeneficiarySplatRouteImport } from './routes/api/agreement/$id/sign/beneficiary/$'
 import { Route as ApiAdminAgreementsByIcIcNumberSplatRouteImport } from './routes/api/admin/agreements/by-ic/$icNumber/$'
 
-const TestUploadRoute = TestUploadRouteImport.update({
-  id: '/test-upload',
-  path: '/test-upload',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -234,11 +229,6 @@ const AppAdminAgreementsIndexRoute = AppAdminAgreementsIndexRouteImport.update({
   path: '/admin/agreements/',
   getParentRoute: () => AppRoute,
 } as any)
-const ApiUploadJsonIndexRoute = ApiUploadJsonIndexRouteImport.update({
-  id: '/api/upload/json/',
-  path: '/api/upload/json/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppAssetsViewIdRoute = AppAssetsViewIdRouteImport.update({
   id: '/assets/view/$id',
   path: '/assets/view/$id',
@@ -268,6 +258,12 @@ const ApiUserNotificationPreferencesSplatRoute =
   ApiUserNotificationPreferencesSplatRouteImport.update({
     id: '/api/user/notification-preferences/$',
     path: '/api/user/notification-preferences/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiUserDocumentEncryptionSplatRoute =
+  ApiUserDocumentEncryptionSplatRouteImport.update({
+    id: '/api/user/document-encryption/$',
+    path: '/api/user/document-encryption/$',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiAgentPendingActionsConfirmRoute =
@@ -318,6 +314,12 @@ const ApiAgreementIdStatusSplatRoute =
   ApiAgreementIdStatusSplatRouteImport.update({
     id: '/api/agreement/$id/status/$',
     path: '/api/agreement/$id/status/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAgreementIdDocumentSplatRoute =
+  ApiAgreementIdDocumentSplatRouteImport.update({
+    id: '/api/agreement/$id/document/$',
+    path: '/api/agreement/$id/document/$',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiAgreementIdBeneficiariesSplatRoute =
@@ -384,7 +386,6 @@ const ApiAdminAgreementsByIcIcNumberSplatRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/test-upload': typeof TestUploadRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/api/agent/chat': typeof ApiAgentChatRoute
   '/api/agreement/$': typeof ApiAgreementSplatRoute
@@ -415,13 +416,13 @@ export interface FileRoutesByFullPath {
   '/api/admin/users/$id': typeof ApiAdminUsersIdRoute
   '/api/agent/conversations/$': typeof ApiAgentConversationsSplatRoute
   '/api/agent/pending-actions/confirm': typeof ApiAgentPendingActionsConfirmRoute
+  '/api/user/document-encryption/$': typeof ApiUserDocumentEncryptionSplatRoute
   '/api/user/notification-preferences/$': typeof ApiUserNotificationPreferencesSplatRoute
   '/api/user/profile/$': typeof ApiUserProfileSplatRoute
   '/app/admin/users/$id': typeof AppAdminUsersIdRoute
   '/app/agreement/view/$id': typeof AppAgreementViewIdRoute
   '/app/assets/edit/$id': typeof AppAssetsEditIdRoute
   '/app/assets/view/$id': typeof AppAssetsViewIdRoute
-  '/api/upload/json': typeof ApiUploadJsonIndexRoute
   '/app/admin/agreements': typeof AppAdminAgreementsIndexRoute
   '/app/admin/assets': typeof AppAdminAssetsIndexRoute
   '/app/admin/users': typeof AppAdminUsersIndexRoute
@@ -434,6 +435,7 @@ export interface FileRoutesByFullPath {
   '/api/agent/conversations/$id/$': typeof ApiAgentConversationsIdSplatRoute
   '/api/agreement/$id/assets/$': typeof ApiAgreementIdAssetsSplatRoute
   '/api/agreement/$id/beneficiaries/$': typeof ApiAgreementIdBeneficiariesSplatRoute
+  '/api/agreement/$id/document/$': typeof ApiAgreementIdDocumentSplatRoute
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic': typeof AppAdminAgreementsSignByIcIndexRoute
@@ -445,7 +447,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/test-upload': typeof TestUploadRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/api/agent/chat': typeof ApiAgentChatRoute
   '/api/agreement/$': typeof ApiAgreementSplatRoute
@@ -476,13 +477,13 @@ export interface FileRoutesByTo {
   '/api/admin/users/$id': typeof ApiAdminUsersIdRoute
   '/api/agent/conversations/$': typeof ApiAgentConversationsSplatRoute
   '/api/agent/pending-actions/confirm': typeof ApiAgentPendingActionsConfirmRoute
+  '/api/user/document-encryption/$': typeof ApiUserDocumentEncryptionSplatRoute
   '/api/user/notification-preferences/$': typeof ApiUserNotificationPreferencesSplatRoute
   '/api/user/profile/$': typeof ApiUserProfileSplatRoute
   '/app/admin/users/$id': typeof AppAdminUsersIdRoute
   '/app/agreement/view/$id': typeof AppAgreementViewIdRoute
   '/app/assets/edit/$id': typeof AppAssetsEditIdRoute
   '/app/assets/view/$id': typeof AppAssetsViewIdRoute
-  '/api/upload/json': typeof ApiUploadJsonIndexRoute
   '/app/admin/agreements': typeof AppAdminAgreementsIndexRoute
   '/app/admin/assets': typeof AppAdminAssetsIndexRoute
   '/app/admin/users': typeof AppAdminUsersIndexRoute
@@ -495,6 +496,7 @@ export interface FileRoutesByTo {
   '/api/agent/conversations/$id/$': typeof ApiAgentConversationsIdSplatRoute
   '/api/agreement/$id/assets/$': typeof ApiAgreementIdAssetsSplatRoute
   '/api/agreement/$id/beneficiaries/$': typeof ApiAgreementIdBeneficiariesSplatRoute
+  '/api/agreement/$id/document/$': typeof ApiAgreementIdDocumentSplatRoute
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic': typeof AppAdminAgreementsSignByIcIndexRoute
@@ -507,7 +509,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/test-upload': typeof TestUploadRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/api/agent/chat': typeof ApiAgentChatRoute
   '/api/agreement/$': typeof ApiAgreementSplatRoute
@@ -538,13 +539,13 @@ export interface FileRoutesById {
   '/api/admin/users/$id': typeof ApiAdminUsersIdRoute
   '/api/agent/conversations/$': typeof ApiAgentConversationsSplatRoute
   '/api/agent/pending-actions/confirm': typeof ApiAgentPendingActionsConfirmRoute
+  '/api/user/document-encryption/$': typeof ApiUserDocumentEncryptionSplatRoute
   '/api/user/notification-preferences/$': typeof ApiUserNotificationPreferencesSplatRoute
   '/api/user/profile/$': typeof ApiUserProfileSplatRoute
   '/app/admin/users/$id': typeof AppAdminUsersIdRoute
   '/app/agreement/view/$id': typeof AppAgreementViewIdRoute
   '/app/assets/edit/$id': typeof AppAssetsEditIdRoute
   '/app/assets/view/$id': typeof AppAssetsViewIdRoute
-  '/api/upload/json/': typeof ApiUploadJsonIndexRoute
   '/app/admin/agreements/': typeof AppAdminAgreementsIndexRoute
   '/app/admin/assets/': typeof AppAdminAssetsIndexRoute
   '/app/admin/users/': typeof AppAdminUsersIndexRoute
@@ -557,6 +558,7 @@ export interface FileRoutesById {
   '/api/agent/conversations/$id/$': typeof ApiAgentConversationsIdSplatRoute
   '/api/agreement/$id/assets/$': typeof ApiAgreementIdAssetsSplatRoute
   '/api/agreement/$id/beneficiaries/$': typeof ApiAgreementIdBeneficiariesSplatRoute
+  '/api/agreement/$id/document/$': typeof ApiAgreementIdDocumentSplatRoute
   '/api/agreement/$id/status/$': typeof ApiAgreementIdStatusSplatRoute
   '/app/admin/agreements/pending-witness/': typeof AppAdminAgreementsPendingWitnessIndexRoute
   '/app/admin/agreements/sign-by-ic/': typeof AppAdminAgreementsSignByIcIndexRoute
@@ -570,7 +572,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
-    | '/test-upload'
     | '/app/dashboard'
     | '/api/agent/chat'
     | '/api/agreement/$'
@@ -601,13 +602,13 @@ export interface FileRouteTypes {
     | '/api/admin/users/$id'
     | '/api/agent/conversations/$'
     | '/api/agent/pending-actions/confirm'
+    | '/api/user/document-encryption/$'
     | '/api/user/notification-preferences/$'
     | '/api/user/profile/$'
     | '/app/admin/users/$id'
     | '/app/agreement/view/$id'
     | '/app/assets/edit/$id'
     | '/app/assets/view/$id'
-    | '/api/upload/json'
     | '/app/admin/agreements'
     | '/app/admin/assets'
     | '/app/admin/users'
@@ -620,6 +621,7 @@ export interface FileRouteTypes {
     | '/api/agent/conversations/$id/$'
     | '/api/agreement/$id/assets/$'
     | '/api/agreement/$id/beneficiaries/$'
+    | '/api/agreement/$id/document/$'
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness'
     | '/app/admin/agreements/sign-by-ic'
@@ -631,7 +633,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/app'
-    | '/test-upload'
     | '/app/dashboard'
     | '/api/agent/chat'
     | '/api/agreement/$'
@@ -662,13 +663,13 @@ export interface FileRouteTypes {
     | '/api/admin/users/$id'
     | '/api/agent/conversations/$'
     | '/api/agent/pending-actions/confirm'
+    | '/api/user/document-encryption/$'
     | '/api/user/notification-preferences/$'
     | '/api/user/profile/$'
     | '/app/admin/users/$id'
     | '/app/agreement/view/$id'
     | '/app/assets/edit/$id'
     | '/app/assets/view/$id'
-    | '/api/upload/json'
     | '/app/admin/agreements'
     | '/app/admin/assets'
     | '/app/admin/users'
@@ -681,6 +682,7 @@ export interface FileRouteTypes {
     | '/api/agent/conversations/$id/$'
     | '/api/agreement/$id/assets/$'
     | '/api/agreement/$id/beneficiaries/$'
+    | '/api/agreement/$id/document/$'
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness'
     | '/app/admin/agreements/sign-by-ic'
@@ -692,7 +694,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
-    | '/test-upload'
     | '/app/dashboard'
     | '/api/agent/chat'
     | '/api/agreement/$'
@@ -723,13 +724,13 @@ export interface FileRouteTypes {
     | '/api/admin/users/$id'
     | '/api/agent/conversations/$'
     | '/api/agent/pending-actions/confirm'
+    | '/api/user/document-encryption/$'
     | '/api/user/notification-preferences/$'
     | '/api/user/profile/$'
     | '/app/admin/users/$id'
     | '/app/agreement/view/$id'
     | '/app/assets/edit/$id'
     | '/app/assets/view/$id'
-    | '/api/upload/json/'
     | '/app/admin/agreements/'
     | '/app/admin/assets/'
     | '/app/admin/users/'
@@ -742,6 +743,7 @@ export interface FileRouteTypes {
     | '/api/agent/conversations/$id/$'
     | '/api/agreement/$id/assets/$'
     | '/api/agreement/$id/beneficiaries/$'
+    | '/api/agreement/$id/document/$'
     | '/api/agreement/$id/status/$'
     | '/app/admin/agreements/pending-witness/'
     | '/app/admin/agreements/sign-by-ic/'
@@ -754,7 +756,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
-  TestUploadRoute: typeof TestUploadRoute
   ApiAgentChatRoute: typeof ApiAgentChatRoute
   ApiAgreementSplatRoute: typeof ApiAgreementSplatRoute
   ApiAssetSplatRoute: typeof ApiAssetSplatRoute
@@ -770,15 +771,16 @@ export interface RootRouteChildren {
   ApiAdminUsersIdRoute: typeof ApiAdminUsersIdRoute
   ApiAgentConversationsSplatRoute: typeof ApiAgentConversationsSplatRoute
   ApiAgentPendingActionsConfirmRoute: typeof ApiAgentPendingActionsConfirmRoute
+  ApiUserDocumentEncryptionSplatRoute: typeof ApiUserDocumentEncryptionSplatRoute
   ApiUserNotificationPreferencesSplatRoute: typeof ApiUserNotificationPreferencesSplatRoute
   ApiUserProfileSplatRoute: typeof ApiUserProfileSplatRoute
-  ApiUploadJsonIndexRoute: typeof ApiUploadJsonIndexRoute
   ApiAdminAgreementsIdSplatRoute: typeof ApiAdminAgreementsIdSplatRoute
   ApiAdminAgreementsPendingWitnessSplatRoute: typeof ApiAdminAgreementsPendingWitnessSplatRoute
   ApiAdminAgreementsSignOnBehalfSplatRoute: typeof ApiAdminAgreementsSignOnBehalfSplatRoute
   ApiAgentConversationsIdSplatRoute: typeof ApiAgentConversationsIdSplatRoute
   ApiAgreementIdAssetsSplatRoute: typeof ApiAgreementIdAssetsSplatRoute
   ApiAgreementIdBeneficiariesSplatRoute: typeof ApiAgreementIdBeneficiariesSplatRoute
+  ApiAgreementIdDocumentSplatRoute: typeof ApiAgreementIdDocumentSplatRoute
   ApiAgreementIdStatusSplatRoute: typeof ApiAgreementIdStatusSplatRoute
   ApiAdminAgreementsByIcIcNumberSplatRoute: typeof ApiAdminAgreementsByIcIcNumberSplatRoute
   ApiAgreementIdSignBeneficiarySplatRoute: typeof ApiAgreementIdSignBeneficiarySplatRoute
@@ -788,13 +790,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test-upload': {
-      id: '/test-upload'
-      path: '/test-upload'
-      fullPath: '/test-upload'
-      preLoaderRoute: typeof TestUploadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/app': {
       id: '/app'
       path: '/app'
@@ -1019,13 +1014,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminAgreementsIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/api/upload/json/': {
-      id: '/api/upload/json/'
-      path: '/api/upload/json'
-      fullPath: '/api/upload/json'
-      preLoaderRoute: typeof ApiUploadJsonIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/app/assets/view/$id': {
       id: '/app/assets/view/$id'
       path: '/assets/view/$id'
@@ -1066,6 +1054,13 @@ declare module '@tanstack/react-router' {
       path: '/api/user/notification-preferences/$'
       fullPath: '/api/user/notification-preferences/$'
       preLoaderRoute: typeof ApiUserNotificationPreferencesSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/user/document-encryption/$': {
+      id: '/api/user/document-encryption/$'
+      path: '/api/user/document-encryption/$'
+      fullPath: '/api/user/document-encryption/$'
+      preLoaderRoute: typeof ApiUserDocumentEncryptionSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/agent/pending-actions/confirm': {
@@ -1129,6 +1124,13 @@ declare module '@tanstack/react-router' {
       path: '/api/agreement/$id/status/$'
       fullPath: '/api/agreement/$id/status/$'
       preLoaderRoute: typeof ApiAgreementIdStatusSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agreement/$id/document/$': {
+      id: '/api/agreement/$id/document/$'
+      path: '/api/agreement/$id/document/$'
+      fullPath: '/api/agreement/$id/document/$'
+      preLoaderRoute: typeof ApiAgreementIdDocumentSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/agreement/$id/beneficiaries/$': {
@@ -1270,7 +1272,6 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
-  TestUploadRoute: TestUploadRoute,
   ApiAgentChatRoute: ApiAgentChatRoute,
   ApiAgreementSplatRoute: ApiAgreementSplatRoute,
   ApiAssetSplatRoute: ApiAssetSplatRoute,
@@ -1286,10 +1287,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminUsersIdRoute: ApiAdminUsersIdRoute,
   ApiAgentConversationsSplatRoute: ApiAgentConversationsSplatRoute,
   ApiAgentPendingActionsConfirmRoute: ApiAgentPendingActionsConfirmRoute,
+  ApiUserDocumentEncryptionSplatRoute: ApiUserDocumentEncryptionSplatRoute,
   ApiUserNotificationPreferencesSplatRoute:
     ApiUserNotificationPreferencesSplatRoute,
   ApiUserProfileSplatRoute: ApiUserProfileSplatRoute,
-  ApiUploadJsonIndexRoute: ApiUploadJsonIndexRoute,
   ApiAdminAgreementsIdSplatRoute: ApiAdminAgreementsIdSplatRoute,
   ApiAdminAgreementsPendingWitnessSplatRoute:
     ApiAdminAgreementsPendingWitnessSplatRoute,
@@ -1298,6 +1299,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAgentConversationsIdSplatRoute: ApiAgentConversationsIdSplatRoute,
   ApiAgreementIdAssetsSplatRoute: ApiAgreementIdAssetsSplatRoute,
   ApiAgreementIdBeneficiariesSplatRoute: ApiAgreementIdBeneficiariesSplatRoute,
+  ApiAgreementIdDocumentSplatRoute: ApiAgreementIdDocumentSplatRoute,
   ApiAgreementIdStatusSplatRoute: ApiAgreementIdStatusSplatRoute,
   ApiAdminAgreementsByIcIcNumberSplatRoute:
     ApiAdminAgreementsByIcIcNumberSplatRoute,

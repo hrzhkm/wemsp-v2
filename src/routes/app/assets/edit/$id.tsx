@@ -1,12 +1,24 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { ArrowLeft, DollarSign, ExternalLink, FileText, Loader2, Package, PencilLine, RefreshCw, Tag, X } from 'lucide-react'
+import {
+  ArrowLeft,
+  DollarSign,
+  ExternalLink,
+  FileText,
+  Loader2,
+  Package,
+  PencilLine,
+  RefreshCw,
+  Tag,
+  X,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import type { AssetType as AssetTypeEnum } from '@/generated/prisma/enums'
 import type { Asset } from '@/components/assets/assetsTable'
 
 import { Button } from '@/components/ui/button'
+import { AssetDocumentLink } from '@/components/assets/assetDocumentLink'
 import {
   Card,
   CardContent,
@@ -24,6 +36,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { AssetType } from '@/generated/prisma/enums'
+import {
+  cleanAssetValue,
+  parsePositiveAssetValue,
+} from '@/lib/asset/assetValidation'
 
 const formatAssetType = (type: string) =>
   type
@@ -41,8 +57,6 @@ const formatValueWithCommas = (value: string) => {
   return parts.join('.')
 }
 
-const cleanValue = (value: string) => value.replace(/,/g, '')
-
 export const Route = createFileRoute('/app/assets/edit/$id')({
   component: RouteComponent,
 })
@@ -56,17 +70,20 @@ function RouteComponent() {
   const [formData, setFormData] = useState<{
     description: string
     name: string
-    type: AssetTypeEnum | undefined
+    type: AssetTypeEnum | ''
     value: string
   }>({
     description: '',
     name: '',
-    type: undefined,
+    type: '',
     value: '',
   })
+  const [isInitialized, setIsInitialized] = useState(false)
   const [showReplaceDocument, setShowReplaceDocument] = useState(false)
 
-  const { data: assetData, isLoading: assetLoading } = useQuery<{ asset: Asset }>({
+  const { data: assetData, isLoading: assetLoading } = useQuery<{
+    asset: Asset
+  }>({
     enabled: !!id,
     queryKey: ['asset', id],
     queryFn: async () => {
@@ -88,19 +105,20 @@ function RouteComponent() {
       type: asset.type as AssetTypeEnum,
       value: formatValueWithCommas(asset.value.toString()),
     })
+    setIsInitialized(true)
   }, [asset])
 
   const updateAssetMutation = useMutation({
     mutationFn: async () => {
       const formDataToSend = new FormData()
-      formDataToSend.append('name', formData.name)
+      formDataToSend.append('name', formData.name.trim())
       if (formData.type) {
         formDataToSend.append('type', formData.type)
       }
       if (formData.description) {
         formDataToSend.append('description', formData.description)
       }
-      formDataToSend.append('value', cleanValue(formData.value))
+      formDataToSend.append('value', cleanAssetValue(formData.value))
       if (documentFile) {
         formDataToSend.append('document', documentFile)
       }
@@ -129,7 +147,10 @@ function RouteComponent() {
   const handleValueChange = (value: string) => {
     const numericValue = value.replace(/[^\d.,]/g, '')
     if (numericValue.split('.').length > 2) return
-    setFormData((prev) => ({ ...prev, value: formatValueWithCommas(numericValue) }))
+    setFormData((prev) => ({
+      ...prev,
+      value: formatValueWithCommas(numericValue),
+    }))
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,8 +188,7 @@ function RouteComponent() {
       return
     }
 
-    const numericValue = parseFloat(cleanValue(formData.value))
-    if (Number.isNaN(numericValue) || numericValue < 0) {
+    if (parsePositiveAssetValue(formData.value) === null) {
       toast.error('Value must be a positive number')
       return
     }
@@ -176,7 +196,7 @@ function RouteComponent() {
     updateAssetMutation.mutate()
   }
 
-  if (assetLoading) {
+  if (assetLoading || (asset && !isInitialized)) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -189,7 +209,11 @@ function RouteComponent() {
       <Card>
         <CardContent className="py-12 text-center">
           <p className="text-muted-foreground">Asset not found.</p>
-          <Button variant="outline" className="mt-4" onClick={() => router.navigate({ to: '/app/assets' })}>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => router.navigate({ to: '/app/assets' })}
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to Assets
           </Button>
@@ -207,9 +231,14 @@ function RouteComponent() {
               <PencilLine className="h-5 w-5" />
               Edit Asset
             </CardTitle>
-            <CardDescription className="mt-1">Update details and replace the document if needed.</CardDescription>
+            <CardDescription className="mt-1">
+              Update details and replace the document if needed.
+            </CardDescription>
           </div>
-          <Button variant="outline" onClick={() => router.navigate({ to: '/app/assets' })}>
+          <Button
+            variant="outline"
+            onClick={() => router.navigate({ to: '/app/assets' })}
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to Assets
           </Button>
@@ -227,7 +256,12 @@ function RouteComponent() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        name: event.target.value,
+                      }))
+                    }
                     placeholder="Enter asset name"
                     className="pl-10"
                   />
@@ -240,7 +274,12 @@ function RouteComponent() {
                   <Tag className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Select
                     value={formData.type}
-                    onValueChange={(value) => setFormData((prev) => ({ ...prev, type: value as AssetTypeEnum }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        type: value as AssetTypeEnum,
+                      }))
+                    }
                   >
                     <SelectTrigger id="type" className="pl-10">
                       <SelectValue placeholder="Select asset type" />
@@ -278,7 +317,12 @@ function RouteComponent() {
                   <Input
                     id="description"
                     value={formData.description}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, description: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: event.target.value,
+                      }))
+                    }
                     placeholder="Optional description"
                     className="pl-10"
                   />
@@ -294,18 +338,22 @@ function RouteComponent() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium">Current document</p>
-                      <Button
-                        type="button"
+                      <AssetDocumentLink
+                        href={asset.documentUrl}
                         variant="link"
                         size="sm"
                         className="h-auto p-0 text-xs"
-                        onClick={() => window.open(asset.documentUrl as string, '_blank')}
                       >
                         View document
                         <ExternalLink className="h-3 w-3" />
-                      </Button>
+                      </AssetDocumentLink>
                     </div>
-                    <Button type="button" size="sm" variant="outline" onClick={() => setShowReplaceDocument(true)}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowReplaceDocument(true)}
+                    >
                       <RefreshCw className="h-4 w-4" />
                       Replace
                     </Button>
@@ -316,13 +364,22 @@ function RouteComponent() {
                       <FileText className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{documentFile.name}</p>
-                      <p className="text-xs text-muted-foreground">{(documentFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p className="truncate text-sm font-medium">
+                        {documentFile.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {(documentFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
                     </div>
-                    <Button type="button" variant="ghost" size="icon-sm" onClick={() => {
-                      setDocumentFile(null)
-                      setShowReplaceDocument(false)
-                    }}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => {
+                        setDocumentFile(null)
+                        setShowReplaceDocument(false)
+                      }}
+                    >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
@@ -335,7 +392,9 @@ function RouteComponent() {
                       accept=".pdf"
                       className="file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1 file:text-sm"
                     />
-                    <p className="mt-1 text-xs text-muted-foreground">PDF only, maximum 10MB.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      PDF only, maximum 10MB.
+                    </p>
                   </div>
                 )}
               </Field>
@@ -351,7 +410,9 @@ function RouteComponent() {
                 Cancel
               </Button>
               <Button type="submit" disabled={updateAssetMutation.isPending}>
-                {updateAssetMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                {updateAssetMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
                 Save Changes
               </Button>
             </div>

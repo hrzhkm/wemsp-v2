@@ -239,6 +239,7 @@ export type UserWhereInput = {
   agreements?: Prisma.AgreementListRelationFilter
   agentConversations?: Prisma.AgentConversationListRelationFilter
   settings?: Prisma.XOR<Prisma.UserSettingNullableScalarRelationFilter, Prisma.UserSettingWhereInput> | null
+  documentEncryptionKey?: Prisma.XOR<Prisma.UserDocumentEncryptionKeyNullableScalarRelationFilter, Prisma.UserDocumentEncryptionKeyWhereInput> | null
   icRegistry?: Prisma.XOR<Prisma.IcRegistryNullableScalarRelationFilter, Prisma.IcRegistryWhereInput> | null
   witnessedAgreements?: Prisma.AgreementListRelationFilter
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryListRelationFilter
@@ -265,6 +266,7 @@ export type UserOrderByWithRelationInput = {
   agreements?: Prisma.AgreementOrderByRelationAggregateInput
   agentConversations?: Prisma.AgentConversationOrderByRelationAggregateInput
   settings?: Prisma.UserSettingOrderByWithRelationInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyOrderByWithRelationInput
   icRegistry?: Prisma.IcRegistryOrderByWithRelationInput
   witnessedAgreements?: Prisma.AgreementOrderByRelationAggregateInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryOrderByRelationAggregateInput
@@ -294,6 +296,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   agreements?: Prisma.AgreementListRelationFilter
   agentConversations?: Prisma.AgentConversationListRelationFilter
   settings?: Prisma.XOR<Prisma.UserSettingNullableScalarRelationFilter, Prisma.UserSettingWhereInput> | null
+  documentEncryptionKey?: Prisma.XOR<Prisma.UserDocumentEncryptionKeyNullableScalarRelationFilter, Prisma.UserDocumentEncryptionKeyWhereInput> | null
   icRegistry?: Prisma.XOR<Prisma.IcRegistryNullableScalarRelationFilter, Prisma.IcRegistryWhereInput> | null
   witnessedAgreements?: Prisma.AgreementListRelationFilter
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryListRelationFilter
@@ -353,6 +356,7 @@ export type UserCreateInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -379,6 +383,7 @@ export type UserUncheckedCreateInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -403,6 +408,7 @@ export type UserUpdateInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -429,6 +435,7 @@ export type UserUncheckedUpdateInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -582,6 +589,20 @@ export type UserUpdateOneRequiredWithoutSettingsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutSettingsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSettingsInput, Prisma.UserUpdateWithoutSettingsInput>, Prisma.UserUncheckedUpdateWithoutSettingsInput>
+}
+
+export type UserCreateNestedOneWithoutDocumentEncryptionKeyInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDocumentEncryptionKeyInput, Prisma.UserUncheckedCreateWithoutDocumentEncryptionKeyInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDocumentEncryptionKeyInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDocumentEncryptionKeyNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDocumentEncryptionKeyInput, Prisma.UserUncheckedCreateWithoutDocumentEncryptionKeyInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDocumentEncryptionKeyInput
+  upsert?: Prisma.UserUpsertWithoutDocumentEncryptionKeyInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDocumentEncryptionKeyInput, Prisma.UserUpdateWithoutDocumentEncryptionKeyInput>, Prisma.UserUncheckedUpdateWithoutDocumentEncryptionKeyInput>
 }
 
 export type UserCreateNestedOneWithoutFamilyMembersInput = {
@@ -748,6 +769,7 @@ export type UserCreateWithoutIcRegistryInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
@@ -772,6 +794,7 @@ export type UserUncheckedCreateWithoutIcRegistryInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -812,6 +835,7 @@ export type UserUpdateWithoutIcRegistryInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -836,6 +860,7 @@ export type UserUncheckedUpdateWithoutIcRegistryInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -859,6 +884,7 @@ export type UserCreateWithoutSettingsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberCreateNestedManyWithoutUserInput
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -884,6 +910,7 @@ export type UserUncheckedCreateWithoutSettingsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedCreateNestedManyWithoutUserInput
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -923,6 +950,7 @@ export type UserUpdateWithoutSettingsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUpdateManyWithoutUserNestedInput
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -948,6 +976,123 @@ export type UserUncheckedUpdateWithoutSettingsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedUpdateManyWithoutUserNestedInput
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
+}
+
+export type UserCreateWithoutDocumentEncryptionKeyInput = {
+  id: string
+  name: string
+  address?: string | null
+  phoneNumber?: string | null
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  assets?: Prisma.AssetCreateNestedManyWithoutUserInput
+  familyMembers?: Prisma.FamilyMemberCreateNestedManyWithoutUserInput
+  relatedFamilyMembers?: Prisma.FamilyMemberCreateNestedManyWithoutFamilyMemberUserInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberCreateNestedManyWithoutUserInput
+  agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
+  agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
+  settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
+}
+
+export type UserUncheckedCreateWithoutDocumentEncryptionKeyInput = {
+  id: string
+  name: string
+  icNumber?: string | null
+  address?: string | null
+  phoneNumber?: string | null
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  assets?: Prisma.AssetUncheckedCreateNestedManyWithoutUserInput
+  familyMembers?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutUserInput
+  relatedFamilyMembers?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutFamilyMemberUserInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedCreateNestedManyWithoutUserInput
+  agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
+  agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
+  settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
+}
+
+export type UserCreateOrConnectWithoutDocumentEncryptionKeyInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDocumentEncryptionKeyInput, Prisma.UserUncheckedCreateWithoutDocumentEncryptionKeyInput>
+}
+
+export type UserUpsertWithoutDocumentEncryptionKeyInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDocumentEncryptionKeyInput, Prisma.UserUncheckedUpdateWithoutDocumentEncryptionKeyInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDocumentEncryptionKeyInput, Prisma.UserUncheckedCreateWithoutDocumentEncryptionKeyInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDocumentEncryptionKeyInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDocumentEncryptionKeyInput, Prisma.UserUncheckedUpdateWithoutDocumentEncryptionKeyInput>
+}
+
+export type UserUpdateWithoutDocumentEncryptionKeyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  assets?: Prisma.AssetUpdateManyWithoutUserNestedInput
+  familyMembers?: Prisma.FamilyMemberUpdateManyWithoutUserNestedInput
+  relatedFamilyMembers?: Prisma.FamilyMemberUpdateManyWithoutFamilyMemberUserNestedInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUpdateManyWithoutUserNestedInput
+  agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
+  agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
+  settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
+  witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
+  proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDocumentEncryptionKeyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  icNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  assets?: Prisma.AssetUncheckedUpdateManyWithoutUserNestedInput
+  familyMembers?: Prisma.FamilyMemberUncheckedUpdateManyWithoutUserNestedInput
+  relatedFamilyMembers?: Prisma.FamilyMemberUncheckedUpdateManyWithoutFamilyMemberUserNestedInput
+  nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedUpdateManyWithoutUserNestedInput
+  agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
+  agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
+  settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -971,6 +1116,7 @@ export type UserCreateWithoutFamilyMembersInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -996,6 +1142,7 @@ export type UserUncheckedCreateWithoutFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -1024,6 +1171,7 @@ export type UserCreateWithoutRelatedFamilyMembersInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -1049,6 +1197,7 @@ export type UserUncheckedCreateWithoutRelatedFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -1088,6 +1237,7 @@ export type UserUpdateWithoutFamilyMembersInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -1113,6 +1263,7 @@ export type UserUncheckedUpdateWithoutFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -1147,6 +1298,7 @@ export type UserUpdateWithoutRelatedFamilyMembersInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -1172,6 +1324,7 @@ export type UserUncheckedUpdateWithoutRelatedFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -1195,6 +1348,7 @@ export type UserCreateWithoutNonRegisteredFamilyMembersInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -1220,6 +1374,7 @@ export type UserUncheckedCreateWithoutNonRegisteredFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -1259,6 +1414,7 @@ export type UserUpdateWithoutNonRegisteredFamilyMembersInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -1284,6 +1440,7 @@ export type UserUncheckedUpdateWithoutNonRegisteredFamilyMembersInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -1307,6 +1464,7 @@ export type UserCreateWithoutAssetsInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -1332,6 +1490,7 @@ export type UserUncheckedCreateWithoutAssetsInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -1371,6 +1530,7 @@ export type UserUpdateWithoutAssetsInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -1396,6 +1556,7 @@ export type UserUncheckedUpdateWithoutAssetsInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -1419,6 +1580,7 @@ export type UserCreateWithoutSessionsInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -1444,6 +1606,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -1483,6 +1646,7 @@ export type UserUpdateWithoutSessionsInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -1508,6 +1672,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -1531,6 +1696,7 @@ export type UserCreateWithoutAccountsInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -1556,6 +1722,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -1595,6 +1762,7 @@ export type UserUpdateWithoutAccountsInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -1620,6 +1788,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -1643,6 +1812,7 @@ export type UserCreateWithoutAgreementsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberCreateNestedManyWithoutUserInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -1668,6 +1838,7 @@ export type UserUncheckedCreateWithoutAgreementsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedCreateNestedManyWithoutUserInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -1697,6 +1868,7 @@ export type UserCreateWithoutWitnessedAgreementsInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
 }
@@ -1722,6 +1894,7 @@ export type UserUncheckedCreateWithoutWitnessedAgreementsInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
 
@@ -1760,6 +1933,7 @@ export type UserUpdateWithoutAgreementsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUpdateManyWithoutUserNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -1785,6 +1959,7 @@ export type UserUncheckedUpdateWithoutAgreementsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedUpdateManyWithoutUserNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -1820,6 +1995,7 @@ export type UserUpdateWithoutWitnessedAgreementsInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -1845,6 +2021,7 @@ export type UserUncheckedUpdateWithoutWitnessedAgreementsInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
 
@@ -1868,6 +2045,7 @@ export type UserCreateWithoutProxySignedBeneficiariesInput = {
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
 }
@@ -1893,6 +2071,7 @@ export type UserUncheckedCreateWithoutProxySignedBeneficiariesInput = {
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   agentConversations?: Prisma.AgentConversationUncheckedCreateNestedManyWithoutUserInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
 }
 
@@ -1932,6 +2111,7 @@ export type UserUpdateWithoutProxySignedBeneficiariesInput = {
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
 }
@@ -1957,6 +2137,7 @@ export type UserUncheckedUpdateWithoutProxySignedBeneficiariesInput = {
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   agentConversations?: Prisma.AgentConversationUncheckedUpdateManyWithoutUserNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
 }
 
@@ -1979,6 +2160,7 @@ export type UserCreateWithoutAgentConversationsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberCreateNestedManyWithoutUserInput
   agreements?: Prisma.AgreementCreateNestedManyWithoutOwnerInput
   settings?: Prisma.UserSettingCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyCreateNestedOneWithoutUserInput
   icRegistry?: Prisma.IcRegistryCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryCreateNestedManyWithoutAdminSignedByInput
@@ -2004,6 +2186,7 @@ export type UserUncheckedCreateWithoutAgentConversationsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedCreateNestedManyWithoutUserInput
   agreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutOwnerInput
   settings?: Prisma.UserSettingUncheckedCreateNestedOneWithoutUserInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedCreateNestedOneWithoutUserInput
   witnessedAgreements?: Prisma.AgreementUncheckedCreateNestedManyWithoutWitnessInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedCreateNestedManyWithoutAdminSignedByInput
 }
@@ -2043,6 +2226,7 @@ export type UserUpdateWithoutAgentConversationsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUpdateManyWithoutUserNestedInput
   agreements?: Prisma.AgreementUpdateManyWithoutOwnerNestedInput
   settings?: Prisma.UserSettingUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUpdateOneWithoutUserNestedInput
   icRegistry?: Prisma.IcRegistryUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUpdateManyWithoutAdminSignedByNestedInput
@@ -2068,6 +2252,7 @@ export type UserUncheckedUpdateWithoutAgentConversationsInput = {
   nonRegisteredFamilyMembers?: Prisma.NonRegisteredFamilyMemberUncheckedUpdateManyWithoutUserNestedInput
   agreements?: Prisma.AgreementUncheckedUpdateManyWithoutOwnerNestedInput
   settings?: Prisma.UserSettingUncheckedUpdateOneWithoutUserNestedInput
+  documentEncryptionKey?: Prisma.UserDocumentEncryptionKeyUncheckedUpdateOneWithoutUserNestedInput
   witnessedAgreements?: Prisma.AgreementUncheckedUpdateManyWithoutWitnessNestedInput
   proxySignedBeneficiaries?: Prisma.AgreementBeneficiaryUncheckedUpdateManyWithoutAdminSignedByNestedInput
 }
@@ -2205,6 +2390,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   agreements?: boolean | Prisma.User$agreementsArgs<ExtArgs>
   agentConversations?: boolean | Prisma.User$agentConversationsArgs<ExtArgs>
   settings?: boolean | Prisma.User$settingsArgs<ExtArgs>
+  documentEncryptionKey?: boolean | Prisma.User$documentEncryptionKeyArgs<ExtArgs>
   icRegistry?: boolean | Prisma.User$icRegistryArgs<ExtArgs>
   witnessedAgreements?: boolean | Prisma.User$witnessedAgreementsArgs<ExtArgs>
   proxySignedBeneficiaries?: boolean | Prisma.User$proxySignedBeneficiariesArgs<ExtArgs>
@@ -2266,6 +2452,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   agreements?: boolean | Prisma.User$agreementsArgs<ExtArgs>
   agentConversations?: boolean | Prisma.User$agentConversationsArgs<ExtArgs>
   settings?: boolean | Prisma.User$settingsArgs<ExtArgs>
+  documentEncryptionKey?: boolean | Prisma.User$documentEncryptionKeyArgs<ExtArgs>
   icRegistry?: boolean | Prisma.User$icRegistryArgs<ExtArgs>
   witnessedAgreements?: boolean | Prisma.User$witnessedAgreementsArgs<ExtArgs>
   proxySignedBeneficiaries?: boolean | Prisma.User$proxySignedBeneficiariesArgs<ExtArgs>
@@ -2290,6 +2477,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     agreements: Prisma.$AgreementPayload<ExtArgs>[]
     agentConversations: Prisma.$AgentConversationPayload<ExtArgs>[]
     settings: Prisma.$UserSettingPayload<ExtArgs> | null
+    documentEncryptionKey: Prisma.$UserDocumentEncryptionKeyPayload<ExtArgs> | null
     icRegistry: Prisma.$IcRegistryPayload<ExtArgs> | null
     witnessedAgreements: Prisma.$AgreementPayload<ExtArgs>[]
     proxySignedBeneficiaries: Prisma.$AgreementBeneficiaryPayload<ExtArgs>[]
@@ -2709,6 +2897,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   agreements<T extends Prisma.User$agreementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agreementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgreementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   agentConversations<T extends Prisma.User$agentConversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   settings<T extends Prisma.User$settingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$settingsArgs<ExtArgs>>): Prisma.Prisma__UserSettingClient<runtime.Types.Result.GetResult<Prisma.$UserSettingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  documentEncryptionKey<T extends Prisma.User$documentEncryptionKeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$documentEncryptionKeyArgs<ExtArgs>>): Prisma.Prisma__UserDocumentEncryptionKeyClient<runtime.Types.Result.GetResult<Prisma.$UserDocumentEncryptionKeyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   icRegistry<T extends Prisma.User$icRegistryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$icRegistryArgs<ExtArgs>>): Prisma.Prisma__IcRegistryClient<runtime.Types.Result.GetResult<Prisma.$IcRegistryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   witnessedAgreements<T extends Prisma.User$witnessedAgreementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$witnessedAgreementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgreementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   proxySignedBeneficiaries<T extends Prisma.User$proxySignedBeneficiariesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$proxySignedBeneficiariesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgreementBeneficiaryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3356,6 +3545,25 @@ export type User$settingsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   include?: Prisma.UserSettingInclude<ExtArgs> | null
   where?: Prisma.UserSettingWhereInput
+}
+
+/**
+ * User.documentEncryptionKey
+ */
+export type User$documentEncryptionKeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserDocumentEncryptionKey
+   */
+  select?: Prisma.UserDocumentEncryptionKeySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserDocumentEncryptionKey
+   */
+  omit?: Prisma.UserDocumentEncryptionKeyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserDocumentEncryptionKeyInclude<ExtArgs> | null
+  where?: Prisma.UserDocumentEncryptionKeyWhereInput
 }
 
 /**

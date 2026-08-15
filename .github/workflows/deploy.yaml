@@ -2,7 +2,7 @@ name: Deploy to homelab server
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -44,11 +44,14 @@ jobs:
           ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
           ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           ADMIN_NAME=${{ secrets.ADMIN_NAME }}
-          AWS_REGION=${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
-          PRIVATE_KEY=${{ secrets.CONTRACT_PRIVATE_KEY }}
+          R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET=${{ secrets.R2_BUCKET }}
+          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
+          DOCUMENT_RECOVERY_KEY=${{ secrets.DOCUMENT_RECOVERY_KEY }}
+          PINATA_JWT=${{ secrets.PINATA_JWT }}
+          IPFS_ENCRYPTION_KEY=${{ secrets.IPFS_ENCRYPTION_KEY }}
+          PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}
           RPC_URL=${{ secrets.RPC_URL }}
           CONTRACT_ADDRESS=${{ secrets.CONTRACT_ADDRESS }}
           OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}

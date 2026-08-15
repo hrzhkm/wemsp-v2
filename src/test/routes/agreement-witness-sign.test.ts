@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   agreementFindUnique: vi.fn(),
   agreementUpdate: vi.fn(),
   isContractConfigured: vi.fn(),
-  ensureAgreementMinted: vi.fn(),
+  ensureAgreementMintedWithMetadata: vi.fn(),
   getAgreementData: vi.fn(),
   getBeneficiarySignatureStatus: vi.fn(),
   recordOwnerSignature: vi.fn(),
@@ -35,7 +35,6 @@ vi.mock('@/db', () => ({
 }))
 vi.mock('@/lib/blockchain/contract', () => ({
   isContractConfigured: mocks.isContractConfigured,
-  ensureAgreementMinted: mocks.ensureAgreementMinted,
   getAgreementData: mocks.getAgreementData,
   getBeneficiarySignatureStatus: mocks.getBeneficiarySignatureStatus,
   recordOwnerSignature: mocks.recordOwnerSignature,
@@ -46,6 +45,9 @@ vi.mock('@/lib/blockchain/contract', () => ({
   getExplorerUrl: mocks.getExplorerUrl,
   getOnChainTimestampDate: mocks.getOnChainTimestampDate,
   getOnChainErrorMessage: mocks.getOnChainErrorMessage,
+}))
+vi.mock('@/lib/agreement/agreementMetadata', () => ({
+  ensureAgreementMintedWithMetadata: mocks.ensureAgreementMintedWithMetadata,
 }))
 
 describe('witnessSignHandlers.POST', () => {
@@ -127,9 +129,10 @@ describe('witnessSignHandlers.POST', () => {
         { id: 2, hasSigned: true },
       ],
     })
-    mocks.ensureAgreementMinted.mockResolvedValueOnce({
+    mocks.ensureAgreementMintedWithMetadata.mockResolvedValueOnce({
       tokenId: 9,
       wasMinted: false,
+      metadataUri: 'ipfs://bafy123',
     })
     mocks.getAgreementData.mockResolvedValueOnce({
       ownerSigned: true,
@@ -165,5 +168,9 @@ describe('witnessSignHandlers.POST', () => {
     expect(body.agreement.status).toBe('ACTIVE')
     expect(body.agreement.witnessId).toBe('ad1')
     expect(body.onChain.tokenId).toBe(9)
+    expect(mocks.ensureAgreementMintedWithMetadata).toHaveBeenCalledWith('a1', [
+      '1',
+      '2',
+    ])
   })
 })

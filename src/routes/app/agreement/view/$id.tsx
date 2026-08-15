@@ -5,6 +5,7 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
+  Download,
   FileText,
   Loader2,
   Package,
@@ -98,7 +99,13 @@ function RouteComponent() {
 
   // Sign as beneficiary mutation
   const signBeneficiaryMutation = useMutation({
-    mutationFn: async ({ beneficiaryId, accept }: { beneficiaryId: string; accept: boolean }) => {
+    mutationFn: async ({
+      beneficiaryId,
+      accept,
+    }: {
+      beneficiaryId: string
+      accept: boolean
+    }) => {
       const response = await fetch(`/api/agreement/${id}/sign/beneficiary`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -175,6 +182,31 @@ function RouteComponent() {
     onError: (error: Error) => {
       console.error('Error submitting agreement:', error)
       toast.error(error.message || 'Failed to submit agreement')
+    },
+  })
+
+  // Complete mutation (for owner after agreement is active)
+  const completeMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`/api/agreement/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'complete' }),
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to complete agreement')
+      }
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agreement', id] })
+      queryClient.invalidateQueries({ queryKey: ['agreements'] })
+      toast.success('Agreement marked as completed')
+    },
+    onError: (error: Error) => {
+      console.error('Error completing agreement:', error)
+      toast.error(error.message || 'Failed to complete agreement')
     },
   })
 
@@ -256,6 +288,10 @@ function RouteComponent() {
     submitMutation.mutate()
   }
 
+  const handleCompleteAgreement = () => {
+    completeMutation.mutate()
+  }
+
   const handleSignAsBeneficiary = (beneficiaryId: string, accept = true) => {
     signBeneficiaryMutation.mutate({ beneficiaryId, accept })
   }
@@ -279,7 +315,9 @@ function RouteComponent() {
             <div>
               <CardTitle>Agreement Details</CardTitle>
               <CardDescription>
-                {isOwner ? 'View your agreement information' : 'View agreement details'}
+                {isOwner
+                  ? 'View your agreement information'
+                  : 'View agreement details'}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -307,7 +345,11 @@ function RouteComponent() {
                 >
                   {getStatusLabel(agreement.status)}
                 </span>
-                <Badge className={getDistributionTypeColor(agreement.distributionType)}>
+                <Badge
+                  className={getDistributionTypeColor(
+                    agreement.distributionType,
+                  )}
+                >
                   {getDistributionTypeLabel(agreement.distributionType)}
                 </Badge>
                 <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border-primary/20">
@@ -321,7 +363,9 @@ function RouteComponent() {
           {/* Description */}
           {agreement.description && (
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Description</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Description
+              </p>
               <p className="text-sm">{agreement.description}</p>
             </div>
           )}
@@ -329,7 +373,9 @@ function RouteComponent() {
           {/* Fields */}
           <FieldGroup className="gap-4">
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Distribution Type</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Distribution Type
+              </p>
               <div className="relative">
                 <Scale className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
@@ -341,7 +387,9 @@ function RouteComponent() {
             </div>
 
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Status</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Status
+              </p>
               <div className="relative">
                 <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
@@ -354,7 +402,9 @@ function RouteComponent() {
 
             {agreement.effectiveDate && (
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">Effective Date</p>
+                <p className="text-xs font-medium text-muted-foreground mb-1">
+                  Effective Date
+                </p>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <Input
@@ -368,7 +418,9 @@ function RouteComponent() {
 
             {agreement.expiryDate && (
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">Expiry Date</p>
+                <p className="text-xs font-medium text-muted-foreground mb-1">
+                  Expiry Date
+                </p>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <Input
@@ -381,7 +433,9 @@ function RouteComponent() {
             )}
 
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Created Date</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Created Date
+              </p>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
@@ -403,9 +457,15 @@ function RouteComponent() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-muted/50">
-                    <th className="text-left py-2.5 px-4 text-xs font-medium">Role</th>
-                    <th className="text-left py-2.5 px-4 text-xs font-medium">Name</th>
-                    <th className="text-right py-2.5 px-4 text-xs font-medium">Status</th>
+                    <th className="text-left py-2.5 px-4 text-xs font-medium">
+                      Role
+                    </th>
+                    <th className="text-left py-2.5 px-4 text-xs font-medium">
+                      Name
+                    </th>
+                    <th className="text-right py-2.5 px-4 text-xs font-medium">
+                      Status
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -445,34 +505,46 @@ function RouteComponent() {
 
                   {/* Beneficiaries */}
                   {agreement.beneficiaries.map((beneficiary: any) => (
-                    <tr key={beneficiary.id} className="border-b last:border-b-0">
+                    <tr
+                      key={beneficiary.id}
+                      className="border-b last:border-b-0"
+                    >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
-                          {beneficiary.hasSigned && beneficiary.isAccepted !== false ? (
+                          {beneficiary.hasSigned &&
+                          beneficiary.isAccepted !== false ? (
                             <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
                           ) : beneficiary.isAccepted === false ? (
                             <XCircle className="h-4 w-4 text-red-600 shrink-0" />
                           ) : (
                             <Clock className="h-4 w-4 text-amber-600 shrink-0" />
                           )}
-                          <span className="text-sm font-medium">Beneficiary</span>
+                          <span className="text-sm font-medium">
+                            Beneficiary
+                          </span>
                         </div>
                       </td>
                       <td className="py-3 px-4">
                         <div className="text-sm">
-                          {beneficiary.familyMember?.user?.name || beneficiary.nonRegisteredFamilyMember?.name || 'Unknown'}
+                          {beneficiary.familyMember?.user?.name ||
+                            beneficiary.nonRegisteredFamilyMember?.name ||
+                            'Unknown'}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {beneficiary.familyMember?.relation || beneficiary.nonRegisteredFamilyMember?.relation || 'N/A'} • {beneficiary.sharePercentage}%
+                          {beneficiary.familyMember?.relation ||
+                            beneficiary.nonRegisteredFamilyMember?.relation ||
+                            'N/A'}{' '}
+                          • {beneficiary.sharePercentage}%
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right">
                         <div className="text-xs text-muted-foreground">
-                          {beneficiary.hasSigned && beneficiary.isAccepted !== false
+                          {beneficiary.hasSigned &&
+                          beneficiary.isAccepted !== false
                             ? formatDate(beneficiary.signedAt)
                             : beneficiary.isAccepted === false
-                            ? 'Rejected'
-                            : 'Pending'}
+                              ? 'Rejected'
+                              : 'Pending'}
                         </div>
                         {beneficiary.explorerUrl && (
                           <a
@@ -503,7 +575,9 @@ function RouteComponent() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="text-sm">
-                          {agreement.witness ? agreement.witness.name : 'Pending assignment'}
+                          {agreement.witness
+                            ? agreement.witness.name
+                            : 'Pending assignment'}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right">
@@ -524,30 +598,46 @@ function RouteComponent() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Package className="h-4 w-4 text-muted-foreground" />
-              <p className="text-sm font-medium">Allocated Assets ({agreement.assets.length})</p>
+              <p className="text-sm font-medium">
+                Allocated Assets ({agreement.assets.length})
+              </p>
             </div>
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-muted/50">
-                    <th className="text-left py-2.5 px-4 text-xs font-medium">Asset Name</th>
-                    <th className="text-left py-2.5 px-4 text-xs font-medium">Type</th>
-                    <th className="text-right py-2.5 px-4 text-xs font-medium">Value</th>
+                    <th className="text-left py-2.5 px-4 text-xs font-medium">
+                      Asset Name
+                    </th>
+                    <th className="text-left py-2.5 px-4 text-xs font-medium">
+                      Type
+                    </th>
+                    <th className="text-right py-2.5 px-4 text-xs font-medium">
+                      Value
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {agreement.assets.map((item: any) => (
                     <tr key={item.id} className="border-b last:border-b-0">
                       <td className="py-3 px-4">
-                        <div className="text-sm font-medium">{item.asset.name}</div>
+                        <div className="text-sm font-medium">
+                          {item.asset.name}
+                        </div>
                       </td>
                       <td className="py-3 px-4">
-                        <div className="text-sm text-muted-foreground">{item.asset.type}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {item.asset.type}
+                        </div>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <div className="text-sm font-medium">${item.asset.value.toLocaleString()}</div>
+                        <div className="text-sm font-medium">
+                          ${item.asset.value.toLocaleString()}
+                        </div>
                         {item.allocatedPercentage && (
-                          <div className="text-xs text-muted-foreground">{item.allocatedPercentage}%</div>
+                          <div className="text-xs text-muted-foreground">
+                            {item.allocatedPercentage}%
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -559,7 +649,12 @@ function RouteComponent() {
                       Total Assets
                     </td>
                     <td className="py-2 px-4 text-right font-medium text-xs">
-                      {agreement.assets.reduce((sum: number, item: any) => sum + item.asset.value, 0).toLocaleString()}
+                      {agreement.assets
+                        .reduce(
+                          (sum: number, item: any) => sum + item.asset.value,
+                          0,
+                        )
+                        .toLocaleString()}
                     </td>
                   </tr>
                 </tfoot>
@@ -571,32 +666,49 @@ function RouteComponent() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <p className="text-sm font-medium">Beneficiaries ({agreement.beneficiaries.length})</p>
+              <p className="text-sm font-medium">
+                Beneficiaries ({agreement.beneficiaries.length})
+              </p>
             </div>
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-muted/50">
-                    <th className="text-left py-2.5 px-4 text-xs font-medium">Name</th>
-                    <th className="text-left py-2.5 px-4 text-xs font-medium">Relation</th>
-                    <th className="text-right py-2.5 px-4 text-xs font-medium">Share</th>
+                    <th className="text-left py-2.5 px-4 text-xs font-medium">
+                      Name
+                    </th>
+                    <th className="text-left py-2.5 px-4 text-xs font-medium">
+                      Relation
+                    </th>
+                    <th className="text-right py-2.5 px-4 text-xs font-medium">
+                      Share
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {agreement.beneficiaries.map((beneficiary: any) => (
-                    <tr key={beneficiary.id} className="border-b last:border-b-0">
+                    <tr
+                      key={beneficiary.id}
+                      className="border-b last:border-b-0"
+                    >
                       <td className="py-3 px-4">
                         <div className="text-sm font-medium">
-                          {beneficiary.familyMember?.user?.name || beneficiary.nonRegisteredFamilyMember?.name || 'Unknown'}
+                          {beneficiary.familyMember?.user?.name ||
+                            beneficiary.nonRegisteredFamilyMember?.name ||
+                            'Unknown'}
                         </div>
                       </td>
                       <td className="py-3 px-4">
                         <div className="text-sm text-muted-foreground">
-                          {beneficiary.familyMember?.relation || beneficiary.nonRegisteredFamilyMember?.relation || 'N/A'}
+                          {beneficiary.familyMember?.relation ||
+                            beneficiary.nonRegisteredFamilyMember?.relation ||
+                            'N/A'}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <div className="text-sm font-medium">{beneficiary.sharePercentage}%</div>
+                        <div className="text-sm font-medium">
+                          {beneficiary.sharePercentage}%
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -607,7 +719,11 @@ function RouteComponent() {
                       Total
                     </td>
                     <td className="py-2 px-4 text-right font-medium text-xs">
-                      {agreement.beneficiaries.reduce((sum: number, b: any) => sum + b.sharePercentage, 0)}%
+                      {agreement.beneficiaries.reduce(
+                        (sum: number, b: any) => sum + b.sharePercentage,
+                        0,
+                      )}
+                      %
                     </td>
                   </tr>
                 </tfoot>
@@ -621,87 +737,126 @@ function RouteComponent() {
               {getStatusDescription(agreement.status)}
             </p>
             <div className="flex flex-wrap gap-2">
+              <Button variant="outline" asChild>
+                <a
+                  href={`/api/agreement/${id}/document`}
+                  download={`agreement-${id}.pdf`}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download PDF
+                </a>
+              </Button>
+
               {/* Owner actions */}
-              {isOwner && agreement.status === 'DRAFT' && !agreement.ownerSignature?.hasSigned && (
-                <>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleSignAsOwner(false)}
-                    disabled={signOwnerMutation.isPending}
-                  >
-                    {signOwnerMutation.isPending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Signature className="mr-2 h-4 w-4" />
-                    )}
-                    Sign On-Chain
-                  </Button>
-                  <Button
-                    onClick={() => handleSignAsOwner(true)}
-                    disabled={signOwnerMutation.isPending}
-                  >
-                    {signOwnerMutation.isPending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Signature className="mr-2 h-4 w-4" />
-                    )}
-                    Sign On-Chain & Submit
-                  </Button>
-                </>
-              )}
+              {isOwner &&
+                agreement.status === 'DRAFT' &&
+                !agreement.ownerSignature?.hasSigned && (
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleSignAsOwner(false)}
+                      disabled={signOwnerMutation.isPending}
+                    >
+                      {signOwnerMutation.isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Signature className="mr-2 h-4 w-4" />
+                      )}
+                      Sign On-Chain
+                    </Button>
+                    <Button
+                      onClick={() => handleSignAsOwner(true)}
+                      disabled={signOwnerMutation.isPending}
+                    >
+                      {signOwnerMutation.isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Signature className="mr-2 h-4 w-4" />
+                      )}
+                      Sign On-Chain & Submit
+                    </Button>
+                  </>
+                )}
 
               {/* Owner submit button (after signing but before submitting) */}
-              {isOwner && agreement.status === 'DRAFT' && agreement.ownerSignature?.hasSigned && (
+              {isOwner &&
+                agreement.status === 'DRAFT' &&
+                agreement.ownerSignature?.hasSigned && (
+                  <Button
+                    onClick={handleSubmitAgreement}
+                    disabled={submitMutation.isPending}
+                  >
+                    {submitMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Signature className="mr-2 h-4 w-4" />
+                    )}
+                    Submit Agreement
+                  </Button>
+                )}
+
+              {/* Owner completion button */}
+              {isOwner && agreement.status === 'ACTIVE' && (
                 <Button
-                  onClick={handleSubmitAgreement}
-                  disabled={submitMutation.isPending}
+                  onClick={handleCompleteAgreement}
+                  disabled={completeMutation.isPending}
                 >
-                  {submitMutation.isPending ? (
+                  {completeMutation.isPending ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <Signature className="mr-2 h-4 w-4" />
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
                   )}
-                  Submit Agreement
+                  Mark Completed
                 </Button>
               )}
 
               {/* Beneficiary actions */}
-              {!isOwner && isCurrentBeneficiary && !hasSigned && agreement.status === 'PENDING_SIGNATURES' && (
-                <>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleSignAsBeneficiary(currentBeneficiary.id, true)}
-                    disabled={signBeneficiaryMutation.isPending}
-                  >
-                    {signBeneficiaryMutation.isPending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <CheckCircle2 className="mr-2 h-4 w-4" />
-                    )}
-                    Accept & Sign On-Chain
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleSignAsBeneficiary(currentBeneficiary.id, false)}
-                    disabled={signBeneficiaryMutation.isPending}
-                  >
-                    <XCircle className="mr-2 h-4 w-4" />
-                    Reject
-                  </Button>
-                </>
-              )}
+              {!isOwner &&
+                isCurrentBeneficiary &&
+                !hasSigned &&
+                agreement.status === 'PENDING_SIGNATURES' && (
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        handleSignAsBeneficiary(currentBeneficiary.id, true)
+                      }
+                      disabled={signBeneficiaryMutation.isPending}
+                    >
+                      {signBeneficiaryMutation.isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                      )}
+                      Accept & Sign On-Chain
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() =>
+                        handleSignAsBeneficiary(currentBeneficiary.id, false)
+                      }
+                      disabled={signBeneficiaryMutation.isPending}
+                    >
+                      <XCircle className="mr-2 h-4 w-4" />
+                      Reject
+                    </Button>
+                  </>
+                )}
 
               {/* Cancel button */}
-              {isOwner && ['DRAFT', 'PENDING_SIGNATURES', 'PENDING_WITNESS'].includes(agreement.status) && (
-                <Button
-                  variant="outline"
-                  className="text-destructive hover:text-destructive"
-                  onClick={() => cancelMutation.mutate()}
-                  disabled={cancelMutation.isPending}
-                >
-                  Cancel Agreement
-                </Button>
-              )}
+              {isOwner &&
+                ['DRAFT', 'PENDING_SIGNATURES', 'PENDING_WITNESS'].includes(
+                  agreement.status,
+                ) && (
+                  <Button
+                    variant="outline"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => cancelMutation.mutate()}
+                    disabled={cancelMutation.isPending}
+                  >
+                    Cancel Agreement
+                  </Button>
+                )}
             </div>
           </div>
         </CardContent>

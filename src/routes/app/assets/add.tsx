@@ -1,6 +1,14 @@
 import { useMutation } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { DollarSign, FileText, Loader2, Package, Tag, Upload, X } from 'lucide-react'
+import {
+  DollarSign,
+  FileText,
+  Loader2,
+  Package,
+  Tag,
+  Upload,
+  X,
+} from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import type { AssetType as AssetTypeEnum } from '@/generated/prisma/enums'
@@ -17,6 +25,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { AssetType } from '@/generated/prisma/enums'
+import {
+  cleanAssetValue,
+  parsePositiveAssetValue,
+} from '@/lib/asset/assetValidation'
 
 const formatAssetType = (type: string) =>
   type
@@ -33,8 +45,6 @@ const formatValueWithCommas = (value: string) => {
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return parts.join('.')
 }
-
-const cleanValue = (value: string) => value.replace(/,/g, '')
 
 export const Route = createFileRoute('/app/assets/add')({
   component: RouteComponent,
@@ -53,12 +63,12 @@ function RouteComponent() {
   const createAssetMutation = useMutation({
     mutationFn: async () => {
       const formDataToSend = new FormData()
-      formDataToSend.append('name', formData.name)
+      formDataToSend.append('name', formData.name.trim())
       formDataToSend.append('type', formData.type)
       if (formData.description) {
         formDataToSend.append('description', formData.description)
       }
-      formDataToSend.append('value', cleanValue(formData.value))
+      formDataToSend.append('value', cleanAssetValue(formData.value))
       if (documentFile) {
         formDataToSend.append('document', documentFile)
       }
@@ -85,7 +95,10 @@ function RouteComponent() {
   const handleValueChange = (value: string) => {
     const numericValue = value.replace(/[^\d.,]/g, '')
     if (numericValue.split('.').length > 2) return
-    setFormData((prev) => ({ ...prev, value: formatValueWithCommas(numericValue) }))
+    setFormData((prev) => ({
+      ...prev,
+      value: formatValueWithCommas(numericValue),
+    }))
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,8 +135,7 @@ function RouteComponent() {
       return
     }
 
-    const numericValue = parseFloat(cleanValue(formData.value))
-    if (Number.isNaN(numericValue) || numericValue < 0) {
+    if (parsePositiveAssetValue(formData.value) === null) {
       toast.error('Value must be a positive number')
       return
     }
@@ -144,7 +156,12 @@ function RouteComponent() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        name: event.target.value,
+                      }))
+                    }
                     placeholder="Enter asset name"
                     className="pl-10"
                   />
@@ -157,7 +174,12 @@ function RouteComponent() {
                   <Tag className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Select
                     value={formData.type}
-                    onValueChange={(value) => setFormData((prev) => ({ ...prev, type: value as AssetTypeEnum }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        type: value as AssetTypeEnum,
+                      }))
+                    }
                   >
                     <SelectTrigger id="type" className="pl-10">
                       <SelectValue placeholder="Select asset type" />
@@ -195,7 +217,12 @@ function RouteComponent() {
                   <Input
                     id="description"
                     value={formData.description}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, description: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: event.target.value,
+                      }))
+                    }
                     placeholder="Optional description"
                     className="pl-10"
                   />
@@ -203,17 +230,28 @@ function RouteComponent() {
               </Field>
 
               <Field className="space-y-2 md:col-span-2">
-                <FieldLabel htmlFor="document">Supporting Document (PDF)</FieldLabel>
+                <FieldLabel htmlFor="document">
+                  Supporting Document (PDF)
+                </FieldLabel>
                 {documentFile ? (
                   <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-muted/30 p-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background ring-1 ring-border">
                       <FileText className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{documentFile.name}</p>
-                      <p className="text-xs text-muted-foreground">{(documentFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p className="truncate text-sm font-medium">
+                        {documentFile.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {(documentFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
                     </div>
-                    <Button type="button" variant="ghost" size="icon-sm" onClick={() => setDocumentFile(null)}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => setDocumentFile(null)}
+                    >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
@@ -227,7 +265,9 @@ function RouteComponent() {
                       accept=".pdf"
                       className="pl-10 file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1 file:text-sm"
                     />
-                    <p className="mt-1 text-xs text-muted-foreground">PDF only, maximum 10MB.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      PDF only, maximum 10MB.
+                    </p>
                   </div>
                 )}
               </Field>
@@ -243,7 +283,9 @@ function RouteComponent() {
                 Cancel
               </Button>
               <Button type="submit" disabled={createAssetMutation.isPending}>
-                {createAssetMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                {createAssetMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
                 Create Asset
               </Button>
             </div>

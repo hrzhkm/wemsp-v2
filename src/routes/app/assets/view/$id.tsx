@@ -1,10 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { ArrowLeft, Calendar, DollarSign, ExternalLink, FileText, Loader2, Package, Tag, User } from 'lucide-react'
+import {
+  ArrowLeft,
+  Calendar,
+  DollarSign,
+  ExternalLink,
+  FileText,
+  Loader2,
+  Package,
+  Tag,
+  User,
+} from 'lucide-react'
 import type { Asset } from '@/components/assets/assetsTable'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { AssetDocumentLink } from '@/components/assets/assetDocumentLink'
 import {
   Card,
   CardContent,
@@ -97,7 +108,11 @@ function RouteComponent() {
       <Card>
         <CardContent className="py-12 text-center">
           <p className="text-muted-foreground">Asset not found.</p>
-          <Button variant="outline" className="mt-4" onClick={() => router.navigate({ to: '/app/assets' })}>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => router.navigate({ to: '/app/assets' })}
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to Assets
           </Button>
@@ -114,16 +129,25 @@ function RouteComponent() {
             <div>
               <CardTitle className="text-xl">Asset Details</CardTitle>
               <CardDescription className="mt-1">
-                {isOwner ? 'View and manage your asset information.' : 'View family member asset information.'}
+                {isOwner
+                  ? 'View and manage your asset information.'
+                  : 'View family member asset information.'}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
               {isOwner ? (
-                <Button onClick={() => router.navigate({ to: `/app/assets/edit/${id}` as any })}>
+                <Button
+                  onClick={() =>
+                    router.navigate({ to: `/app/assets/edit/${id}` as any })
+                  }
+                >
                   Edit Asset
                 </Button>
               ) : null}
-              <Button variant="outline" onClick={() => router.navigate({ to: '/app/assets' })}>
+              <Button
+                variant="outline"
+                onClick={() => router.navigate({ to: '/app/assets' })}
+              >
                 <ArrowLeft className="h-4 w-4" />
                 Back
               </Button>
@@ -138,7 +162,12 @@ function RouteComponent() {
               <div className="min-w-0 flex-1">
                 <h2 className="truncate text-xl font-semibold">{asset.name}</h2>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <Badge className={cn('px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase', getAssetTypeBadgeClass(asset.type))}>
+                  <Badge
+                    className={cn(
+                      'px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase',
+                      getAssetTypeBadgeClass(asset.type),
+                    )}
+                  >
                     {formatLabel(asset.type)}
                   </Badge>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-background px-2 py-1 text-xs text-muted-foreground">
@@ -149,7 +178,9 @@ function RouteComponent() {
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-background px-2 py-1 text-xs text-muted-foreground">
                       <User className="h-3.5 w-3.5" />
                       {asset.owner.name}
-                      {asset.relationship ? ` (${formatLabel(asset.relationship)})` : ''}
+                      {asset.relationship
+                        ? ` (${formatLabel(asset.relationship)})`
+                        : ''}
                     </span>
                   ) : null}
                 </div>
@@ -163,57 +194,89 @@ function RouteComponent() {
         <CardContent className="pt-6">
           <FieldGroup className="grid gap-4 md:grid-cols-2">
             <div>
-              <p className="mb-1 text-xs font-medium text-muted-foreground">Asset Name</p>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                Asset Name
+              </p>
               <div className="relative">
                 <Package className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input value={asset.name} disabled className="bg-muted/50 pl-10" />
+                <Input
+                  value={asset.name}
+                  disabled
+                  className="bg-muted/50 pl-10"
+                />
               </div>
             </div>
 
             <div>
-              <p className="mb-1 text-xs font-medium text-muted-foreground">Asset Type</p>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                Asset Type
+              </p>
               <div className="relative">
                 <Tag className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input value={formatLabel(asset.type)} disabled className="bg-muted/50 pl-10" />
+                <Input
+                  value={formatLabel(asset.type)}
+                  disabled
+                  className="bg-muted/50 pl-10"
+                />
               </div>
             </div>
 
             <div>
-              <p className="mb-1 text-xs font-medium text-muted-foreground">Value</p>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                Value
+              </p>
               <div className="relative">
                 <DollarSign className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input value={formatCurrency(asset.value)} disabled className="bg-muted/50 pl-10 font-semibold" />
+                <Input
+                  value={formatCurrency(asset.value)}
+                  disabled
+                  className="bg-muted/50 pl-10 font-semibold"
+                />
               </div>
             </div>
 
             <div>
-              <p className="mb-1 text-xs font-medium text-muted-foreground">Created Date</p>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                Created Date
+              </p>
               <div className="relative">
                 <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input value={formatDate(asset.createdAt)} disabled className="bg-muted/50 pl-10" />
+                <Input
+                  value={formatDate(asset.createdAt)}
+                  disabled
+                  className="bg-muted/50 pl-10"
+                />
               </div>
             </div>
 
             <div className="md:col-span-2">
-              <p className="mb-1 text-xs font-medium text-muted-foreground">Description</p>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                Description
+              </p>
               <div className="relative">
                 <FileText className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input value={asset.description || 'No description'} disabled className="bg-muted/50 pl-10" />
+                <Input
+                  value={asset.description || 'No description'}
+                  disabled
+                  className="bg-muted/50 pl-10"
+                />
               </div>
             </div>
 
             {asset.documentUrl ? (
               <div className="md:col-span-2">
-                <p className="mb-1 text-xs font-medium text-muted-foreground">Document</p>
-                <Button
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  Document
+                </p>
+                <AssetDocumentLink
+                  href={asset.documentUrl}
                   variant="outline"
-                  onClick={() => window.open(asset.documentUrl as string, '_blank')}
                   className="w-full justify-start"
                 >
                   <FileText className="h-4 w-4" />
                   View Document
                   <ExternalLink className="h-3 w-3" />
-                </Button>
+                </AssetDocumentLink>
               </div>
             ) : null}
           </FieldGroup>

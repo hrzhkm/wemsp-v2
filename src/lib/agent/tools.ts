@@ -2,6 +2,7 @@ import { tool } from '@langchain/core/tools'
 import { z } from 'zod'
 import { serializePendingAction } from './pendingActions'
 import { prisma } from '@/db'
+import { extractDocumentKey } from '@/lib/storage/assetDocument'
 
 type AgentRuntime = {
   conversationId: string
@@ -155,6 +156,12 @@ export function buildAgentTools(runtime: AgentRuntime) {
 
   const stageAssetCreation = tool(
     async ({ description, documentUrl, name, type, value }) => {
+      if (documentUrl) {
+        const key = extractDocumentKey(documentUrl)
+        if (!key.startsWith(`tmp/asset-documents/${runtime.userId}/`)) {
+          throw new Error('Invalid document reference')
+        }
+      }
       const pendingId = crypto.randomUUID()
       const createdAt = new Date().toISOString()
 
@@ -202,7 +209,11 @@ export function buildAgentTools(runtime: AgentRuntime) {
           .describe('Asset type based on schema enum'),
         value: z.number().positive().describe('Asset value as positive number'),
         description: z.string().optional().describe('Optional asset description'),
-        documentUrl: z.string().url().optional().describe('Optional uploaded document URL'),
+        documentUrl: z
+          .string()
+          .regex(/^\/api\/file\/tmp\/asset-documents\/[^/]+\/[0-9a-f-]{36}\.enc$/i)
+          .optional()
+          .describe('Optional uploaded document URL'),
       }),
     }
   )
