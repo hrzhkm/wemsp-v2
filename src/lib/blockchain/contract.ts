@@ -1,6 +1,5 @@
 import {
 	Contract,
-	FallbackProvider,
 	JsonRpcProvider,
 	Network,
 	NonceManager,
@@ -47,10 +46,12 @@ const RETRYABLE_ERROR_PATTERNS = [
 	/\b5\d\d\b/,
 ]
 
-let _provider: FallbackProvider | null = null
+let _provider: JsonRpcProvider | null = null
+let _fallbackProvider: JsonRpcProvider | null = null
 let _wallet: Wallet | null = null
 let _signer: NonceManager | null = null
 let _contract: Contract | null = null
+let _readContract: Contract | null = null
 
 export interface MintResult {
 	tokenId: number
@@ -88,29 +89,65 @@ export interface BeneficiarySignatureStatus {
 }
 
 /**
- * Build a resilient provider over the primary RPC (and an optional fallback).
- * The FallbackProvider broadcasts transactions to every backend and uses the
- * first successful response, and reads race providers with quorum 1, so a
- * slow or failing RPC does not block an operation.
+ * Primary JSON-RPC provider. We intentionally do NOT use ethers'
+ * FallbackProvider: it permanently marks a provider as fatally failed when a
+ * single (even transient) sync check errors, so a flaky RPC can take down the
+ * whole provider until restart. Instead we retry transient errors and, for
+ * reads only, fall back to the secondary RPC via readWithFallback.
  */
-function getProvider(): FallbackProvider {
+function getProvider(): JsonRpcProvider {
 	if (!RPC_URL) {
 		throw new Error('RPC_URL environment variable is not set')
 	}
 	if (!_provider) {
 		const staticNetwork = new Network(CHAIN_NAME, CHAIN_ID)
-		const providers: Array<{ provider: JsonRpcProvider; weight: number }> = [
-			{ provider: new JsonRpcProvider(RPC_URL, staticNetwork, { pollingInterval: 4000 }), weight: 2 },
-		]
-		if (RPC_URL_FALLBACK) {
-			providers.push({
-				provider: new JsonRpcProvider(RPC_URL_FALLBACK, staticNetwork, { pollingInterval: 4000 }),
-				weight: 1,
-			})
-		}
-		_provider = new FallbackProvider(providers, staticNetwork, { quorum: 1 })
+		_provider = new JsonRpcProvider(RPC_URL, staticNetwork, { pollingInterval: 4000 })
 	}
 	return _provider
+}
+
+function getFallbackProvider(): JsonRpcProvider | null {
+	if (!RPC_URL_FALLBACK) {
+		return null
+	}
+	if (!_fallbackProvider) {
+		const staticNetwork = new Network(CHAIN_NAME, CHAIN_ID)
+		_fallbackProvider = new JsonRpcProvider(RPC_URL_FALLBACK, staticNetwork, { pollingInterval: 4000 })
+	}
+	return _fallbackProvider
+}
+
+/**
+ * Read-only contract bound to the primary provider (no signer needed).
+ * Used for read failover when the primary RPC is unreachable.
+ */
+function getReadContract(): Contract {
+	if (!CONTRACT_ADDRESS) {
+		throw new Error('CONTRACT_ADDRESS environment variable is not set')
+	}
+	if (!_readContract) {
+		_readContract = new Contract(CONTRACT_ADDRESS, AgreementContractArtifact.abi, getProvider())
+	}
+	return _readContract
+}
+
+async function readWithFallback<T>(
+	operation: (contract: Contract) => Promise<T>,
+): Promise<T> {
+	try {
+		return await withRetry(() => operation(getReadContract()))
+	} catch (error) {
+		const fallback = getFallbackProvider()
+		if (isTransientError(error) && fallback) {
+			const fallbackContract = new Contract(
+				CONTRACT_ADDRESS,
+				AgreementContractArtifact.abi,
+				fallback,
+			)
+			return await withRetry(() => operation(fallbackContract))
+		}
+		throw error
+	}
 }
 
 function getWallet(): Wallet {
@@ -399,8 +436,7 @@ export async function updateAgreementMetadata(
 }
 
 export async function getAgreementData(tokenId: number): Promise<AgreementData> {
-	const contract = getContract()
-	const data = await withRetry(() => contract.getAgreement(tokenId))
+	const data = await readWithFallback((contract) => contract.getAgreement(tokenId))
 
 	return {
 		agreementId: data.agreementId,
@@ -419,8 +455,7 @@ export async function getBeneficiarySignatureStatus(
 	tokenId: number,
 	beneficiaryId: string
 ): Promise<BeneficiarySignatureStatus> {
-	const contract = getContract()
-	const [hasSigned, signedAt] = await withRetry(() =>
+	const [hasSigned, signedAt] = await readWithFallback((contract) =>
 		contract.getBeneficiarySignature(tokenId, beneficiaryId),
 	)
 
@@ -431,8 +466,7 @@ export async function getBeneficiarySignatureStatus(
 }
 
 export async function isAgreementFullySigned(tokenId: number): Promise<boolean> {
-	const contract = getContract()
-	return withRetry(() => contract.isFullySigned(tokenId))
+	return readWithFallback((contract) => contract.isFullySigned(tokenId))
 }
 
 export async function isAgreementFinalized(tokenId: number): Promise<boolean> {
@@ -441,8 +475,9 @@ export async function isAgreementFinalized(tokenId: number): Promise<boolean> {
 }
 
 export async function getTokenIdByAgreementId(agreementId: string): Promise<number> {
-	const contract = getContract()
-	const tokenId = await withRetry(() => contract.getTokenIdByAgreementId(agreementId))
+	const tokenId = await readWithFallback((contract) =>
+		contract.getTokenIdByAgreementId(agreementId),
+	)
 	return Number(tokenId)
 }
 
@@ -451,13 +486,11 @@ export async function getTokenIdByVisibleId(visibleId: string): Promise<number> 
 }
 
 export async function getTokenURI(tokenId: number): Promise<string> {
-	const contract = getContract()
-	return withRetry(() => contract.tokenURI(tokenId))
+	return readWithFallback((contract) => contract.tokenURI(tokenId))
 }
 
 export async function getTotalSupply(): Promise<number> {
-	const contract = getContract()
-	const supply = await withRetry(() => contract.totalSupply())
+	const supply = await readWithFallback((contract) => contract.totalSupply())
 	return Number(supply)
 }
 
