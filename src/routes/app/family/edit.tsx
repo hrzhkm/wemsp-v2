@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2, PencilLine, User, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import type { FamilyMember } from '@/types/family'
 
+import type { CountryCode } from '@/lib/family/phoneNumber'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -22,7 +23,17 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { FamilyRelation } from '@/lib/family/familyTypes'
-import { isNonRegisteredFamilyMember, isRegisteredFamilyMember } from '@/types/family'
+import {
+  isNonRegisteredFamilyMember,
+  isRegisteredFamilyMember,
+} from '@/types/family'
+import { PhoneNumberInput } from '@/components/family/phoneNumberInput'
+import { getApiError } from '@/lib/apiError'
+import {
+  isValidMalaysianIc,
+  normalizeMalaysianIc,
+} from '@/lib/family/malaysianIc'
+import { parsePhoneInput } from '@/lib/family/phoneNumber'
 
 const formatRelationLabel = (relation: string) =>
   relation
@@ -37,7 +48,9 @@ export const Route = createFileRoute('/app/family/edit')({
 
 function RouteComponent() {
   const router = useRouter()
-  const routeState = router.state.location.state as { member?: FamilyMember } | undefined
+  const routeState = router.state.location.state as
+    | { member?: FamilyMember }
+    | undefined
   const member = routeState ? routeState.member : undefined
 
   const updateMutation = useMutation({
@@ -56,13 +69,13 @@ function RouteComponent() {
         method: 'PUT',
       })
       if (!response.ok) {
-        const error = await response.text()
-        throw new Error(error || 'Failed to update family member')
+        throw new Error(
+          await getApiError(response, 'Failed to update family member'),
+        )
       }
       return response.json()
     },
     onError: (error: Error) => {
-      console.error('Error updating family member:', error)
       toast.error(error.message || 'Failed to update family member')
     },
     onSuccess: () => {
@@ -78,19 +91,34 @@ function RouteComponent() {
     if (!member) return
 
     if (isNonRegisteredFamilyMember(member)) {
-      const address = formData.get('address') as string
-      const icNumber = formData.get('icNumber') as string
-      const name = formData.get('name') as string
-      const phoneNumber = formData.get('phoneNumber') as string
+      const address = String(formData.get('address') || '').trim()
+      const icNumber = normalizeMalaysianIc(
+        String(formData.get('icNumber') || ''),
+      )
+      const name = String(formData.get('name') || '').trim()
+      const phoneNumber = parsePhoneInput(
+        String(formData.get('phoneNumber') || ''),
+        String(formData.get('phoneCountry') || 'MY') as CountryCode,
+      )
       const relation = formData.get('relation') as string
 
-      if (!name || !icNumber || !relation) {
+      if (!name || !isValidMalaysianIc(icNumber) || !relation) {
         toast.error('Please fill in all required fields')
+        return
+      }
+      if (!phoneNumber.valid) {
+        toast.error('Please enter a valid phone number')
         return
       }
 
       await updateMutation.mutateAsync({
-        data: { address, icNumber, name, phoneNumber, relation },
+        data: {
+          address,
+          icNumber,
+          name,
+          phoneNumber: phoneNumber.value,
+          relation,
+        },
         id: member.id.toString(),
         type: 'non-registered',
       })
@@ -141,7 +169,10 @@ function RouteComponent() {
               Update relationship details and contact information.
             </CardDescription>
           </div>
-          <Button variant="outline" onClick={() => router.navigate({ to: '/app/family' })}>
+          <Button
+            variant="outline"
+            onClick={() => router.navigate({ to: '/app/family' })}
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to Family
           </Button>
@@ -159,13 +190,19 @@ function RouteComponent() {
               />
             ) : (
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted text-muted-foreground ring-1 ring-border">
-                {isRegisteredFamilyMember(member) ? <User className="h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
+                {isRegisteredFamilyMember(member) ? (
+                  <User className="h-5 w-5" />
+                ) : (
+                  <UserPlus className="h-5 w-5" />
+                )}
               </div>
             )}
             <div className="min-w-0">
               <p className="truncate font-medium">{member.name}</p>
               <p className="truncate text-sm text-muted-foreground">
-                {isRegisteredFamilyMember(member) ? member.email : `IC: ${member.icNumber}`}
+                {isRegisteredFamilyMember(member)
+                  ? member.email
+                  : `IC: ${member.icNumber}`}
               </p>
             </div>
           </div>
@@ -197,8 +234,14 @@ function RouteComponent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="relation-non-registered">Relationship *</Label>
-                  <Select name="relation" defaultValue={member.relation} required>
+                  <Label htmlFor="relation-non-registered">
+                    Relationship *
+                  </Label>
+                  <Select
+                    name="relation"
+                    defaultValue={member.relation}
+                    required
+                  >
                     <SelectTrigger id="relation-non-registered">
                       <SelectValue placeholder="Select relationship" />
                     </SelectTrigger>
@@ -214,12 +257,7 @@ function RouteComponent() {
 
                 <div className="space-y-2">
                   <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    defaultValue={member.phoneNumber || ''}
-                    placeholder="Enter phone number"
-                  />
+                  <PhoneNumberInput initialValue={member.phoneNumber} />
                 </div>
 
                 <div className="space-y-2">
@@ -256,7 +294,11 @@ function RouteComponent() {
 
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="relation-registered">Relationship *</Label>
-                  <Select name="relation" defaultValue={member.relation} required>
+                  <Select
+                    name="relation"
+                    defaultValue={member.relation}
+                    required
+                  >
                     <SelectTrigger id="relation-registered">
                       <SelectValue placeholder="Select relationship" />
                     </SelectTrigger>
@@ -269,7 +311,8 @@ function RouteComponent() {
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    Registered user details are read-only. You can update the relationship only.
+                    Registered user details are read-only. You can update the
+                    relationship only.
                   </p>
                 </div>
               </div>

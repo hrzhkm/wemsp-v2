@@ -1,11 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { Filter, Loader2, Plus, Search, Users, Wallet, WalletCards } from 'lucide-react'
+import {
+  Filter,
+  Loader2,
+  Plus,
+  Search,
+  Users,
+  Wallet,
+  WalletCards,
+} from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import type { Asset } from '@/components/assets/assetsTable'
 
 import { AssetsTable } from '@/components/assets/assetsTable'
+import { ConfirmationDialog } from '@/components/confirmationDialog'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -54,6 +63,7 @@ function RouteComponent() {
   const { language, t } = useLanguage()
   const [query, setQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState<'all' | string>('all')
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null)
 
   const { data: session } = useQuery({
     queryKey: ['session'],
@@ -97,7 +107,10 @@ function RouteComponent() {
     },
   })
 
-  const allAssets = useMemo(() => [...assets, ...familyAssets], [assets, familyAssets])
+  const allAssets = useMemo(
+    () => [...assets, ...familyAssets],
+    [assets, familyAssets],
+  )
 
   const typeOptions = useMemo(() => {
     const types = new Set<string>()
@@ -131,22 +144,35 @@ function RouteComponent() {
 
   const totalValue = useMemo(
     () => assets.reduce((sum, asset) => sum + asset.value, 0),
-    [assets]
+    [assets],
   )
   const familyValue = useMemo(
     () => familyAssets.reduce((sum, asset) => sum + asset.value, 0),
-    [familyAssets]
+    [familyAssets],
   )
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('assetsPage.confirmDelete'))) {
-      return
-    }
-    await deleteMutation.mutateAsync(id)
+  const handleDelete = (id: number) => {
+    setPendingDeleteId(id)
   }
 
   return (
     <div className="space-y-4">
+      <ConfirmationDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => !open && setPendingDeleteId(null)}
+        title={t('assetsPage.deleteDialogTitle')}
+        description={t('assetsPage.confirmDelete')}
+        confirmLabel={t('assetsPage.deleteAction')}
+        cancelLabel={t('assetsPage.cancelAction')}
+        isPending={deleteMutation.isPending}
+        onConfirm={async () => {
+          if (pendingDeleteId === null) return
+          try {
+            await deleteMutation.mutateAsync(pendingDeleteId)
+            setPendingDeleteId(null)
+          } catch {}
+        }}
+      />
       <Card className="border-border/70 bg-gradient-to-r from-sky-50/60 via-background to-emerald-50/30">
         <CardHeader className="gap-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -156,7 +182,10 @@ function RouteComponent() {
                 {t('assetsPage.subtitle')}
               </CardDescription>
             </div>
-            <Button className="w-full sm:w-auto" onClick={() => router.navigate({ to: '/app/assets/add' })}>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => router.navigate({ to: '/app/assets/add' })}
+            >
               <Plus className="h-4 w-4" />
               {t('assetsPage.addAsset')}
             </Button>
@@ -168,28 +197,40 @@ function RouteComponent() {
                 <Wallet className="h-4 w-4" />
               </div>
               <p className="text-2xl font-semibold">{assets.length}</p>
-              <p className="text-xs text-muted-foreground">{t('assetsPage.stats.myAssets')}</p>
+              <p className="text-xs text-muted-foreground">
+                {t('assetsPage.stats.myAssets')}
+              </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/70 p-3 shadow-sm">
               <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-700">
                 <WalletCards className="h-4 w-4" />
               </div>
               <p className="text-2xl font-semibold">{familyAssets.length}</p>
-              <p className="text-xs text-muted-foreground">{t('assetsPage.stats.familyAssets')}</p>
+              <p className="text-xs text-muted-foreground">
+                {t('assetsPage.stats.familyAssets')}
+              </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/70 p-3 shadow-sm">
               <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-700">
                 <Users className="h-4 w-4" />
               </div>
-              <p className="text-lg font-semibold">{formatCurrency(totalValue, language)}</p>
-              <p className="text-xs text-muted-foreground">{t('assetsPage.stats.myTotalValue')}</p>
+              <p className="text-lg font-semibold">
+                {formatCurrency(totalValue, language)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t('assetsPage.stats.myTotalValue')}
+              </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/70 p-3 shadow-sm">
               <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-slate-500/15 text-slate-700">
                 <Filter className="h-4 w-4" />
               </div>
-              <p className="text-lg font-semibold">{formatCurrency(familyValue, language)}</p>
-              <p className="text-xs text-muted-foreground">{t('assetsPage.stats.familyTotalValue')}</p>
+              <p className="text-lg font-semibold">
+                {formatCurrency(familyValue, language)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t('assetsPage.stats.familyTotalValue')}
+              </p>
             </div>
           </div>
         </CardHeader>
@@ -199,8 +240,12 @@ function RouteComponent() {
         <CardHeader className="space-y-4">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="text-base">{t('assetsPage.filterTitle')}</CardTitle>
-              <CardDescription>{t('assetsPage.filterDescription')}</CardDescription>
+              <CardTitle className="text-base">
+                {t('assetsPage.filterTitle')}
+              </CardTitle>
+              <CardDescription>
+                {t('assetsPage.filterDescription')}
+              </CardDescription>
             </div>
             {hasActiveFilters ? (
               <Button
@@ -225,7 +270,10 @@ function RouteComponent() {
                 className="pl-9"
               />
             </div>
-            <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value)}>
+            <Select
+              value={typeFilter}
+              onValueChange={(value) => setTypeFilter(value)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder={t('assetsPage.assetType')} />
               </SelectTrigger>
@@ -245,7 +293,9 @@ function RouteComponent() {
       <Card className="border-border/70">
         <CardHeader>
           <CardTitle>{t('assetsPage.myAssetsTitle')}</CardTitle>
-          <CardDescription>{t('assetsPage.myAssetsDescription')}</CardDescription>
+          <CardDescription>
+            {t('assetsPage.myAssetsDescription')}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -259,8 +309,16 @@ function RouteComponent() {
               onDelete={handleDelete}
               currentUserId={currentUserId}
               showOwner={false}
-              emptyTitle={hasActiveFilters ? t('assetsPage.emptyFilteredTitle') : t('assetsPage.emptyTitle')}
-              emptyDescription={hasActiveFilters ? t('assetsPage.emptyFilteredDescription') : t('assetsPage.emptyDescription')}
+              emptyTitle={
+                hasActiveFilters
+                  ? t('assetsPage.emptyFilteredTitle')
+                  : t('assetsPage.emptyTitle')
+              }
+              emptyDescription={
+                hasActiveFilters
+                  ? t('assetsPage.emptyFilteredDescription')
+                  : t('assetsPage.emptyDescription')
+              }
             />
           )}
         </CardContent>
@@ -272,7 +330,9 @@ function RouteComponent() {
             <Users className="h-5 w-5" />
             {t('assetsPage.familyAssetsTitle')}
           </CardTitle>
-          <CardDescription>{t('assetsPage.familyAssetsDescription')}</CardDescription>
+          <CardDescription>
+            {t('assetsPage.familyAssetsDescription')}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <AssetsTable
@@ -280,7 +340,11 @@ function RouteComponent() {
             isLoading={isLoading}
             currentUserId={currentUserId}
             showOwner={true}
-            emptyTitle={hasActiveFilters ? t('assetsPage.emptyFamilyFilteredTitle') : t('assetsPage.emptyFamilyTitle')}
+            emptyTitle={
+              hasActiveFilters
+                ? t('assetsPage.emptyFamilyFilteredTitle')
+                : t('assetsPage.emptyFamilyTitle')
+            }
             emptyDescription={
               hasActiveFilters
                 ? t('assetsPage.emptyFilteredDescription')

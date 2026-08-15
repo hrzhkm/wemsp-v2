@@ -1,11 +1,25 @@
 import { useRouter } from '@tanstack/react-router'
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { ExternalLink, FileText, Loader2, MoreVertical, Package, Pencil, Trash2, User } from 'lucide-react'
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import {
+  ExternalLink,
+  FileText,
+  Loader2,
+  MoreVertical,
+  Package,
+  Pencil,
+  Trash2,
+  User,
+} from 'lucide-react'
 import { useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { AssetDocumentLink } from '@/components/assets/assetDocumentLink'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -105,12 +119,16 @@ const createColumns = ({
             </div>
             <div className="min-w-0">
               <button
-                onClick={() => router.navigate({ to: `/app/assets/view/${asset.id}` as any })}
+                onClick={() =>
+                  router.navigate({ to: `/app/assets/view/${asset.id}` as any })
+                }
                 className="truncate text-left font-medium hover:text-primary hover:underline"
               >
                 {asset.name}
               </button>
-              <p className="truncate text-xs text-muted-foreground">{asset.description || t('assetsTable.noDescription')}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {asset.description || t('assetsTable.noDescription')}
+              </p>
             </div>
           </div>
         )
@@ -120,7 +138,12 @@ const createColumns = ({
       accessorKey: 'type',
       header: t('assetsTable.type'),
       cell: ({ row }) => (
-        <Badge className={cn('px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase', getAssetTypeBadgeClass(row.original.type))}>
+        <Badge
+          className={cn(
+            'px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase',
+            getAssetTypeBadgeClass(row.original.type),
+          )}
+        >
           {formatTitleCase(row.original.type)}
         </Badge>
       ),
@@ -128,7 +151,11 @@ const createColumns = ({
     {
       accessorKey: 'value',
       header: t('assetsTable.value'),
-      cell: ({ row }) => <span className="font-semibold">{formatCurrency(row.original.value)}</span>,
+      cell: ({ row }) => (
+        <span className="font-semibold">
+          {formatCurrency(row.original.value)}
+        </span>
+      ),
     },
   ]
 
@@ -139,7 +166,9 @@ const createColumns = ({
       cell: ({ row }) => {
         const asset = row.original
         const ownerName = asset.owner ? asset.owner.name : t('assetsTable.you')
-        const relationship = asset.relationship ? formatTitleCase(asset.relationship) : null
+        const relationship = asset.relationship
+          ? formatTitleCase(asset.relationship)
+          : null
 
         return (
           <div className="min-w-0">
@@ -148,7 +177,9 @@ const createColumns = ({
               <span className="truncate text-sm font-medium">{ownerName}</span>
             </div>
             {relationship ? (
-              <p className="truncate pl-5 text-xs text-muted-foreground">{relationship}</p>
+              <p className="truncate pl-5 text-xs text-muted-foreground">
+                {relationship}
+              </p>
             ) : null}
           </div>
         )
@@ -162,14 +193,18 @@ const createColumns = ({
     cell: ({ row }) => {
       const asset = row.original
       if (!asset.documentUrl) {
-        return <span className="text-sm text-muted-foreground">{t('assetsTable.noDocument')}</span>
+        return (
+          <span className="text-sm text-muted-foreground">
+            {t('assetsTable.noDocument')}
+          </span>
+        )
       }
       return (
-        <Button variant="ghost" size="sm" onClick={() => window.open(asset.documentUrl as string, '_blank')}>
+        <AssetDocumentLink href={asset.documentUrl} variant="ghost" size="sm">
           <FileText className="h-4 w-4" />
           {t('assetsTable.view')}
           <ExternalLink className="h-3 w-3" />
-        </Button>
+        </AssetDocumentLink>
       )
     },
   })
@@ -206,7 +241,11 @@ const createColumns = ({
               ) : (
                 <Trash2 className="h-4 w-4" />
               )}
-              <span>{isDeleting === asset.id ? t('assetsTable.deleting') : t('assetsTable.delete')}</span>
+              <span>
+                {isDeleting === asset.id
+                  ? t('assetsTable.deleting')
+                  : t('assetsTable.delete')}
+              </span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -256,7 +295,8 @@ export function AssetsTable({
   })
 
   const resolvedEmptyTitle = emptyTitle || t('assetsTable.emptyTitle')
-  const resolvedEmptyDescription = emptyDescription || t('assetsTable.emptyDescription')
+  const resolvedEmptyDescription =
+    emptyDescription || t('assetsTable.emptyDescription')
 
   const table = useReactTable({
     columns,
@@ -268,7 +308,9 @@ export function AssetsTable({
     return (
       <div className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-muted/20 py-12">
         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-        <div className="text-sm text-muted-foreground">{t('assetsTable.loading')}</div>
+        <div className="text-sm text-muted-foreground">
+          {t('assetsTable.loading')}
+        </div>
       </div>
     )
   }
@@ -280,7 +322,9 @@ export function AssetsTable({
           <Package className="h-7 w-7 text-muted-foreground" />
         </div>
         <h3 className="text-lg font-semibold">{resolvedEmptyTitle}</h3>
-        <p className="mt-1 max-w-md text-sm text-muted-foreground">{resolvedEmptyDescription}</p>
+        <p className="mt-1 max-w-md text-sm text-muted-foreground">
+          {resolvedEmptyDescription}
+        </p>
       </div>
     )
   }
@@ -289,26 +333,47 @@ export function AssetsTable({
     <div className="space-y-3">
       <div className="space-y-3 md:hidden">
         {data.map((asset) => {
-          const ownerName = asset.owner ? asset.owner.name : t('assetsTable.you')
-          const relationship = asset.relationship ? formatTitleCase(asset.relationship) : null
+          const ownerName = asset.owner
+            ? asset.owner.name
+            : t('assetsTable.you')
+          const relationship = asset.relationship
+            ? formatTitleCase(asset.relationship)
+            : null
           const isOwner = !asset.owner || asset.owner.id === currentUserId
 
           return (
-            <div key={asset.id} className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
+            <div
+              key={asset.id}
+              className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm"
+            >
               <div className="flex items-start justify-between gap-3">
                 <button
-                  onClick={() => router.navigate({ to: `/app/assets/view/${asset.id}` as any })}
+                  onClick={() =>
+                    router.navigate({
+                      to: `/app/assets/view/${asset.id}` as any,
+                    })
+                  }
                   className="min-w-0 text-left"
                 >
-                  <p className="truncate font-medium hover:text-primary">{asset.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{asset.description || t('assetsTable.noDescription')}</p>
+                  <p className="truncate font-medium hover:text-primary">
+                    {asset.name}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {asset.description || t('assetsTable.noDescription')}
+                  </p>
                 </button>
                 {isOwner ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon-sm" className="rounded-lg">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="rounded-lg"
+                      >
                         <MoreVertical className="h-4 w-4" />
-                        <span className="sr-only">{t('assetsTable.openMenu')}</span>
+                        <span className="sr-only">
+                          {t('assetsTable.openMenu')}
+                        </span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -326,7 +391,11 @@ export function AssetsTable({
                         ) : (
                           <Trash2 className="h-4 w-4" />
                         )}
-                        <span>{isDeleting === asset.id ? t('assetsTable.deleting') : t('assetsTable.delete')}</span>
+                        <span>
+                          {isDeleting === asset.id
+                            ? t('assetsTable.deleting')
+                            : t('assetsTable.delete')}
+                        </span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -334,21 +403,34 @@ export function AssetsTable({
               </div>
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Badge className={cn('px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase', getAssetTypeBadgeClass(asset.type))}>
+                <Badge
+                  className={cn(
+                    'px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase',
+                    getAssetTypeBadgeClass(asset.type),
+                  )}
+                >
                   {formatTitleCase(asset.type)}
                 </Badge>
-                <span className="text-sm font-semibold">{formatCurrency(asset.value)}</span>
+                <span className="text-sm font-semibold">
+                  {formatCurrency(asset.value)}
+                </span>
               </div>
 
               <div className="mt-3 flex items-center justify-between gap-2">
                 <p className="truncate text-xs text-muted-foreground">
-                  {showOwner ? `${ownerName}${relationship ? ` (${relationship})` : ''}` : ownerName}
+                  {showOwner
+                    ? `${ownerName}${relationship ? ` (${relationship})` : ''}`
+                    : ownerName}
                 </p>
                 {asset.documentUrl ? (
-                  <Button variant="ghost" size="sm" onClick={() => window.open(asset.documentUrl as string, '_blank')}>
+                  <AssetDocumentLink
+                    href={asset.documentUrl}
+                    variant="ghost"
+                    size="sm"
+                  >
                     <FileText className="h-4 w-4" />
                     {t('assetsTable.view')}
-                  </Button>
+                  </AssetDocumentLink>
                 ) : null}
               </div>
             </div>
@@ -365,7 +447,10 @@ export function AssetsTable({
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -377,14 +462,20 @@ export function AssetsTable({
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   {t('assetsTable.noAssetsFound')}
                 </TableCell>
               </TableRow>
