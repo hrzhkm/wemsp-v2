@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
 import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
+import { sendFinalizedAgreementDocument } from '@/lib/agreement/agreementDelivery'
 import { ensureAgreementMintedWithMetadata } from '@/lib/agreement/agreementMetadata'
 import {
   finalizeAgreement,
@@ -136,6 +137,20 @@ export const witnessSignHandlers = {
         },
       })
 
+      // Best-effort document delivery to owner + registered beneficiaries
+      let documentDelivery: {
+        recipients: Array<string>
+        deliveredTo: Array<string>
+      } | null = null
+      try {
+        documentDelivery = await sendFinalizedAgreementDocument(agreementId)
+      } catch (deliveryError) {
+        console.error(
+          `Error sending agreement document for ${agreementId}:`,
+          deliveryError,
+        )
+      }
+
       return Response.json({
         success: true,
         message: 'Agreement witnessed successfully',
@@ -145,6 +160,7 @@ export const witnessSignHandlers = {
           witnessId: updatedAgreement.witnessId,
           witnessedAt: updatedAgreement.witnessedAt?.toISOString(),
         },
+        documentDelivery,
         onChain: {
           tokenId,
           witnessSignatureTxHash: witnessTxHash,

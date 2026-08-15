@@ -247,6 +247,22 @@ export async function finalizeAgreement(tokenId: number): Promise<SignatureResul
 	}
 }
 
+export async function updateAgreementMetadata(
+	tokenId: number,
+	metadataUri: string
+): Promise<SignatureResult> {
+	const contract = getContract()
+	const tx = await contract.updateAgreement(tokenId, metadataUri)
+	const receipt = await tx.wait()
+	const block = await getProvider().getBlock(receipt.blockNumber)
+
+	return {
+		txHash: receipt.hash,
+		blockNumber: receipt.blockNumber,
+		timestamp: block?.timestamp ?? Math.floor(Date.now() / 1000),
+	}
+}
+
 export async function getAgreementData(tokenId: number): Promise<AgreementData> {
 	const contract = getContract()
 	const data = await contract.getAgreement(tokenId)

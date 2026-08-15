@@ -8,12 +8,19 @@ const transporter = nodemailer.createTransport({
     }
 })
 
-export const sendEmail = async (to: string, subject: string, text: string) => {
+export interface EmailAttachment {
+    filename: string
+    content: Buffer
+    contentType?: string
+}
+
+export const sendEmail = async (to: string, subject: string, text: string, attachments?: Array<EmailAttachment>) => {
     const mailOptions = {
         from: process.env.EMAIL_FROM ?? process.env.EMAIL_ADMIN,
         to,
         subject,
         text,
+        ...(attachments && attachments.length > 0 ? { attachments } : {}),
     }
     try {
         await transporter.sendMail(mailOptions);

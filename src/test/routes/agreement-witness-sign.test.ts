@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   getExplorerUrl: vi.fn(),
   getOnChainTimestampDate: vi.fn(),
   getOnChainErrorMessage: vi.fn(),
+  sendFinalizedAgreementDocument: vi.fn(),
 }))
 
 vi.mock('@/lib/auth/auth', () => ({
@@ -48,6 +49,9 @@ vi.mock('@/lib/blockchain/contract', () => ({
 }))
 vi.mock('@/lib/agreement/agreementMetadata', () => ({
   ensureAgreementMintedWithMetadata: mocks.ensureAgreementMintedWithMetadata,
+}))
+vi.mock('@/lib/agreement/agreementDelivery', () => ({
+  sendFinalizedAgreementDocument: mocks.sendFinalizedAgreementDocument,
 }))
 
 describe('witnessSignHandlers.POST', () => {
@@ -158,6 +162,10 @@ describe('witnessSignHandlers.POST', () => {
       witnessId: 'ad1',
       witnessedAt: new Date(),
     })
+    mocks.sendFinalizedAgreementDocument.mockResolvedValueOnce({
+      recipients: ['owner@example.com'],
+      deliveredTo: ['owner@example.com'],
+    })
 
     const res = await witnessSignHandlers.POST({
       request: new Request('http://x', { method: 'POST' }),
@@ -172,5 +180,69 @@ describe('witnessSignHandlers.POST', () => {
       '1',
       '2',
     ])
+    expect(mocks.sendFinalizedAgreementDocument).toHaveBeenCalledWith('a1')
+    expect(body.documentDelivery.deliveredTo).toEqual(['owner@example.com'])
+  })
+
+  it('still witnesses when document delivery fails', async () => {
+    mocks.getSession.mockResolvedValueOnce({
+      user: { id: 'ad1', role: 'ADMIN' },
+    })
+    mocks.userFindUnique.mockResolvedValueOnce({
+      id: 'ad1',
+      role: 'ADMIN',
+      name: null,
+      email: null,
+    })
+    mocks.isContractConfigured.mockReturnValueOnce(true)
+    mocks.agreementFindUnique.mockResolvedValueOnce({
+      id: 'a1',
+      status: 'PENDING_WITNESS',
+      witnessedAt: null,
+      ownerHasSigned: true,
+      beneficiaries: [{ id: 1, hasSigned: true }],
+    })
+    mocks.ensureAgreementMintedWithMetadata.mockResolvedValueOnce({
+      tokenId: 9,
+      wasMinted: false,
+      metadataUri: 'ipfs://bafy123',
+    })
+    mocks.getAgreementData.mockResolvedValueOnce({
+      ownerSigned: true,
+      witnessedAt: 0,
+      witnessSigned: false,
+    })
+    mocks.getBeneficiarySignatureStatus.mockResolvedValue({
+      hasSigned: true,
+      signedAt: 1700000000,
+    })
+    mocks.recordWitnessSignature.mockResolvedValueOnce({
+      txHash: '0xwit',
+      timestamp: 1700000000,
+    })
+    mocks.isAgreementFullySigned.mockResolvedValueOnce(true)
+    mocks.finalizeAgreement.mockResolvedValueOnce({
+      txHash: '0xfin',
+      timestamp: 1700000001,
+    })
+    mocks.agreementUpdate.mockResolvedValueOnce({
+      id: 'a1',
+      status: 'ACTIVE',
+      witnessId: 'ad1',
+      witnessedAt: new Date(),
+    })
+    mocks.sendFinalizedAgreementDocument.mockRejectedValueOnce(
+      new Error('smtp down'),
+    )
+
+    const res = await witnessSignHandlers.POST({
+      request: new Request('http://x', { method: 'POST' }),
+      params: { id: 'a1' },
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.agreement.status).toBe('ACTIVE')
+    expect(body.documentDelivery).toBeNull()
   })
 })

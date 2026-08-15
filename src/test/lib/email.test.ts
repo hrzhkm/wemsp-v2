@@ -38,4 +38,26 @@ describe('sendEmail', () => {
       expect.objectContaining({ from: 'smtp@example.com' }),
     )
   })
+
+  it('includes attachments when provided', async () => {
+    const attachment = {
+      filename: 'agreement.pdf',
+      content: Buffer.from('%PDF-1.7'),
+      contentType: 'application/pdf',
+    }
+
+    await sendEmail('user@example.com', 'Subject', 'Message', [attachment])
+
+    expect(sendMail).toHaveBeenCalledWith(
+      expect.objectContaining({ attachments: [attachment] }),
+    )
+  })
+
+  it('omits the attachments key when none are provided', async () => {
+    await sendEmail('user@example.com', 'Subject', 'Message')
+
+    expect(sendMail).toHaveBeenCalledWith(
+      expect.not.objectContaining({ attachments: expect.anything() }),
+    )
+  })
 })

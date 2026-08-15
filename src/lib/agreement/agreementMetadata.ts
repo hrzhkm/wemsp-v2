@@ -131,6 +131,23 @@ export async function ensureAgreementMetadataUri(
     )
   }
 
+  return uploadAgreementMetadata(agreement)
+}
+
+/**
+ * Re-encrypt and re-upload the agreement metadata and persist the new URI.
+ * Used to keep on-chain metadata fresh when a DRAFT agreement is edited after minting.
+ */
+export async function refreshAgreementMetadataUri(
+  agreementId: string,
+): Promise<AgreementMetadataUriResult> {
+  const agreement = await getAgreementForMetadata(agreementId)
+  return uploadAgreementMetadata(agreement)
+}
+
+async function uploadAgreementMetadata(
+  agreement: AgreementMetadataSource,
+): Promise<AgreementMetadataUriResult> {
   try {
     const payload = buildAgreementMetadataPayload(agreement)
     const plaintext = Buffer.from(JSON.stringify(payload), 'utf8')
