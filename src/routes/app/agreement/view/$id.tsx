@@ -30,8 +30,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { FieldGroup } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { authClient } from '@/lib/auth/auth-client'
-import { getStatusColor, getStatusDescription } from '@/lib/agreement/agreement-workflow'
+import { authClient } from '@/lib/auth/authClient'
+import { getStatusColor, getStatusDescription } from '@/lib/agreement/agreementWorkflow'
 
 export const Route = createFileRoute('/app/agreement/view/$id')({
   component: RouteComponent,

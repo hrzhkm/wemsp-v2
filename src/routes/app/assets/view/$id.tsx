@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { ArrowLeft, Calendar, DollarSign, ExternalLink, FileText, Loader2, Package, Tag, User } from 'lucide-react'
-import type { Asset } from '@/components/assets/assets-table'
+import type { Asset } from '@/components/assets/assetsTable'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card'
 import { FieldGroup } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { authClient } from '@/lib/auth/auth-client'
+import { authClient } from '@/lib/auth/authClient'
 import { cn } from '@/lib/utils'
 
 const formatCurrency = (value: number) =>

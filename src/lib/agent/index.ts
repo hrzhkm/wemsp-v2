@@ -1,9 +1,9 @@
 import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from '@langchain/core/messages'
 import { ChatOpenAI } from '@langchain/openai'
-import { buildAgentSystemPrompt } from './system-prompt'
+import { buildAgentSystemPrompt } from './systemPrompt'
 import { buildAgentTools } from './tools'
-import type { AgentPendingActionSummary } from './pending-actions'
-import type { AgentResponseLanguage } from './system-prompt'
+import type { AgentPendingActionSummary } from './pendingActions'
+import type { AgentResponseLanguage } from './systemPrompt'
 
 type HistoryMessage = {
   role: 'user' | 'assistant'

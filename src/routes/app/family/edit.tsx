@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { FamilyRelation } from '@/lib/family/family-types'
+import { FamilyRelation } from '@/lib/family/familyTypes'
 import { isNonRegisteredFamilyMember, isRegisteredFamilyMember } from '@/types/family'
 
 const formatRelationLabel = (relation: string) =>

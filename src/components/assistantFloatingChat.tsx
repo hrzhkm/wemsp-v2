@@ -5,7 +5,7 @@ import type { ChangeEvent, FormEvent, ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { authClient } from '@/lib/auth/auth-client'
+import { authClient } from '@/lib/auth/authClient'
 import { useLanguage } from '@/lib/i18n/context'
 
 type ChatMessage = {

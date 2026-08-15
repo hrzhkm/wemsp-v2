@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
-import { parsePendingAction, serializePendingAction } from '@/lib/agent/pending-actions'
+import { parsePendingAction, serializePendingAction } from '@/lib/agent/pendingActions'
 
 type ConfirmPendingActionRequest = {
   conversationId?: string

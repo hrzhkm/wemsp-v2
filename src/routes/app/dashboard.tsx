@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { AgreementStatus } from '@/generated/prisma/enums'
-import { authClient } from '@/lib/auth/auth-client'
+import { authClient } from '@/lib/auth/authClient'
 import { useLanguage } from '@/lib/i18n/context'
 
 interface AssetSummary {

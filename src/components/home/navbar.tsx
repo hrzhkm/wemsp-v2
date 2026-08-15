@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { LoginForm } from '@/components/login-form';
+import { LoginForm } from '@/components/loginForm';
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { authClient } from '@/lib/auth/auth-client';
+import { authClient } from '@/lib/auth/authClient';
 import { Link } from '@tanstack/react-router';
 import { useLanguage } from '@/lib/i18n/context';
-import { LanguageSwitcher } from '@/components/language-switcher';
+import { LanguageSwitcher } from '@/components/languageSwitcher';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -179,4 +179,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

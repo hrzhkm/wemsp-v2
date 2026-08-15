@@ -3,7 +3,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
-import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
+import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
 
 /**
  * Check if a user has completed their profile.

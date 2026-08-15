@@ -4,7 +4,7 @@ import { ArrowLeft, DollarSign, ExternalLink, FileText, Loader2, Package, Pencil
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import type { AssetType as AssetTypeEnum } from '@/generated/prisma/enums'
-import type { Asset } from '@/components/assets/assets-table'
+import type { Asset } from '@/components/assets/assetsTable'
 
 import { Button } from '@/components/ui/button'
 import {

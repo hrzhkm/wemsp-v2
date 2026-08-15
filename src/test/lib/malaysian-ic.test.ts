@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatMalaysianIc } from '@/lib/family/malaysian-ic'
+import { formatMalaysianIc } from '@/lib/family/malaysianIc'
 
 describe('formatMalaysianIc', () => {
   it('formats full and partial IC numbers while ignoring non-digits', () => {

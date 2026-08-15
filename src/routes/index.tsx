@@ -3,7 +3,7 @@ import Navbar from '../components/home/navbar';
 import Header from "../components/home/header";
 import About from "../components/home/about";
 import Services from "../components/home/services";
-// import LatestTransactions from "../components/home/latest-transactions";
+// import LatestTransactions from "../components/home/latestTransactions";
 // import { Footer } from "@/components/ui/footer";
 
 export const Route = createFileRoute('/')({ component: App })

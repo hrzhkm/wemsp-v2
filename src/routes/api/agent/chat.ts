@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import type { AgentResponseLanguage } from '@/lib/agent/system-prompt'
+import type { AgentResponseLanguage } from '@/lib/agent/systemPrompt'
 import { auth } from '@/lib/auth/auth'
 import { runAgentTurn } from '@/lib/agent'
 import { prisma } from '@/db'

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/db'
-import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
+import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
 import { corsHeaders } from '@/lib/cors'
 
 export const Route = createFileRoute('/api/admin/agreements/pending-witness/$')({

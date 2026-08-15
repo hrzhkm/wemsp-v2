@@ -3,9 +3,9 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { Filter, Loader2, Plus, Search, Users, Wallet, WalletCards } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import type { Asset } from '@/components/assets/assets-table'
+import type { Asset } from '@/components/assets/assetsTable'
 
-import { AssetsTable } from '@/components/assets/assets-table'
+import { AssetsTable } from '@/components/assets/assetsTable'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { authClient } from '@/lib/auth/auth-client'
+import { authClient } from '@/lib/auth/authClient'
 import { useLanguage } from '@/lib/i18n/context'
 
 interface AssetsResponse {

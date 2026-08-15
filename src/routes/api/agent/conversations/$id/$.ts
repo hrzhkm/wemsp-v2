@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
-import { getPendingActionSummaries } from '@/lib/agent/pending-actions'
+import { getPendingActionSummaries } from '@/lib/agent/pendingActions'
 
 export const Route = createFileRoute('/api/agent/conversations/$id/$')({
   server: {

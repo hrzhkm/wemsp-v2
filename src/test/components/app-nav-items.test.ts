@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getVisibleNavItems, adminNavItems, type NavItem } from '@/components/app-nav-items'
+import { getVisibleNavItems, adminNavItems, type NavItem } from '@/components/appNavItems'
 
 describe('getVisibleNavItems', () => {
   it('hides admin-only items from USER', () => {

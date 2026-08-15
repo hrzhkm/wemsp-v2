@@ -8,7 +8,7 @@ import {
   validateAgreementInput,
   validateAssets,
   validateBeneficiaries,
-} from '@/lib/agreement/agreement-validation'
+} from '@/lib/agreement/agreementValidation'
 
 export const agreementHandlers = {
       // GET /api/agreement - List agreements or get single agreement by ID

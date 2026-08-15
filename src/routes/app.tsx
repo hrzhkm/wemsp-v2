@@ -5,7 +5,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/app-sidebar'
+import { AppSidebar } from '@/components/appSidebar'
 import { Separator } from '@/components/ui/separator'
 import {
   Breadcrumb,
@@ -15,12 +15,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import { authClient } from '@/lib/auth/auth-client'
+import { authClient } from '@/lib/auth/authClient'
 import { getServerSession, requireCompletedProfile } from '@/middleware'
 import { getRoleFromSession, resolveAppGuard } from '@/lib/auth/rbac'
-import { ProfileCompletionDialog } from '@/components/profile-completion-dialog'
+import { ProfileCompletionDialog } from '@/components/profileCompletionDialog'
 import { useLanguage } from '@/lib/i18n/context'
-import { AssistantFloatingChat } from '@/components/assistant-floating-chat'
+import { AssistantFloatingChat } from '@/components/assistantFloatingChat'
 
 export const Route = createFileRoute('/app')({
   component: RouteComponent,

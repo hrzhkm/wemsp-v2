@@ -5,7 +5,7 @@ import {
   formatShare,
   hasFixedShare,
   validateFaraidShares,
-} from '@/lib/faraid/faraid-rules'
+} from '@/lib/faraid/faraidRules'
 
 describe('faraid-rules', () => {
   it('calculates spouse and mother fixed shares with children', () => {

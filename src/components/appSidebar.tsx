@@ -20,9 +20,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { authClient } from "@/lib/auth/auth-client"
+import { authClient } from "@/lib/auth/authClient"
 import { useLanguage } from "@/lib/i18n/context"
-import { getVisibleNavItems } from "@/components/app-nav-items"
+import { getVisibleNavItems } from "@/components/appNavItems"
 import { getRoleFromSession } from "@/lib/auth/rbac"
 
 export function AppSidebar() {

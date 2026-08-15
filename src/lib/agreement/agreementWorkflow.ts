@@ -1,5 +1,5 @@
 import { AgreementStatus } from '@/generated/prisma/enums'
-import { validateStatusTransition } from './agreement-validation'
+import { validateStatusTransition } from './agreementValidation'
 
 /**
  * Workflow context for status transitions

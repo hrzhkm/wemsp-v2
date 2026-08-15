@@ -1,5 +1,5 @@
 import type { FamilyRelation } from '@/generated/prisma/enums'
-import { calculateFaraidDistribution, formatShare } from './faraid-rules'
+import { calculateFaraidDistribution, formatShare } from './faraidRules'
 
 /**
  * Family member with their relation information

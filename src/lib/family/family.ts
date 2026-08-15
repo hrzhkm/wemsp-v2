@@ -3,8 +3,8 @@ import {
   FamilyRelation,
   INVERSE_RELATIONS,
   getInverseRelation,
-} from './family-types'
-import type { FamilyRelationType } from './family-types'
+} from './familyTypes'
+import type { FamilyRelationType } from './familyTypes'
 
 // Re-export types for server-side usage
 export { FamilyRelation, type FamilyRelationType, INVERSE_RELATIONS, getInverseRelation }

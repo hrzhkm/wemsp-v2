@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { requireAdminFromHeaders } from '@/lib/auth/admin-guard'
+import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
 
 const mocks = vi.hoisted(() => ({
   getSession: vi.fn(),

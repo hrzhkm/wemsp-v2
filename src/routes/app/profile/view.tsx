@@ -2,7 +2,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { AlertTriangle, Calendar, CheckCircle2, Clock, IdCard, Mail, MapPin, Phone, Shield, Sparkles, UserCircle2, XCircle } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
-import { authClient } from '@/lib/auth/auth-client'
+import { authClient } from '@/lib/auth/authClient'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {

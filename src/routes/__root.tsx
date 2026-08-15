@@ -9,7 +9,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { LanguageProvider } from '@/lib/i18n/context'
 import '@/lib/i18n/config'
 
-// import Header from '../components/Header'
+// import Header from '../components/header'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 

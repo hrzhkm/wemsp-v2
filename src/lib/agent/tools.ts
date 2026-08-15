@@ -1,6 +1,6 @@
 import { tool } from '@langchain/core/tools'
 import { z } from 'zod'
-import { serializePendingAction } from './pending-actions'
+import { serializePendingAction } from './pendingActions'
 import { prisma } from '@/db'
 
 type AgentRuntime = {

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
-import { validateBeneficiaries } from '@/lib/agreement/agreement-validation'
+import { validateBeneficiaries } from '@/lib/agreement/agreementValidation'
 
 export const Route = createFileRoute('/api/agreement/$id/beneficiaries/$')({
   server: {
