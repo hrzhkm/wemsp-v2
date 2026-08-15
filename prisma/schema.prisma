@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -49,33 +48,33 @@ enum Role {
 
 // Distribution type for Islamic agreements
 enum DistributionType {
-  FARAID      // Islamic inheritance law (fixed shares)
-  HIBAH       // Gift during lifetime
-  WASIYYAH    // Will (up to 1/3 for non-heirs)
-  WAKAF       // Endowment
+  FARAID // Islamic inheritance law (fixed shares)
+  HIBAH // Gift during lifetime
+  WASIYYAH // Will (up to 1/3 for non-heirs)
+  WAKAF // Endowment
 }
 
 // Status of an agreement
 enum AgreementStatus {
-  DRAFT                    // Initial creation
-  PENDING_SIGNATURES       // Waiting for beneficiaries to sign
-  PENDING_WITNESS          // All beneficiaries signed, waiting for admin witness
-  ACTIVE                   // Fully executed agreement
-  COMPLETED                // Distribution completed
-  CANCELLED                // Agreement cancelled
-  EXPIRED                  // Agreement expired
+  DRAFT // Initial creation
+  PENDING_SIGNATURES // Waiting for beneficiaries to sign
+  PENDING_WITNESS // All beneficiaries signed, waiting for admin witness
+  ACTIVE // Fully executed agreement
+  COMPLETED // Distribution completed
+  CANCELLED // Agreement cancelled
+  EXPIRED // Agreement expired
 }
 
 // Central registry for IC numbers to ensure global uniqueness
 // across User and NonRegisteredFamilyMember tables
 model IcRegistry {
-  icNumber    String   @id @unique
-  createdAt   DateTime @default(now())
-  
+  icNumber  String   @id @unique
+  createdAt DateTime @default(now())
+
   // One-to-one relations (only one can be set at a time)
   user                      User?
   nonRegisteredFamilyMember NonRegisteredFamilyMember?
-  
+
   @@map("ic_registry")
 }
 
@@ -94,70 +93,91 @@ model User {
   sessions      Session[]
   accounts      Account[]
   assets        Asset[]
-  
+
   // Family relationships where this user is the owner
-  familyMembers            FamilyMember[] @relation("UserFamilyMembers")
+  familyMembers              FamilyMember[]              @relation("UserFamilyMembers")
   // Family relationships where this user is the related member
-  relatedFamilyMembers     FamilyMember[] @relation("RelatedFamilyMembers")
+  relatedFamilyMembers       FamilyMember[]              @relation("RelatedFamilyMembers")
   // Non-registered family members added by this user
   nonRegisteredFamilyMembers NonRegisteredFamilyMember[]
-  
+
   // Agreements owned by this user (as the distributor)
-  agreements    Agreement[]
-  
+  agreements Agreement[]
+
   // AI assistant conversations
-  agentConversations AgentConversation[]
-  settings UserSetting?
-  
+  agentConversations    AgentConversation[]
+  settings              UserSetting?
+  documentEncryptionKey UserDocumentEncryptionKey?
+
   // Reference to IC registry for global uniqueness
-  icRegistry    IcRegistry? @relation(fields: [icNumber], references: [icNumber], onDelete: SetNull)
-  
+  icRegistry IcRegistry? @relation(fields: [icNumber], references: [icNumber], onDelete: SetNull)
+
   // Agreements this user witnessed (admin-role users act as witnesses)
   witnessedAgreements      Agreement[]            @relation("AgreementWitness")
   // Beneficiaries this user proxy-signed (admin-role users only)
   proxySignedBeneficiaries AgreementBeneficiary[] @relation("AdminProxySigning")
-  
+
   @@map("user")
 }
 
 model UserSetting {
-  userId                         String   @id
-  user                           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  preferredLanguage              String   @default("en")
-  emailSignatureRequests         Boolean  @default(true)
-  inAppSignatureRequests         Boolean  @default(true)
-  emailAgreementStatusUpdates    Boolean  @default(true)
-  inAppAgreementStatusUpdates    Boolean  @default(true)
-  emailWitnessConfirmation       Boolean  @default(true)
-  inAppWitnessConfirmation       Boolean  @default(true)
-  emailExpiryReminders           Boolean  @default(true)
-  inAppExpiryReminders           Boolean  @default(true)
-  reminderDays                   Int[]    @default([1, 3, 7])
-  createdAt                      DateTime @default(now())
-  updatedAt                      DateTime @updatedAt
+  userId                      String   @id
+  user                        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferredLanguage           String   @default("en")
+  emailSignatureRequests      Boolean  @default(true)
+  inAppSignatureRequests      Boolean  @default(true)
+  emailAgreementStatusUpdates Boolean  @default(true)
+  inAppAgreementStatusUpdates Boolean  @default(true)
+  emailWitnessConfirmation    Boolean  @default(true)
+  inAppWitnessConfirmation    Boolean  @default(true)
+  emailExpiryReminders        Boolean  @default(true)
+  inAppExpiryReminders        Boolean  @default(true)
+  reminderDays                Int[]    @default([1, 3, 7])
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
 
   @@map("user_setting")
+}
+
+model UserDocumentEncryptionKey {
+  userId             String   @id
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId         String
+  answerWrappedFek   Bytes
+  answerSalt         Bytes
+  answerIv           Bytes
+  answerAuthTag      Bytes
+  recoveryWrappedFek Bytes
+  recoveryIv         Bytes
+  recoveryAuthTag    Bytes
+  algorithm          String   @default("aes-256-gcm")
+  keyVersion         Int      @default(1)
+  recoveryKeyVersion Int      @default(1)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("user_document_encryption_key")
 }
 
 // Junction table to link users as family members
 model FamilyMember {
   // Change it to id String @id @default(cuid()) for production
-  id            Int         @id @default(autoincrement()) 
-  relation      FamilyRelation // The relation type (e.g., FATHER, MOTHER, SIBLING)
-  
+  id       Int            @id @default(autoincrement())
+  relation FamilyRelation // The relation type (e.g., FATHER, MOTHER, SIBLING)
+
   // The user who created/owns this family link
-  userId        String
-  user          User           @relation("UserFamilyMembers", fields: [userId], references: [id], onDelete: Cascade)
-  
+  userId String
+  user   User   @relation("UserFamilyMembers", fields: [userId], references: [id], onDelete: Cascade)
+
   // The related family member (another user in the system)
   familyMemberUserId String
-  familyMemberUser   User           @relation("RelatedFamilyMembers", fields: [familyMemberUserId], references: [id], onDelete: Cascade)
-  
+  familyMemberUser   User   @relation("RelatedFamilyMembers", fields: [familyMemberUserId], references: [id], onDelete: Cascade)
+
   // Agreement beneficiaries where this family member is a beneficiary
   agreementBeneficiaries AgreementBeneficiary[]
-  
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Prevent duplicate relationships between same users
   @@unique([userId, familyMemberUserId])
@@ -170,27 +190,27 @@ model FamilyMember {
 // Can be deleted once a user with the same IC registers and confirms identity
 model NonRegisteredFamilyMember {
   // Change it to id String @id @default(cuid()) for prod
-  id            Int         @id @default(autoincrement())
-  relation      FamilyRelation // The relation type
-  
+  id       Int            @id @default(autoincrement())
+  relation FamilyRelation // The relation type
+
   // Family member details (not yet a registered user)
-  name          String
-  icNumber      String      @unique
-  address       String?
-  phoneNumber   String?
-  
+  name        String
+  icNumber    String  @unique
+  address     String?
+  phoneNumber String?
+
   // The user who added this non-registered family member
-  userId        String
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // Reference to IC registry for global uniqueness
-  icRegistry    IcRegistry  @relation(fields: [icNumber], references: [icNumber], onDelete: Cascade)
-  
+  icRegistry IcRegistry @relation(fields: [icNumber], references: [icNumber], onDelete: Cascade)
+
   // Agreement beneficiaries where this non-registered family member is a beneficiary
   agreementBeneficiaries AgreementBeneficiary[]
-  
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@map("non_registered_family_member")
@@ -198,22 +218,23 @@ model NonRegisteredFamilyMember {
 
 model Asset {
   // Change it to id String @id @default(cuid()) for prod
-  id            Int         @id @default(autoincrement())
-  name          String
-  type          AssetType
-  description   String?
-  value         Float
-  documentUrl   String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                Int       @id @default(autoincrement())
+  name              String
+  type              AssetType
+  description       String?
+  value             Float
+  documentUrl       String?
+  documentEncrypted Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   // The user who owns this asset
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // Agreements where this asset is allocated
   agreementAssets AgreementAsset[]
-  
+
   @@map("asset")
 }
 
@@ -267,44 +288,44 @@ model Verification {
 
 // Main agreement model for Islamic distribution
 model Agreement {
-  id                String           @id @default(cuid())
-  title             String
-  description       String?
-  distributionType  DistributionType
-  status            AgreementStatus  @default(DRAFT)
-  
+  id               String           @id @default(cuid())
+  title            String
+  description      String?
+  distributionType DistributionType
+  status           AgreementStatus  @default(DRAFT)
+
   // Owner of the agreement (the person distributing assets)
-  ownerId           String
-  owner             User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
   // Owner signature tracking
-  ownerHasSigned    Boolean          @default(false)
+  ownerHasSigned    Boolean   @default(false)
   ownerSignedAt     DateTime?
-  ownerSignatureRef String?          // Transaction hash for owner signature
-  
+  ownerSignatureRef String? // Transaction hash for owner signature
+
   // Witness (admin-role User)
-  witnessId         String?
-  witness           User?            @relation("AgreementWitness", fields: [witnessId], references: [id])
-  witnessedAt       DateTime?
-  witnessSignatureRef String?        // Transaction hash for witness signature
-  
+  witnessId           String?
+  witness             User?     @relation("AgreementWitness", fields: [witnessId], references: [id])
+  witnessedAt         DateTime?
+  witnessSignatureRef String? // Transaction hash for witness signature
+
   // Agreement validity
-  effectiveDate     DateTime?        // When agreement takes effect
-  expiryDate        DateTime?        // Optional expiry
-  
+  effectiveDate DateTime? // When agreement takes effect
+  expiryDate    DateTime? // Optional expiry
+
   // On-chain tracking (NFT)
-  tokenId           Int?             // NFT token ID on the contract
-  contractAddress   String?          // Smart contract address
-  metadataUri       String?          // S3 URI for agreement JSON metadata
-  mintTxHash        String?          // Transaction hash for minting the NFT
-  
+  tokenId         Int? // NFT token ID on the contract
+  contractAddress String? // Smart contract address
+  metadataUri     String? // S3 URI for agreement JSON metadata
+  mintTxHash      String? // Transaction hash for minting the NFT
+
   // Timestamps
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  assets            AgreementAsset[]
-  beneficiaries     AgreementBeneficiary[]
+  assets        AgreementAsset[]
+  beneficiaries AgreementBeneficiary[]
 
   @@index([ownerId])
   @@index([status])
@@ -314,21 +335,21 @@ model Agreement {
 
 // Junction table linking agreements to assets with optional allocation
 model AgreementAsset {
-  id            String    @id @default(cuid())
-  
-  agreementId   String
-  agreement     Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
-  
-  assetId       Int
-  asset         Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
-  
+  id String @id @default(cuid())
+
+  agreementId String
+  agreement   Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  assetId Int
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
   // Optional: specific value allocated from this asset (if partial)
   allocatedValue      Float?
-  allocatedPercentage Float?    // Percentage of asset included
+  allocatedPercentage Float? // Percentage of asset included
   notes               String?
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([agreementId, assetId])
   @@index([agreementId])
@@ -338,39 +359,39 @@ model AgreementAsset {
 
 // Tracks beneficiaries with their share and signature status
 model AgreementBeneficiary {
-  id            String    @id @default(cuid())
+  id String @id @default(cuid())
 
-  agreementId   String
-  agreement     Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+  agreementId String
+  agreement   Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
 
   // Beneficiary can be either a registered family member OR non-registered
   // Only one should be set at a time
-  familyMemberId              Int?
-  familyMember                FamilyMember? @relation(fields: [familyMemberId], references: [id], onDelete: SetNull)
+  familyMemberId Int?
+  familyMember   FamilyMember? @relation(fields: [familyMemberId], references: [id], onDelete: SetNull)
 
   nonRegisteredFamilyMemberId Int?
   nonRegisteredFamilyMember   NonRegisteredFamilyMember? @relation(fields: [nonRegisteredFamilyMemberId], references: [id], onDelete: SetNull)
 
   // Distribution share
-  sharePercentage   Float         // Percentage of total distribution
-  shareDescription  String?       // E.g., "1/6 as per Faraid for mother"
+  sharePercentage  Float // Percentage of total distribution
+  shareDescription String? // E.g., "1/6 as per Faraid for mother"
 
   // Signature tracking
-  hasSigned         Boolean       @default(false)
-  signedAt          DateTime?
-  signatureRef      String?       // Reference to signature document/hash
+  hasSigned    Boolean   @default(false)
+  signedAt     DateTime?
+  signatureRef String? // Reference to signature document/hash
 
   // Status
-  isAccepted        Boolean?      // null = pending, true = accepted, false = rejected
-  rejectionReason   String?
+  isAccepted      Boolean? // null = pending, true = accepted, false = rejected
+  rejectionReason String?
 
   // Admin signing audit fields
   adminNotes      String?
   adminSignedById String?
-  adminSignedBy   User?    @relation("AdminProxySigning", fields: [adminSignedById], references: [id])
+  adminSignedBy   User?   @relation("AdminProxySigning", fields: [adminSignedById], references: [id])
 
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agreementId])
   @@index([familyMemberId])
@@ -405,7 +426,7 @@ model AgentMessage {
   conversation   AgentConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   role           AgentMessageRole
   content        String
-  createdAt      DateTime @default(now())
+  createdAt      DateTime          @default(now())
 
   @@index([conversationId, createdAt])
   @@map("agent_message")

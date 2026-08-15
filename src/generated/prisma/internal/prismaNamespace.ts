@@ -388,6 +388,7 @@ export const ModelName = {
   IcRegistry: 'IcRegistry',
   User: 'User',
   UserSetting: 'UserSetting',
+  UserDocumentEncryptionKey: 'UserDocumentEncryptionKey',
   FamilyMember: 'FamilyMember',
   NonRegisteredFamilyMember: 'NonRegisteredFamilyMember',
   Asset: 'Asset',
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "todo" | "icRegistry" | "user" | "userSetting" | "familyMember" | "nonRegisteredFamilyMember" | "asset" | "session" | "account" | "verification" | "agreement" | "agreementAsset" | "agreementBeneficiary" | "agentConversation" | "agentMessage"
+    modelProps: "todo" | "icRegistry" | "user" | "userSetting" | "userDocumentEncryptionKey" | "familyMember" | "nonRegisteredFamilyMember" | "asset" | "session" | "account" | "verification" | "agreement" | "agreementAsset" | "agreementBeneficiary" | "agentConversation" | "agentMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -711,6 +712,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserSettingCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserSettingCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserDocumentEncryptionKey: {
+      payload: Prisma.$UserDocumentEncryptionKeyPayload<ExtArgs>
+      fields: Prisma.UserDocumentEncryptionKeyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserDocumentEncryptionKeyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserDocumentEncryptionKeyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload>
+        }
+        findFirst: {
+          args: Prisma.UserDocumentEncryptionKeyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserDocumentEncryptionKeyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload>
+        }
+        findMany: {
+          args: Prisma.UserDocumentEncryptionKeyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload>[]
+        }
+        create: {
+          args: Prisma.UserDocumentEncryptionKeyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload>
+        }
+        createMany: {
+          args: Prisma.UserDocumentEncryptionKeyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserDocumentEncryptionKeyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload>[]
+        }
+        delete: {
+          args: Prisma.UserDocumentEncryptionKeyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload>
+        }
+        update: {
+          args: Prisma.UserDocumentEncryptionKeyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserDocumentEncryptionKeyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserDocumentEncryptionKeyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserDocumentEncryptionKeyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserDocumentEncryptionKeyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserDocumentEncryptionKeyPayload>
+        }
+        aggregate: {
+          args: Prisma.UserDocumentEncryptionKeyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserDocumentEncryptionKey>
+        }
+        groupBy: {
+          args: Prisma.UserDocumentEncryptionKeyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserDocumentEncryptionKeyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserDocumentEncryptionKeyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserDocumentEncryptionKeyCountAggregateOutputType> | number
         }
       }
     }
@@ -1620,6 +1695,26 @@ export const UserSettingScalarFieldEnum = {
 export type UserSettingScalarFieldEnum = (typeof UserSettingScalarFieldEnum)[keyof typeof UserSettingScalarFieldEnum]
 
 
+export const UserDocumentEncryptionKeyScalarFieldEnum = {
+  userId: 'userId',
+  questionId: 'questionId',
+  answerWrappedFek: 'answerWrappedFek',
+  answerSalt: 'answerSalt',
+  answerIv: 'answerIv',
+  answerAuthTag: 'answerAuthTag',
+  recoveryWrappedFek: 'recoveryWrappedFek',
+  recoveryIv: 'recoveryIv',
+  recoveryAuthTag: 'recoveryAuthTag',
+  algorithm: 'algorithm',
+  keyVersion: 'keyVersion',
+  recoveryKeyVersion: 'recoveryKeyVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserDocumentEncryptionKeyScalarFieldEnum = (typeof UserDocumentEncryptionKeyScalarFieldEnum)[keyof typeof UserDocumentEncryptionKeyScalarFieldEnum]
+
+
 export const FamilyMemberScalarFieldEnum = {
   id: 'id',
   relation: 'relation',
@@ -1654,6 +1749,7 @@ export const AssetScalarFieldEnum = {
   description: 'description',
   value: 'value',
   documentUrl: 'documentUrl',
+  documentEncrypted: 'documentEncrypted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
@@ -1884,6 +1980,20 @@ export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Bytes'
+ */
+export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+/**
+ * Reference to a field of type 'Bytes[]'
+ */
+export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
+    
+
+
+/**
  * Reference to a field of type 'FamilyRelation'
  */
 export type EnumFamilyRelationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FamilyRelation'>
@@ -2065,6 +2175,7 @@ export type GlobalOmitConfig = {
   icRegistry?: Prisma.IcRegistryOmit
   user?: Prisma.UserOmit
   userSetting?: Prisma.UserSettingOmit
+  userDocumentEncryptionKey?: Prisma.UserDocumentEncryptionKeyOmit
   familyMember?: Prisma.FamilyMemberOmit
   nonRegisteredFamilyMember?: Prisma.NonRegisteredFamilyMemberOmit
   asset?: Prisma.AssetOmit

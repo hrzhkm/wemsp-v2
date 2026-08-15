@@ -43,6 +43,7 @@ export type AssetMinAggregateOutputType = {
   description: string | null
   value: number | null
   documentUrl: string | null
+  documentEncrypted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -55,6 +56,7 @@ export type AssetMaxAggregateOutputType = {
   description: string | null
   value: number | null
   documentUrl: string | null
+  documentEncrypted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -67,6 +69,7 @@ export type AssetCountAggregateOutputType = {
   description: number
   value: number
   documentUrl: number
+  documentEncrypted: number
   createdAt: number
   updatedAt: number
   userId: number
@@ -91,6 +94,7 @@ export type AssetMinAggregateInputType = {
   description?: true
   value?: true
   documentUrl?: true
+  documentEncrypted?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -103,6 +107,7 @@ export type AssetMaxAggregateInputType = {
   description?: true
   value?: true
   documentUrl?: true
+  documentEncrypted?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -115,6 +120,7 @@ export type AssetCountAggregateInputType = {
   description?: true
   value?: true
   documentUrl?: true
+  documentEncrypted?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -214,6 +220,7 @@ export type AssetGroupByOutputType = {
   description: string | null
   value: number
   documentUrl: string | null
+  documentEncrypted: boolean
   createdAt: Date
   updatedAt: Date
   userId: string
@@ -249,6 +256,7 @@ export type AssetWhereInput = {
   description?: Prisma.StringNullableFilter<"Asset"> | string | null
   value?: Prisma.FloatFilter<"Asset"> | number
   documentUrl?: Prisma.StringNullableFilter<"Asset"> | string | null
+  documentEncrypted?: Prisma.BoolFilter<"Asset"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Asset"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Asset"> | Date | string
   userId?: Prisma.StringFilter<"Asset"> | string
@@ -263,6 +271,7 @@ export type AssetOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   value?: Prisma.SortOrder
   documentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  documentEncrypted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -280,6 +289,7 @@ export type AssetWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"Asset"> | string | null
   value?: Prisma.FloatFilter<"Asset"> | number
   documentUrl?: Prisma.StringNullableFilter<"Asset"> | string | null
+  documentEncrypted?: Prisma.BoolFilter<"Asset"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Asset"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Asset"> | Date | string
   userId?: Prisma.StringFilter<"Asset"> | string
@@ -294,6 +304,7 @@ export type AssetOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   value?: Prisma.SortOrder
   documentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  documentEncrypted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -314,6 +325,7 @@ export type AssetScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"Asset"> | string | null
   value?: Prisma.FloatWithAggregatesFilter<"Asset"> | number
   documentUrl?: Prisma.StringNullableWithAggregatesFilter<"Asset"> | string | null
+  documentEncrypted?: Prisma.BoolWithAggregatesFilter<"Asset"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Asset"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Asset"> | Date | string
   userId?: Prisma.StringWithAggregatesFilter<"Asset"> | string
@@ -325,6 +337,7 @@ export type AssetCreateInput = {
   description?: string | null
   value: number
   documentUrl?: string | null
+  documentEncrypted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAssetsInput
@@ -338,6 +351,7 @@ export type AssetUncheckedCreateInput = {
   description?: string | null
   value: number
   documentUrl?: string | null
+  documentEncrypted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -350,6 +364,7 @@ export type AssetUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   value?: Prisma.FloatFieldUpdateOperationsInput | number
   documentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentEncrypted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAssetsNestedInput
@@ -363,6 +378,7 @@ export type AssetUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   value?: Prisma.FloatFieldUpdateOperationsInput | number
   documentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentEncrypted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -376,6 +392,7 @@ export type AssetCreateManyInput = {
   description?: string | null
   value: number
   documentUrl?: string | null
+  documentEncrypted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -387,6 +404,7 @@ export type AssetUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   value?: Prisma.FloatFieldUpdateOperationsInput | number
   documentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentEncrypted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -398,6 +416,7 @@ export type AssetUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   value?: Prisma.FloatFieldUpdateOperationsInput | number
   documentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentEncrypted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -420,6 +439,7 @@ export type AssetCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   value?: Prisma.SortOrder
   documentUrl?: Prisma.SortOrder
+  documentEncrypted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -437,6 +457,7 @@ export type AssetMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   value?: Prisma.SortOrder
   documentUrl?: Prisma.SortOrder
+  documentEncrypted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -449,6 +470,7 @@ export type AssetMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   value?: Prisma.SortOrder
   documentUrl?: Prisma.SortOrder
+  documentEncrypted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -538,6 +560,7 @@ export type AssetCreateWithoutUserInput = {
   description?: string | null
   value: number
   documentUrl?: string | null
+  documentEncrypted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   agreementAssets?: Prisma.AgreementAssetCreateNestedManyWithoutAssetInput
@@ -550,6 +573,7 @@ export type AssetUncheckedCreateWithoutUserInput = {
   description?: string | null
   value: number
   documentUrl?: string | null
+  documentEncrypted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   agreementAssets?: Prisma.AgreementAssetUncheckedCreateNestedManyWithoutAssetInput
@@ -591,6 +615,7 @@ export type AssetScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"Asset"> | string | null
   value?: Prisma.FloatFilter<"Asset"> | number
   documentUrl?: Prisma.StringNullableFilter<"Asset"> | string | null
+  documentEncrypted?: Prisma.BoolFilter<"Asset"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Asset"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Asset"> | Date | string
   userId?: Prisma.StringFilter<"Asset"> | string
@@ -602,6 +627,7 @@ export type AssetCreateWithoutAgreementAssetsInput = {
   description?: string | null
   value: number
   documentUrl?: string | null
+  documentEncrypted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAssetsInput
@@ -614,6 +640,7 @@ export type AssetUncheckedCreateWithoutAgreementAssetsInput = {
   description?: string | null
   value: number
   documentUrl?: string | null
+  documentEncrypted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -641,6 +668,7 @@ export type AssetUpdateWithoutAgreementAssetsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   value?: Prisma.FloatFieldUpdateOperationsInput | number
   documentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentEncrypted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAssetsNestedInput
@@ -653,6 +681,7 @@ export type AssetUncheckedUpdateWithoutAgreementAssetsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   value?: Prisma.FloatFieldUpdateOperationsInput | number
   documentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentEncrypted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -665,6 +694,7 @@ export type AssetCreateManyUserInput = {
   description?: string | null
   value: number
   documentUrl?: string | null
+  documentEncrypted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -675,6 +705,7 @@ export type AssetUpdateWithoutUserInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   value?: Prisma.FloatFieldUpdateOperationsInput | number
   documentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentEncrypted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agreementAssets?: Prisma.AgreementAssetUpdateManyWithoutAssetNestedInput
@@ -687,6 +718,7 @@ export type AssetUncheckedUpdateWithoutUserInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   value?: Prisma.FloatFieldUpdateOperationsInput | number
   documentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentEncrypted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agreementAssets?: Prisma.AgreementAssetUncheckedUpdateManyWithoutAssetNestedInput
@@ -699,6 +731,7 @@ export type AssetUncheckedUpdateManyWithoutUserInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   value?: Prisma.FloatFieldUpdateOperationsInput | number
   documentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentEncrypted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -741,6 +774,7 @@ export type AssetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   description?: boolean
   value?: boolean
   documentUrl?: boolean
+  documentEncrypted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -756,6 +790,7 @@ export type AssetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   description?: boolean
   value?: boolean
   documentUrl?: boolean
+  documentEncrypted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -769,6 +804,7 @@ export type AssetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   description?: boolean
   value?: boolean
   documentUrl?: boolean
+  documentEncrypted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -782,12 +818,13 @@ export type AssetSelectScalar = {
   description?: boolean
   value?: boolean
   documentUrl?: boolean
+  documentEncrypted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
 }
 
-export type AssetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "type" | "description" | "value" | "documentUrl" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["asset"]>
+export type AssetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "type" | "description" | "value" | "documentUrl" | "documentEncrypted" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["asset"]>
 export type AssetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   agreementAssets?: boolean | Prisma.Asset$agreementAssetsArgs<ExtArgs>
@@ -813,6 +850,7 @@ export type $AssetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     description: string | null
     value: number
     documentUrl: string | null
+    documentEncrypted: boolean
     createdAt: Date
     updatedAt: Date
     userId: string
@@ -1247,6 +1285,7 @@ export interface AssetFieldRefs {
   readonly description: Prisma.FieldRef<"Asset", 'String'>
   readonly value: Prisma.FieldRef<"Asset", 'Float'>
   readonly documentUrl: Prisma.FieldRef<"Asset", 'String'>
+  readonly documentEncrypted: Prisma.FieldRef<"Asset", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Asset", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Asset", 'DateTime'>
   readonly userId: Prisma.FieldRef<"Asset", 'String'>

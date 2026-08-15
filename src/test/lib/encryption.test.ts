@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest'
-import type {WrappedKey} from '@/lib/storage/encryption';
+import type { WrappedKey } from '@/lib/storage/encryption'
 import {
   AUTH_TAG_BYTES,
   EncryptionError,
   IV_BYTES,
   KEY_BYTES,
-  
   decryptDocument,
   encryptDocument,
   generateFek,
   rewrapFek,
   unwrapFek,
-  wrapFek
+  unwrapFekWithKey,
+  wrapFek,
+  wrapFekWithKey,
 } from '@/lib/storage/encryption'
 
 const SECRET = 'My first pet was named Rex'
@@ -131,14 +132,14 @@ describe('encryption — Tier 2 FEK management', () => {
     expect(unwrapped.equals(fek)).toBe(true)
   })
 
-  it.each([['empty string', ''], ['only whitespace', '   \t \n  ']])(
-    'throws EMPTY_SECRET when wrapping with a %s secret',
-    (_label, secret) => {
-      expect(() => wrapFek(generateFek(), secret)).toThrowError(
-        expect.objectContaining({ code: 'EMPTY_SECRET' }),
-      )
-    },
-  )
+  it.each([
+    ['empty string', ''],
+    ['only whitespace', '   \t \n  '],
+  ])('throws EMPTY_SECRET when wrapping with a %s secret', (_label, secret) => {
+    expect(() => wrapFek(generateFek(), secret)).toThrowError(
+      expect.objectContaining({ code: 'EMPTY_SECRET' }),
+    )
+  })
 
   it('throws EMPTY_SECRET (not UNWRAP_FAILED) when unwrapping with an empty secret', () => {
     const wrapped = wrapFek(generateFek(), SECRET)
@@ -167,6 +168,25 @@ describe('encryption — re-wrap on secret change', () => {
     const recovered = unwrapFek(rewrapped, 'A brand new answer')
     expect(recovered.equals(fek)).toBe(true)
     expect(decryptDocument(encrypted, recovered).equals(document)).toBe(true)
+  })
+})
+
+describe('encryption — recovery wrapping', () => {
+  it('wraps and unwraps a FEK with a server key', () => {
+    const fek = generateFek()
+    const recoveryKey = generateFek()
+    expect(
+      unwrapFekWithKey(wrapFekWithKey(fek, recoveryKey), recoveryKey).equals(
+        fek,
+      ),
+    ).toBe(true)
+  })
+
+  it('fails closed for a wrong recovery key', () => {
+    const wrapped = wrapFekWithKey(generateFek(), generateFek())
+    expect(() => unwrapFekWithKey(wrapped, generateFek())).toThrowError(
+      expect.objectContaining({ code: 'UNWRAP_FAILED' }),
+    )
   })
 })
 

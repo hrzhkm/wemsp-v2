@@ -68,6 +68,8 @@ export interface WrappedKey {
   keyVersion: number
 }
 
+export type KeyWrappedFek = Pick<WrappedKey, 'wrappedKey' | 'iv' | 'authTag'>
+
 function assertKeyLength(key: Buffer): void {
   if (key.length !== KEY_BYTES) {
     throw new EncryptionError(
@@ -227,4 +229,36 @@ export function rewrapFek(
 ): WrappedKey {
   const fek = unwrapFek(wrapped, oldSecret)
   return wrapFek(fek, newSecret)
+}
+
+export function wrapFekWithKey(
+  fek: Buffer,
+  wrappingKey: Buffer,
+): KeyWrappedFek {
+  assertKeyLength(fek)
+  assertKeyLength(wrappingKey)
+  const iv = crypto.randomBytes(IV_BYTES)
+  const cipher = crypto.createCipheriv(ALGORITHM, wrappingKey, iv)
+  const wrappedKey = Buffer.concat([cipher.update(fek), cipher.final()])
+  return { wrappedKey, iv, authTag: cipher.getAuthTag() }
+}
+
+export function unwrapFekWithKey(
+  wrapped: KeyWrappedFek,
+  wrappingKey: Buffer,
+): Buffer {
+  assertKeyLength(wrappingKey)
+  try {
+    const decipher = crypto.createDecipheriv(ALGORITHM, wrappingKey, wrapped.iv)
+    decipher.setAuthTag(wrapped.authTag)
+    const fek = Buffer.concat([
+      decipher.update(wrapped.wrappedKey),
+      decipher.final(),
+    ])
+    assertKeyLength(fek)
+    return fek
+  } catch (error) {
+    if (error instanceof EncryptionError) throw error
+    throw new EncryptionError('UNWRAP_FAILED', 'Failed to unwrap FEK')
+  }
 }

@@ -568,16 +568,9 @@ export function AssistantFloatingChat() {
                           {formatAssetValue(action.asset.value)}
                         </p>
                         {action.asset.documentUrl ? (
-                          <p className="truncate">
+                          <p>
                             <span className="font-medium">{t('assistantChat.assetFields.document')}:</span>{' '}
-                            <a
-                              href={action.asset.documentUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-primary underline underline-offset-2"
-                            >
-                              {t('assistantChat.viewDocument')}
-                            </a>
+                            {t('assistantChat.documentAttachedPrefix')}
                           </p>
                         ) : null}
                       </div>

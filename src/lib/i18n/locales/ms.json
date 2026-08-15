@@ -80,6 +80,26 @@
       "activeSessionsDescription": "Semak lokasi akaun anda sedang log masuk dan buang sesi yang anda tidak kenali.",
       "twoFactorTitle": "Pengesahan Dua Faktor (2FA)",
       "twoFactorDescription": "Tambah langkah pengesahan kedua untuk perlindungan akaun yang lebih baik.",
+      "documentEncryption": {
+        "title": "Penyulitan Dokumen",
+        "description": "Lindungi dokumen aset dengan jawapan keselamatan peribadi.",
+        "setupDescription": "Tetapkan jawapan sebelum melampirkan dokumen PDF. Huruf besar, kecil dan ruang dinormalkan dan jawapan yang terlupa tidak boleh ditetapkan semula sendiri.",
+        "configuredDescription": "Penyulitan dokumen aktif. Menukar jawapan ini mengekalkan kunci penyulitan yang sama supaya dokumen sedia ada kekal boleh dibaca.",
+        "question": "Soalan keselamatan",
+        "answer": "Jawapan",
+        "currentAnswer": "Jawapan semasa",
+        "newAnswer": "Jawapan baharu",
+        "confirmAnswer": "Sahkan jawapan",
+        "configure": "Aktifkan penyulitan dokumen",
+        "update": "Kemas kini jawapan keselamatan",
+        "saved": "Tetapan penyulitan dokumen disimpan",
+        "loadError": "Tidak dapat memuatkan tetapan penyulitan dokumen.",
+        "questions": {
+          "firstSchool": "Apakah nama sekolah pertama anda?",
+          "childhoodFriend": "Apakah nama seorang rakan zaman kanak-kanak?",
+          "memorablePlace": "Tempat apakah yang paling bermakna kepada anda?"
+        }
+      },
       "english": "Inggeris",
       "malay": "Melayu",
       "current": "Semasa",

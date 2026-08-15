@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Bell, Check, ChevronRight, KeyRound, Languages, Loader2, Monitor, Search, Shield, Smartphone } from 'lucide-react'
+import { Bell, Check, ChevronRight, FileKey, KeyRound, Languages, Loader2, Monitor, Search, Shield, Smartphone } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -13,12 +13,13 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { useIsMobile } from '@/hooks/use-mobile'
 import { authClient } from '@/lib/auth/authClient'
 import { useLanguage } from '@/lib/i18n/context'
+import { DocumentEncryptionPanel } from '@/components/settings/documentEncryptionPanel'
 
 export const Route = createFileRoute('/app/settings/')({
   component: RouteComponent,
 })
 
-type SettingsPanel = 'active-sessions' | 'change-password' | 'language' | 'notifications' | 'two-factor'
+type SettingsPanel = 'active-sessions' | 'change-password' | 'document-encryption' | 'language' | 'notifications' | 'two-factor'
 type NotificationPreferenceKey =
   | 'emailAgreementStatusUpdates'
   | 'emailExpiryReminders'
@@ -329,6 +330,10 @@ function RouteComponent() {
         description: t('settings.changePasswordDescription'),
         title: t('settings.changePasswordTitle'),
       },
+      'document-encryption': {
+        description: t('settings.documentEncryption.description'),
+        title: t('settings.documentEncryption.title'),
+      },
       language: {
         description: t('settings.languageDescription'),
         title: t('settings.languageTitle'),
@@ -358,6 +363,12 @@ function RouteComponent() {
         icon: <Bell className="h-4 w-4" />,
         id: 'notifications' as const,
         label: t('settings.notificationsTitle'),
+      },
+      {
+        description: t('settings.documentEncryption.description'),
+        icon: <FileKey className="h-4 w-4" />,
+        id: 'document-encryption' as const,
+        label: t('settings.documentEncryption.title'),
       },
       {
         description: t('settings.changePasswordDescription'),
@@ -394,6 +405,10 @@ function RouteComponent() {
   const selectedPanelInfo = settingsPanels[selectedPanel]
 
   const renderPanelContent = () => {
+    if (selectedPanel === 'document-encryption') {
+      return <DocumentEncryptionPanel />
+    }
+
     if (selectedPanel === 'language') {
       return (
         <div className="space-y-4">

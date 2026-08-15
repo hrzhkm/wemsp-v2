@@ -4,12 +4,12 @@ import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
 import { corsHeaders } from '@/lib/cors'
 import { AssetType } from '@/generated/prisma/enums'
 import {
-  deleteFileFromS3,
-  extractKeyFromUrl,
-  generateS3Key,
-  getFileUrl,
-  uploadFileToS3,
-} from '@/lib/storage/aws'
+  AssetDocumentError,
+  deleteAssetDocument,
+  reencryptAssetDocument,
+  uploadAssetDocument,
+} from '@/lib/storage/assetDocument'
+import { DocumentEncryptionError } from '@/lib/storage/documentEncryption'
 
 export const Route = createFileRoute('/api/admin/assets/$')({
   server: {
@@ -23,7 +23,10 @@ export const Route = createFileRoute('/api/admin/assets/$')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           // Get query parameters for pagination and filtering
@@ -78,17 +81,20 @@ export const Route = createFileRoute('/api/admin/assets/$')({
             orderBy: { createdAt: 'desc' },
           })
 
-          return Response.json({
-            assets,
-            pagination: {
-              page,
-              limit,
-              total,
-              totalPages: Math.ceil(total / limit),
+          return Response.json(
+            {
+              assets,
+              pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+              },
             },
-          }, { headers: corsHeaders })
+            { headers: corsHeaders },
+          )
         } catch (error) {
-          console.error('Error fetching assets:', error)
+          console.error('Error fetching assets')
           return Response.json(
             { error: 'Internal server error' },
             { status: 500, headers: corsHeaders },
@@ -101,7 +107,10 @@ export const Route = createFileRoute('/api/admin/assets/$')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           // Parse FormData instead of JSON
@@ -144,61 +153,50 @@ export const Route = createFileRoute('/api/admin/assets/$')({
           })
 
           if (!user) {
-            return Response.json({ error: 'User not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'User not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
-          // Upload document to S3 if provided
+          // Encrypt with the asset owner's FEK before storing in R2.
           let documentUrl: string | null = null
           if (document && document.size > 0) {
-            // Validate file type
-            const allowedTypes = ['application/pdf']
-
-            if (!allowedTypes.includes(document.type)) {
-              return Response.json(
-                { error: 'Invalid file type. Allowed types: PDF' },
-                { status: 400, headers: corsHeaders },
-              )
-            }
-
-            // Validate file size (max 10MB)
-            const maxSize = 10 * 1024 * 1024 // 10MB
-            if (document.size > maxSize) {
-              return Response.json(
-                { error: 'File size exceeds 10MB limit' },
-                { status: 400, headers: corsHeaders },
-              )
-            }
-
-            // Upload to S3
-            const key = generateS3Key(document.name, 'documents')
-            await uploadFileToS3(document, key)
-            documentUrl = getFileUrl(key)
+            documentUrl = (await uploadAssetDocument(userId, document)).url
           }
 
           // Create asset in database
-          const asset = await prisma.asset.create({
-            data: {
-              name,
-              type: type as AssetType,
-              description: description || null,
-              value: numValue,
-              documentUrl,
-              userId,
-            },
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
+          let asset
+          try {
+            asset = await prisma.asset.create({
+              data: {
+                name,
+                type: type as AssetType,
+                description: description || null,
+                value: numValue,
+                documentUrl,
+                documentEncrypted: Boolean(documentUrl),
+                userId,
+              },
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                _count: {
+                  select: {
+                    agreementAssets: true,
+                  },
                 },
               },
-              _count: {
-                select: {
-                  agreementAssets: true,
-                },
-              },
-            },
-          })
+            })
+          } catch (error) {
+            if (documentUrl)
+              await deleteAssetDocument(documentUrl).catch(() => undefined)
+            throw error
+          }
 
           return Response.json(
             {
@@ -208,7 +206,16 @@ export const Route = createFileRoute('/api/admin/assets/$')({
             { status: 201, headers: corsHeaders },
           )
         } catch (error) {
-          console.error('Error creating asset:', error)
+          if (
+            error instanceof AssetDocumentError ||
+            error instanceof DocumentEncryptionError
+          ) {
+            return Response.json(
+              { error: error.message },
+              { status: 400, headers: corsHeaders },
+            )
+          }
+          console.error('Error creating asset')
           return Response.json(
             { error: 'Internal server error' },
             { status: 500, headers: corsHeaders },
@@ -221,14 +228,20 @@ export const Route = createFileRoute('/api/admin/assets/$')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           const url = new URL(request.url)
           const id = url.pathname.split('/').pop()
 
           if (!id) {
-            return Response.json({ error: 'Missing asset id' }, { status: 400, headers: corsHeaders })
+            return Response.json(
+              { error: 'Missing asset id' },
+              { status: 400, headers: corsHeaders },
+            )
           }
 
           // Check if asset exists
@@ -237,7 +250,10 @@ export const Route = createFileRoute('/api/admin/assets/$')({
           })
 
           if (!existingAsset) {
-            return Response.json({ error: 'Asset not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'Asset not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
           // Parse FormData
@@ -280,81 +296,92 @@ export const Route = createFileRoute('/api/admin/assets/$')({
           })
 
           if (!user) {
-            return Response.json({ error: 'User not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'User not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
           let documentUrl = existingAsset.documentUrl
+          let newDocumentUrl: string | null = null
 
           // Handle document replacement
           if (document && document.size > 0) {
-            // Validate file type
-            const allowedTypes = ['application/pdf']
-
-            if (!allowedTypes.includes(document.type)) {
-              return Response.json(
-                { error: 'Invalid file type. Allowed types: PDF' },
-                { status: 400, headers: corsHeaders },
+            newDocumentUrl = (await uploadAssetDocument(userId, document)).url
+            documentUrl = newDocumentUrl
+          } else if (
+            existingAsset.documentUrl &&
+            existingAsset.userId !== userId
+          ) {
+            newDocumentUrl = (
+              await reencryptAssetDocument(
+                existingAsset.documentUrl,
+                existingAsset.userId,
+                userId,
               )
-            }
-
-            // Validate file size (max 10MB)
-            const maxSize = 10 * 1024 * 1024 // 10MB
-            if (document.size > maxSize) {
-              return Response.json(
-                { error: 'File size exceeds 10MB limit' },
-                { status: 400, headers: corsHeaders },
-              )
-            }
-
-            // Delete old file from S3 if exists
-            if (existingAsset.documentUrl) {
-              try {
-                const oldKey = extractKeyFromUrl(existingAsset.documentUrl)
-                await deleteFileFromS3(oldKey)
-              } catch (error) {
-                console.error('Error deleting old file from S3:', error)
-                // Continue with upload even if deletion fails
-              }
-            }
-
-            // Upload new file to S3
-            const key = generateS3Key(document.name, 'documents')
-            await uploadFileToS3(document, key)
-            documentUrl = getFileUrl(key)
+            ).url
+            documentUrl = newDocumentUrl
           }
 
           // Update asset in database
-          const asset = await prisma.asset.update({
-            where: { id: parseInt(id) },
-            data: {
-              name,
-              type: type as AssetType,
-              description: description || null,
-              value: numValue,
-              documentUrl,
-              userId,
-            },
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
+          let asset
+          try {
+            asset = await prisma.asset.update({
+              where: { id: parseInt(id) },
+              data: {
+                name,
+                type: type as AssetType,
+                description: description || null,
+                value: numValue,
+                documentUrl,
+                documentEncrypted: newDocumentUrl
+                  ? true
+                  : existingAsset.documentEncrypted,
+                userId,
+              },
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                _count: {
+                  select: {
+                    agreementAssets: true,
+                  },
                 },
               },
-              _count: {
-                select: {
-                  agreementAssets: true,
-                },
-              },
-            },
-          })
+            })
+          } catch (error) {
+            if (newDocumentUrl)
+              await deleteAssetDocument(newDocumentUrl).catch(() => undefined)
+            throw error
+          }
+          if (newDocumentUrl && existingAsset.documentUrl) {
+            await deleteAssetDocument(existingAsset.documentUrl).catch(
+              () => undefined,
+            )
+          }
 
-          return Response.json({
-            success: true,
-            asset,
-          }, { headers: corsHeaders })
+          return Response.json(
+            {
+              success: true,
+              asset,
+            },
+            { headers: corsHeaders },
+          )
         } catch (error) {
-          console.error('Error updating asset:', error)
+          if (
+            error instanceof AssetDocumentError ||
+            error instanceof DocumentEncryptionError
+          ) {
+            return Response.json(
+              { error: error.message },
+              { status: 400, headers: corsHeaders },
+            )
+          }
+          console.error('Error updating asset')
           return Response.json(
             { error: 'Internal server error' },
             { status: 500, headers: corsHeaders },
@@ -367,14 +394,20 @@ export const Route = createFileRoute('/api/admin/assets/$')({
           // Verify admin session
           const admin = await requireAdminFromHeaders(request.headers)
           if (!admin) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+            return Response.json(
+              { error: 'Unauthorized' },
+              { status: 401, headers: corsHeaders },
+            )
           }
 
           const url = new URL(request.url)
           const id = url.pathname.split('/').pop()
 
           if (!id) {
-            return Response.json({ error: 'Missing asset id' }, { status: 400, headers: corsHeaders })
+            return Response.json(
+              { error: 'Missing asset id' },
+              { status: 400, headers: corsHeaders },
+            )
           }
 
           // Check if asset exists
@@ -390,7 +423,10 @@ export const Route = createFileRoute('/api/admin/assets/$')({
           })
 
           if (!asset) {
-            return Response.json({ error: 'Asset not found' }, { status: 404, headers: corsHeaders })
+            return Response.json(
+              { error: 'Asset not found' },
+              { status: 404, headers: corsHeaders },
+            )
           }
 
           // Check if asset is used in agreements
@@ -401,15 +437,9 @@ export const Route = createFileRoute('/api/admin/assets/$')({
             )
           }
 
-          // Delete file from S3 if exists
+          // Delete storage first so a failure preserves the database reference for retry.
           if (asset.documentUrl) {
-            try {
-              const key = extractKeyFromUrl(asset.documentUrl)
-              await deleteFileFromS3(key)
-            } catch (error) {
-              console.error('Error deleting file from S3:', error)
-              // Continue with asset deletion even if file deletion fails
-            }
+            await deleteAssetDocument(asset.documentUrl)
           }
 
           // Delete asset from database
@@ -417,12 +447,15 @@ export const Route = createFileRoute('/api/admin/assets/$')({
             where: { id: parseInt(id) },
           })
 
-          return Response.json({
-            success: true,
-            message: 'Asset deleted successfully',
-          }, { headers: corsHeaders })
+          return Response.json(
+            {
+              success: true,
+              message: 'Asset deleted successfully',
+            },
+            { headers: corsHeaders },
+          )
         } catch (error) {
-          console.error('Error deleting asset:', error)
+          console.error('Error deleting asset')
           return Response.json(
             { error: 'Internal server error' },
             { status: 500, headers: corsHeaders },

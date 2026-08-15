@@ -80,6 +80,26 @@
       "activeSessionsDescription": "Review where your account is signed in and remove sessions you do not recognize.",
       "twoFactorTitle": "Two-Factor Authentication (2FA)",
       "twoFactorDescription": "Add a second verification step for better account protection.",
+      "documentEncryption": {
+        "title": "Document Encryption",
+        "description": "Protect asset documents with a private security answer.",
+        "setupDescription": "Set an answer before attaching PDF documents. It is normalized for case and whitespace and cannot be reset by you if forgotten.",
+        "configuredDescription": "Document encryption is active. Changing this answer keeps the same encryption key, so existing documents remain readable.",
+        "question": "Security question",
+        "answer": "Answer",
+        "currentAnswer": "Current answer",
+        "newAnswer": "New answer",
+        "confirmAnswer": "Confirm answer",
+        "configure": "Enable document encryption",
+        "update": "Update security answer",
+        "saved": "Document encryption settings saved",
+        "loadError": "Unable to load document encryption settings.",
+        "questions": {
+          "firstSchool": "What was the name of your first school?",
+          "childhoodFriend": "What was the name of a childhood friend?",
+          "memorablePlace": "What place is especially memorable to you?"
+        }
+      },
       "english": "English",
       "malay": "Malay",
       "current": "Current",

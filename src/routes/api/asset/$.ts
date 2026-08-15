@@ -3,12 +3,11 @@ import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'
 import { AssetType } from '@/generated/prisma/enums'
 import {
-  deleteFileFromS3,
-  extractKeyFromUrl,
-  generateS3Key,
-  getFileUrl,
-  uploadFileToS3,
-} from '@/lib/storage/aws'
+  AssetDocumentError,
+  deleteAssetDocument,
+  uploadAssetDocument,
+} from '@/lib/storage/assetDocument'
+import { DocumentEncryptionError } from '@/lib/storage/documentEncryption'
 import { parsePositiveAssetValue } from '@/lib/asset/assetValidation'
 
 // Helper function to get inverse relationship
@@ -76,45 +75,31 @@ export const assetHandlers = {
         )
       }
 
-      // Upload document to S3 if provided
+      // Encrypt and upload the document before creating its database reference.
       let documentUrl: string | null = null
       if (document && document.size > 0) {
-        // Validate file type
-        const allowedTypes = ['application/pdf']
-
-        if (!allowedTypes.includes(document.type)) {
-          return Response.json(
-            { error: 'Invalid file type. Allowed types: PDF' },
-            { status: 400 },
-          )
-        }
-
-        // Validate file size (max 10MB)
-        const maxSize = 10 * 1024 * 1024 // 10MB
-        if (document.size > maxSize) {
-          return Response.json(
-            { error: 'File size exceeds 10MB limit' },
-            { status: 400 },
-          )
-        }
-
-        // Upload to S3
-        const key = generateS3Key(document.name, 'documents')
-        await uploadFileToS3(document, key)
-        documentUrl = getFileUrl(key)
+        documentUrl = (await uploadAssetDocument(session.user.id, document)).url
       }
 
       // Create asset in database
-      const asset = await prisma.asset.create({
-        data: {
-          name,
-          type: type as AssetType,
-          description: description || null,
-          value: numValue,
-          documentUrl,
-          userId: session.user.id,
-        },
-      })
+      let asset
+      try {
+        asset = await prisma.asset.create({
+          data: {
+            name,
+            type: type as AssetType,
+            description: description || null,
+            value: numValue,
+            documentUrl,
+            documentEncrypted: Boolean(documentUrl),
+            userId: session.user.id,
+          },
+        })
+      } catch (error) {
+        if (documentUrl)
+          await deleteAssetDocument(documentUrl).catch(() => undefined)
+        throw error
+      }
 
       return Response.json(
         {
@@ -131,7 +116,13 @@ export const assetHandlers = {
         { status: 201 },
       )
     } catch (error) {
-      console.error('Error creating asset:', error)
+      if (
+        error instanceof AssetDocumentError ||
+        error instanceof DocumentEncryptionError
+      ) {
+        return Response.json({ error: error.message }, { status: 400 })
+      }
+      console.error('Error creating asset')
       return Response.json({ error: 'Internal Server Error' }, { status: 500 })
     }
   },
@@ -329,7 +320,7 @@ export const assetHandlers = {
         familyAssets: transformedFamilyAssets,
       })
     } catch (error) {
-      console.error('Error fetching assets:', error)
+      console.error('Error fetching assets')
       return Response.json({ error: 'Internal Server Error' }, { status: 500 })
     }
   },
@@ -394,56 +385,41 @@ export const assetHandlers = {
       }
 
       let documentUrl = existingAsset.documentUrl
+      let newDocumentUrl: string | null = null
 
       // Handle document replacement
       if (document && document.size > 0) {
-        // Validate file type
-        const allowedTypes = ['application/pdf']
-
-        if (!allowedTypes.includes(document.type)) {
-          return Response.json(
-            { error: 'Invalid file type. Allowed types: PDF' },
-            { status: 400 },
-          )
-        }
-
-        // Validate file size (max 10MB)
-        const maxSize = 10 * 1024 * 1024 // 10MB
-        if (document.size > maxSize) {
-          return Response.json(
-            { error: 'File size exceeds 10MB limit' },
-            { status: 400 },
-          )
-        }
-
-        // Delete old file from S3 if exists
-        if (existingAsset.documentUrl) {
-          try {
-            const oldKey = extractKeyFromUrl(existingAsset.documentUrl)
-            await deleteFileFromS3(oldKey)
-          } catch (error) {
-            console.error('Error deleting old file from S3:', error)
-            // Continue with upload even if deletion fails
-          }
-        }
-
-        // Upload new file to S3
-        const key = generateS3Key(document.name, 'documents')
-        await uploadFileToS3(document, key)
-        documentUrl = getFileUrl(key)
+        newDocumentUrl = (await uploadAssetDocument(session.user.id, document))
+          .url
+        documentUrl = newDocumentUrl
       }
 
       // Update asset in database
-      const asset = await prisma.asset.update({
-        where: { id: parseInt(id) },
-        data: {
-          name,
-          type: type as AssetType,
-          description: description || null,
-          value: numValue,
-          documentUrl,
-        },
-      })
+      let asset
+      try {
+        asset = await prisma.asset.update({
+          where: { id: parseInt(id) },
+          data: {
+            name,
+            type: type as AssetType,
+            description: description || null,
+            value: numValue,
+            documentUrl,
+            documentEncrypted: newDocumentUrl
+              ? true
+              : existingAsset.documentEncrypted,
+          },
+        })
+      } catch (error) {
+        if (newDocumentUrl)
+          await deleteAssetDocument(newDocumentUrl).catch(() => undefined)
+        throw error
+      }
+      if (newDocumentUrl && existingAsset.documentUrl) {
+        await deleteAssetDocument(existingAsset.documentUrl).catch(
+          () => undefined,
+        )
+      }
 
       return Response.json({
         success: true,
@@ -457,7 +433,13 @@ export const assetHandlers = {
         },
       })
     } catch (error) {
-      console.error('Error updating asset:', error)
+      if (
+        error instanceof AssetDocumentError ||
+        error instanceof DocumentEncryptionError
+      ) {
+        return Response.json({ error: error.message }, { status: 400 })
+      }
+      console.error('Error updating asset')
       return Response.json({ error: 'Internal Server Error' }, { status: 500 })
     }
   },
@@ -491,15 +473,9 @@ export const assetHandlers = {
         return Response.json({ error: 'Asset not found' }, { status: 404 })
       }
 
-      // Delete file from S3 if exists
+      // Delete storage first so a failure preserves the database reference for retry.
       if (asset.documentUrl) {
-        try {
-          const key = extractKeyFromUrl(asset.documentUrl)
-          await deleteFileFromS3(key)
-        } catch (error) {
-          console.error('Error deleting file from S3:', error)
-          // Continue with asset deletion even if file deletion fails
-        }
+        await deleteAssetDocument(asset.documentUrl)
       }
 
       // Delete asset from database
@@ -512,7 +488,7 @@ export const assetHandlers = {
         message: 'Asset deleted successfully',
       })
     } catch (error) {
-      console.error('Error deleting asset:', error)
+      console.error('Error deleting asset')
       return Response.json({ error: 'Internal Server Error' }, { status: 500 })
     }
   },

@@ -55,6 +55,7 @@ export const ModelName = {
   IcRegistry: 'IcRegistry',
   User: 'User',
   UserSetting: 'UserSetting',
+  UserDocumentEncryptionKey: 'UserDocumentEncryptionKey',
   FamilyMember: 'FamilyMember',
   NonRegisteredFamilyMember: 'NonRegisteredFamilyMember',
   Asset: 'Asset',
@@ -137,6 +138,26 @@ export const UserSettingScalarFieldEnum = {
 export type UserSettingScalarFieldEnum = (typeof UserSettingScalarFieldEnum)[keyof typeof UserSettingScalarFieldEnum]
 
 
+export const UserDocumentEncryptionKeyScalarFieldEnum = {
+  userId: 'userId',
+  questionId: 'questionId',
+  answerWrappedFek: 'answerWrappedFek',
+  answerSalt: 'answerSalt',
+  answerIv: 'answerIv',
+  answerAuthTag: 'answerAuthTag',
+  recoveryWrappedFek: 'recoveryWrappedFek',
+  recoveryIv: 'recoveryIv',
+  recoveryAuthTag: 'recoveryAuthTag',
+  algorithm: 'algorithm',
+  keyVersion: 'keyVersion',
+  recoveryKeyVersion: 'recoveryKeyVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserDocumentEncryptionKeyScalarFieldEnum = (typeof UserDocumentEncryptionKeyScalarFieldEnum)[keyof typeof UserDocumentEncryptionKeyScalarFieldEnum]
+
+
 export const FamilyMemberScalarFieldEnum = {
   id: 'id',
   relation: 'relation',
@@ -171,6 +192,7 @@ export const AssetScalarFieldEnum = {
   description: 'description',
   value: 'value',
   documentUrl: 'documentUrl',
+  documentEncrypted: 'documentEncrypted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
