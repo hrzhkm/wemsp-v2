@@ -1,11 +1,9 @@
- 
 'use client'
 
 import { useEffect, useState } from 'react'
 import { Clock, ExternalLink, Hash, Loader2 } from 'lucide-react'
 import { format } from 'date-fns'
-import type {
-  LatestTransaction} from '@/services/latestTransactions';
+import type { LatestTransaction } from '@/services/latestTransactions'
 import {
   Card,
   CardContent,

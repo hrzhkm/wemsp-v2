@@ -78,7 +78,13 @@ describe('adminTransactionsHandlers.GET', () => {
         title: 'Hibah House',
         tokenId: 1,
         owner: { name: 'Ahmad' },
-        beneficiaries: [{ id: 'ben_9', familyMember: null, nonRegisteredFamilyMember: { name: 'Siti' } }],
+        beneficiaries: [
+          {
+            id: 'ben_9',
+            familyMember: null,
+            nonRegisteredFamilyMember: { name: 'Siti' },
+          },
+        ],
       },
     ])
     mocks.getAllContractEvents.mockResolvedValueOnce([

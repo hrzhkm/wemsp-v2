@@ -105,7 +105,7 @@ export const adminTransactionsHandlers = {
         const tokenId = event.tokenId
         return {
           ...event,
-          agreement: tokenId != null ? byToken.get(tokenId) ?? null : null,
+          agreement: tokenId != null ? (byToken.get(tokenId) ?? null) : null,
           ownerName: tokenId != null ? ownersByToken.get(tokenId) : undefined,
           beneficiaryName:
             event.beneficiaryId != null
@@ -118,16 +118,14 @@ export const adminTransactionsHandlers = {
         if (type && event.type !== type) return false
 
         const occurredAt = new Date(event.occurredAt)
-        if (from && new Date(from).getTime() > occurredAt.getTime()) return false
+        if (from && new Date(from).getTime() > occurredAt.getTime())
+          return false
         if (to && new Date(to).getTime() < occurredAt.getTime()) return false
 
         if (search) {
           const agreementTitle = event.agreement?.title.toLowerCase() || ''
           const ownerName = event.ownerName.toLowerCase() || ''
-          if (
-            !agreementTitle.includes(search) &&
-            !ownerName.includes(search)
-          ) {
+          if (!agreementTitle.includes(search) && !ownerName.includes(search)) {
             return false
           }
         }

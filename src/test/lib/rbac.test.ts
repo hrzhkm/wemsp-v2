@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import type {AppRole} from '@/lib/auth/rbac';
+import type { AppRole } from '@/lib/auth/rbac'
 import {
-  
   canAccessAppRoute,
   getRoleFromSession,
   getUnauthorizedRedirect,
-  isAdmin
+  isAdmin,
 } from '@/lib/auth/rbac'
 
 describe('getRoleFromSession', () => {

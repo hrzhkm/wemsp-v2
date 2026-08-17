@@ -13,7 +13,10 @@ import {
   TrashIcon,
   XCircleIcon,
 } from 'lucide-react'
-import type { AgreementStatus, DistributionType } from '@/generated/prisma/enums'
+import type {
+  AgreementStatus,
+  DistributionType,
+} from '@/generated/prisma/enums'
 import { getAdminSession } from '@/middleware'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

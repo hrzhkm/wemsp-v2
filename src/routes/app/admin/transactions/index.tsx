@@ -55,8 +55,10 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
 }
 
 const EVENT_BADGE_VARIANTS: Record<string, string> = {
-  AgreementMinted: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  OwnerSigned: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  AgreementMinted:
+    'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  OwnerSigned:
+    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
   BeneficiarySigned:
     'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
   WitnessSigned:
@@ -147,9 +149,7 @@ function RouteComponent() {
               <History className="h-3.5 w-3.5" />
               Transaction History
             </div>
-            <CardTitle className="text-xl">
-              Contract Transactions
-            </CardTitle>
+            <CardTitle className="text-xl">Contract Transactions</CardTitle>
             <CardDescription className="mt-1">
               All on-chain lifecycle events recorded on the agreement contract
             </CardDescription>
@@ -258,9 +258,7 @@ function RouteComponent() {
                           {event.agreement.title}
                         </a>
                       ) : (
-                        <span className="text-muted-foreground">
-                          Unknown
-                        </span>
+                        <span className="text-muted-foreground">Unknown</span>
                       )}
                     </TableCell>
                     <TableCell>{event.ownerName || '-'}</TableCell>
