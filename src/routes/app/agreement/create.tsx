@@ -4,7 +4,10 @@ import { Ban, FileText, Info, Loader2, Package, Users, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { DistributionType } from '@/generated/prisma/enums'
-import type {BeneficiaryWithShare, FamilyMember} from '@/lib/faraid/faraidCalculator';
+import type {
+  BeneficiaryWithShare,
+  FamilyMember,
+} from '@/lib/faraid/faraidCalculator'
 import { authClient } from '@/lib/auth/authClient'
 import {
   Card,
@@ -24,11 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
-import {
-  
-  
-  calculateAutoFaraidDistribution
-} from '@/lib/faraid/faraidCalculator'
+import { calculateAutoFaraidDistribution } from '@/lib/faraid/faraidCalculator'
 
 export const Route = createFileRoute('/app/agreement/create')({
   component: RouteComponent,
@@ -129,9 +128,8 @@ function RouteComponent() {
   >([])
 
   // Faraid calculation result
-  const [faraidResult, setFaraidResult] = useState<
-    Array<BeneficiaryWithShare> | null
-  >(null)
+  const [faraidResult, setFaraidResult] =
+    useState<Array<BeneficiaryWithShare> | null>(null)
   const [faraidDescription, setFaraidDescription] = useState<string>('')
   const [faraidWarnings, setFaraidWarnings] = useState<Array<string>>([])
 
@@ -160,14 +158,16 @@ function RouteComponent() {
       }
 
       // Convert family members to the format expected by the calculator
-      const familyMembers: Array<FamilyMember> = allMembers.map((member: any) => ({
-        id: member.id,
-        type: member.type,
-        name: member.name,
-        relation: member.relation,
-        email: member.email,
-        icNumber: member.icNumber,
-      }))
+      const familyMembers: Array<FamilyMember> = allMembers.map(
+        (member: any) => ({
+          id: member.id,
+          type: member.type,
+          name: member.name,
+          relation: member.relation,
+          email: member.email,
+          icNumber: member.icNumber,
+        }),
+      )
 
       const result = calculateAutoFaraidDistribution(familyMembers)
       setFaraidResult(result.beneficiaries)

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import type { AgreementStatus} from '@/generated/prisma/enums';
+import type { AgreementStatus } from '@/generated/prisma/enums'
 import { prisma } from '@/db'
 import { requireAdminFromHeaders } from '@/lib/auth/adminGuard'
 import { corsHeaders } from '@/lib/cors'

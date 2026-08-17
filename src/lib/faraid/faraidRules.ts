@@ -221,6 +221,36 @@ export function calculateFaraidDistribution(
     explanations.push('Siblings: Residuary (absence of descendants/ascendants)')
   }
 
+  // Radd (proportional return): if fixed shares do not exhaust the estate and
+  // no residuary heir exists, redistribute the remainder proportionally among
+  // fixed-share heirs. Spouses (HUSBAND/WIFE) are excluded from radd in all
+  // four Sunni schools.
+  if (totalFixedShares > 0 && totalFixedShares < 1 && residuary.length === 0) {
+    const remainder = 1 - totalFixedShares
+    let raddBase = 0
+    shares.forEach((share, relation) => {
+      if (share > 0 && relation !== 'HUSBAND' && relation !== 'WIFE') {
+        raddBase += share
+      }
+    })
+
+    if (raddBase > 0) {
+      shares.forEach((share, relation) => {
+        if (share > 0 && relation !== 'HUSBAND' && relation !== 'WIFE') {
+          shares.set(relation, share + (remainder * share) / raddBase)
+        }
+      })
+      totalFixedShares = 1
+      explanations.push(
+        'Radd: remaining portion redistributed proportionally to eligible heirs (spouses excluded)',
+      )
+    } else {
+      explanations.push(
+        'Remaining portion allocated to Baitulmal (no eligible residuary or radd heirs)',
+      )
+    }
+  }
+
   return {
     shares,
     residuary,

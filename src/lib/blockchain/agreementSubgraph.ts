@@ -41,11 +41,13 @@ const EVENT_COLLECTIONS = [
 ]
 
 const EVENT_FIELDS: Record<string, string> = {
-  agreementMinteds: 'tokenId agreementId beneficiaryCount transactionHash blockTimestamp blockNumber',
+  agreementMinteds:
+    'tokenId agreementId beneficiaryCount transactionHash blockTimestamp blockNumber',
   ownerSigneds: 'tokenId timestamp transactionHash blockTimestamp blockNumber',
   beneficiarySigneds:
     'tokenId beneficiaryId timestamp transactionHash blockTimestamp blockNumber',
-  witnessSigneds: 'tokenId timestamp transactionHash blockTimestamp blockNumber',
+  witnessSigneds:
+    'tokenId timestamp transactionHash blockTimestamp blockNumber',
   agreementFinalizeds:
     'tokenId timestamp transactionHash blockTimestamp blockNumber',
   agreementUpdateds:
@@ -64,7 +66,9 @@ function buildQuery(): string {
   return `query { ${selections} }`
 }
 
-async function querySubgraph(): Promise<Record<string, Array<Record<string, unknown>>>> {
+async function querySubgraph(): Promise<
+  Record<string, Array<Record<string, unknown>>>
+> {
   const response = await fetch(SUBGRAPH_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

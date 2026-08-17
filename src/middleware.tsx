@@ -1,4 +1,4 @@
-import { createMiddleware, createServerFn  } from '@tanstack/react-start'
+import { createMiddleware, createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { auth } from '@/lib/auth/auth'
 import { prisma } from '@/db'

@@ -32,7 +32,10 @@ function mintedEntity(overrides: Record<string, unknown> = {}) {
   }
 }
 
-function signedEntity(type: 'ownerSigneds' | 'witnessSigneds' | 'agreementFinalizeds', overrides: Record<string, unknown> = {}) {
+function signedEntity(
+  type: 'ownerSigneds' | 'witnessSigneds' | 'agreementFinalizeds',
+  overrides: Record<string, unknown> = {},
+) {
   return {
     tokenId: '1',
     timestamp: '1700000100',
@@ -71,8 +74,15 @@ describe('getAllContractEvents', () => {
   it('normalizes events across collections and sorts them descending', async () => {
     mocks.fetch.mockResolvedValueOnce(
       okResponse({
-        agreementMinteds: [mintedEntity({ blockTimestamp: '1700000000', blockNumber: '100' })],
-        ownerSigneds: [signedEntity('ownerSigneds', { blockTimestamp: '1700000100', blockNumber: '101' })],
+        agreementMinteds: [
+          mintedEntity({ blockTimestamp: '1700000000', blockNumber: '100' }),
+        ],
+        ownerSigneds: [
+          signedEntity('ownerSigneds', {
+            blockTimestamp: '1700000100',
+            blockNumber: '101',
+          }),
+        ],
         beneficiarySigneds: [
           {
             tokenId: '1',
@@ -83,8 +93,18 @@ describe('getAllContractEvents', () => {
             blockNumber: '102',
           },
         ],
-        witnessSigneds: [signedEntity('witnessSigneds', { blockTimestamp: '1700000300', blockNumber: '103' })],
-        agreementFinalizeds: [signedEntity('agreementFinalizeds', { blockTimestamp: '1700000400', blockNumber: '104' })],
+        witnessSigneds: [
+          signedEntity('witnessSigneds', {
+            blockTimestamp: '1700000300',
+            blockNumber: '103',
+          }),
+        ],
+        agreementFinalizeds: [
+          signedEntity('agreementFinalizeds', {
+            blockTimestamp: '1700000400',
+            blockNumber: '104',
+          }),
+        ],
         agreementUpdateds: [
           {
             tokenId: '1',
